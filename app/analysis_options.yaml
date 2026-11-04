@@ -2,6 +2,8 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - rust_builder/**
+    - lib/platform/rust/generated/**
     - lib/l10n/generated/**
     - build/**
     - android/**

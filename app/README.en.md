@@ -9,8 +9,9 @@ This directory is the Flutter project root. The Git repository is rooted one lev
 - Initialization page showing the app name, tagline, hourglass icon, and development status.
 - Page text follows the system language, supporting Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Spanish, German, and French. Unsupported languages fall back to Simplified Chinese; there is no in-app language selector yet.
 - Adaptive content width, scrolling, safe areas, and system text scaling.
+- Normal startup loads the real Rust library. Flutter/FRB and Android Kotlin/UniFFI probes have passed; `lib/main_probe.dart` is a separate development entry point.
 
-Real countdowns, earnings calculations, floating windows, persistent settings, and mobile widgets are pending. See the [repository feature list](../README.en.md#current-features) for implemented and planned capabilities. The Windows release build and startup tests have passed; builds and device testing on other platforms remain unverified.
+Business countdowns, earnings calculations, the final floating window, persistent settings, and product widgets are pending. See the [repository feature list](../README.en.md#current-features). Windows release/native integration tests and Android x86_64 emulator runtime tests have passed. Apple verification is deferred to the user on a Mac; see the [Apple guide](../native/ios/README.md) (in Chinese).
 
 ## Running the app
 

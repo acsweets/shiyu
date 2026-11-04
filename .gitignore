@@ -13,3 +13,5 @@ Thumbs.db
 *.mobileprovision
 # Rust 构建产物
 core/target/
+# 本仓库的生成工具与临时产物
+.tooling/

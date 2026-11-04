@@ -6,15 +6,17 @@
 
 ## 当前功能
 
-当前版本为工程初始化阶段，运行后显示开发状态首页。下表按当前代码列出已实现能力；计时和薪资业务尚未实现。
+当前处于 M0 最小运行阶段，普通启动仍显示开发状态首页。下表按当前代码列出已实现能力；计时和薪资业务尚未实现。
 
 | 已实现 | 当前行为 |
 | --- | --- |
 | 初始化首页 | 显示沙漏图标、应用名称、标语与开发状态说明 |
 | 跟随系统语言 | 首页文案支持简体中文、繁体中文、英语、日语、韩语、西班牙语、德语和法语；不支持的语言回退为简体中文，暂无应用内语言切换入口 |
 | 自适应页面 | 内容居中、限制最大宽度，空间不足时可滚动；支持系统字体缩放与安全区域布局 |
+| Rust 最小运行链路 | 普通启动加载真实 Rust 库；Flutter/FRB 与 Android Kotlin/UniFFI 复用同一核心，已通过探测测试 |
+| 独立开发验证入口 | `lib/main_probe.dart` 提供 Rust 探测及桌面窗口/托盘/快捷键验证；不作为最终产品界面 |
 
-平台状态：Windows Release 已在当前 Windows 11 机器构建通过，启动测试通过；Android、iOS、macOS 已生成工程文件，尚未完成构建与设备验证。四个平台均未完成产品功能验收。
+平台状态：Windows Release 与真实原生集成测试通过；Android 16 / API 36 / x86_64 模拟器实际构建、安装和集成运行通过。macOS/iOS 已提供构建适配和验证脚本，待用户在 Mac 自行验证。四个平台的 MVP 产品功能验收均未完成，Android 模拟器通过不代表硬件真机通过。
 
 ### MVP 待开发功能
 
@@ -69,21 +71,25 @@ flutter gen-l10n
 flutter run -d windows
 ```
 
-Android 使用 `flutter devices` 查到的设备 ID；macOS 在 Mac 上使用 `flutter run -d macos`；iOS 需要 Mac、Xcode 与模拟器/签名条件。模板当前 iOS 最低版本为 15.0，macOS 为 12.0；Android 最低版本沿用固定 Flutter SDK 的默认值。Windows 产品目标为 Windows 10+，仍需在目标系统验证。
+Android 使用 `flutter devices` 查到的设备 ID；macOS 在 Mac 上使用 `flutter run -d macos`；iOS 需要 Mac、Xcode 与模拟器/签名条件。当前 iOS 最低版本为 15.0，macOS 为 12.0，Android 最低 API 为 24。Windows 产品目标为 Windows 10+，仍需在目标系统验证。
+
+最小运行验证、已知环境问题和产物见 [M0 验收报告](docs/验收记录/01/README.md)。独立桌面验证使用 `flutter run -d windows -t lib/main_probe.dart`；Apple 构建与 Swift 探测步骤见 [Mac 验证说明](native/ios/README.md)。
+
+另有 ARM64 debug 手机测试包，已通过构建与包内 Rust ABI 校验，尚未真机运行；本地路径见验收报告。
 
 ## 检查与约定
 
 在仓库根目录运行 `./scripts/check.ps1`，执行本地化生成、格式检查、静态分析、启动冒烟测试和 Rust 检查。添加 `-BuildWindows` 可验证 Windows release 构建。CI 包含同样检查及 Windows 构建；其他平台 CI 与真机验收后续补齐。
 
-2026-11-04 在当前 Windows 机器执行 `./scripts/check.ps1 -BuildWindows` 通过：格式检查、Flutter 静态分析、两项启动测试、Windows release 构建、Rust fmt/clippy。Android 构建未验证：本机许可证未全部接受，Google Maven 网络检查异常；iOS/macOS 需在 Mac 上验证。GitHub CI 配置已纳入仓库，远程运行结果以 Actions 为准。
+2026-11-04 已通过 Windows Release、Flutter 格式/分析/两项启动测试、Rust fmt/clippy/test，以及 Windows 和 Android 真实原生集成测试。`./scripts/check_m0.ps1 -AndroidDeviceId <设备ID>` 可复核运行链路；可选 `-GradleUserHome <短路径缓存目录>` 隔离本机代理/长路径配置。CI 现包含 Windows 与 Android APK 构建及 Rust 库打包检查，远程运行结果以 Actions 为准。
 
 Flutter 按功能分域，Dart 变量使用显式类型、函数类型通过 typedef 命名；超过三行的匿名回调提取为具名函数。手写代码注释使用中文，成员变量与核心方法添加用途注释。生成的原生模板和绑定通过工具维护。
 
-## 初始化范围
+## 工程范围与进度
 
-已建立四平台工程、Riverpod 根容器、ARB 国际化和响应式初始化页。Rust crate 仅建立边界，尚无计算实现。Flutter 与 Rust 尚未链接；后续按冻结计划引入 flutter_rust_bridge、UniFFI、jiff、rust_decimal 和设置存储。
+已建立四平台工程、Riverpod 根容器、ARB 国际化和响应式初始化页；FRB 与 UniFFI 已接入同一个 Rust 核心，目前只提供链路探测。jiff、rust_decimal、正式数据契约、业务计算与设置存储在后续节点实现。Android debug 包含原生探测 widget 源码，正式计时/薪资组件尚未实现，widget 冷启动尚未验收。
 
-业务功能进度见上方“当前功能”。本次初始化不代表 M0 风险验证或 MVP 已完成；初始化页不填充虚构薪资或倒计时。
+业务功能进度见上方“当前功能”。首个里程碑按用户调整以 Windows/Android 运行通过为准，Apple 待用户验证；这不代表原四平台 G0 或 MVP 已完成。初始化页不填充虚构薪资或倒计时。
 
 本次初始化未设置账号、遥测或联网请求业务。薪资与个人设置不上传的原则需在后续实现中持续遵守。
 

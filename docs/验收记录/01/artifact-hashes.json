@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-04",
+  "artifacts": [
+    {
+      "path": "app/build/windows/x64/runner/Release/shiyu.exe",
+      "bytes": 92160,
+      "sha256": "6f666f4606f5019c233ffc87797440202e3bf38a806bacb0f0d31530e5e74e17"
+    },
+    {
+      "path": "app/build/windows/x64/runner/Release/shiyu_bridge.dll",
+      "bytes": 504320,
+      "sha256": "ce1d44fcb3b4f8384e3baefa93f0f4730f04f76ccfe72d91e7882a7c2f53cebd"
+    },
+    {
+      "path": "app/build/app/outputs/flutter-apk/app-debug.apk",
+      "bytes": 88349395,
+      "sha256": "97d1fa4a217488f45c7273e420de46c36498eb901c298487690798c69a7dc3a6"
+    },
+    {
+      "path": "app/build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk",
+      "bytes": 84483326,
+      "sha256": "fee424f9afd27c050dda172c5964efc3e5c8a3b1062a91012840073331403cb1"
+    }
+  ]
+}

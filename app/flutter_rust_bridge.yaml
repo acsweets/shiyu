@@ -1,0 +1,6 @@
+rust_input: crate::api
+rust_root: ../core/crates/flutter_bridge
+dart_output: lib/platform/rust/generated
+dart_root: .
+web: false
+dart_format_line_length: 80

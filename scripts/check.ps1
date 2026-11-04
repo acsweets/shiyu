@@ -16,7 +16,7 @@ Push-Location (Join-Path $projectRoot 'app')
 try {
     Invoke-Checked 'flutter' @('pub', 'get', '--enforce-lockfile')
     Invoke-Checked 'flutter' @('gen-l10n')
-    Invoke-Checked 'dart' @('format', '--output=none', '--set-exit-if-changed', 'lib/app', 'lib/features', 'lib/main.dart', 'test')
+    Invoke-Checked 'dart' @('format', '--output=none', '--set-exit-if-changed', 'lib/app', 'lib/features', 'lib/main.dart', 'lib/main_probe.dart', 'test', 'integration_test')
     Invoke-Checked 'flutter' @('analyze', '--fatal-infos')
     Invoke-Checked 'flutter' @('test')
     if ($BuildWindows) {
@@ -30,6 +30,7 @@ Push-Location (Join-Path $projectRoot 'core')
 try {
     Invoke-Checked 'cargo' @('fmt', '--all', '--', '--check')
     Invoke-Checked 'cargo' @('clippy', '--workspace', '--all-targets', '--locked', '--', '-D', 'warnings')
+    Invoke-Checked 'cargo' @('test', '--workspace', '--locked')
 } finally {
     Pop-Location
 }
