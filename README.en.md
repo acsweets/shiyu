@@ -50,6 +50,7 @@ workspace/
 │   ├── core/                  # Rust workspace within this repository
 │   │   └── crates/engine/     # shiyu_core pure computation engine
 │   ├── doc/                   # Existing product and technical documentation
+│   ├── docs/                  # Development milestones, node plans, and future evidence
 │   ├── scripts/               # Repository check scripts
 │   └── .github/workflows/     # CI
 └── <other-projects>/          # Separate repositories
@@ -90,6 +91,7 @@ This initialization adds no accounts, telemetry, or application network requests
 
 The following source documents are in Chinese:
 
+- [Sequential development plan and milestones](docs/开发计划/README.md): an existing baseline followed by nodes 01–14, each with implementation TODOs, review steps, and completion criteria.
 - [Project information](doc/桌面悬浮计时器/项目基础信息.md)
 - [Frozen MVP requirements 1.0](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md)
 - [Development steps, schedule, and testing](doc/桌面悬浮计时器/需求/最终开发步骤-排期-测试验证.md)
