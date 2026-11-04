@@ -1,0 +1,15 @@
+# 编辑器和操作系统缓存
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+# 本地配置与签名材料
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+# Rust 构建产物
+core/target/
