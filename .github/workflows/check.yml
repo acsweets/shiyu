@@ -25,7 +25,8 @@ jobs:
         working-directory: core
       - run: flutter pub get --enforce-lockfile
       - run: flutter gen-l10n
-      - run: dart format --output=none --set-exit-if-changed lib/app lib/features lib/main.dart lib/main_probe.dart test integration_test
+      - run: dart format lib/l10n/generated
+      - run: dart format --output=none --set-exit-if-changed lib/app lib/features lib/platform/desktop lib/platform/widgets lib/main.dart lib/main_probe.dart test integration_test
       - run: flutter analyze --fatal-infos
       - run: flutter test
       - run: flutter build windows --release
@@ -46,6 +47,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      - uses: android-actions/setup-android@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.47.2'

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shiyu/main.dart' as application;
 import 'package:shiyu/platform/rust/generated/api/diagnostics.dart';
+import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,10 @@ void main() {
 
 /// 同时检查打包、加载、异步调用和无符号边界，禁止用 mock 替代原生链路。
 Future<void> _verifyNativeBridge(WidgetTester tester) async {
-  await application.main();
+  final RetirementController controller = await application.runShiyu(
+    floating: false,
+  );
+  addTearDown(controller.dispose);
   await tester.pumpAndSettle();
   expect(await bridgeProbe(challenge: 41), 'shiyu-core:42');
   expect(await bridgeProbe(challenge: 0), 'shiyu-core:1');

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shiyu/features/diagnostics/desktop_probe_controller.dart';
 import 'package:shiyu/main.dart' as application;
+import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
@@ -14,7 +15,10 @@ void main() {
 /// 使用真实插件检查窗口读回及穿透恢复，保留视觉效果和实际快捷键供用户复核。
 Future<void> _verifyDesktopWindow(WidgetTester tester) async {
   if (!Platform.isWindows && !Platform.isMacOS) return;
-  await application.main();
+  final RetirementController controllerState = await application.runShiyu(
+    floating: false,
+  );
+  addTearDown(controllerState.dispose);
   await tester.pumpAndSettle();
   final DesktopProbeController controller = DesktopProbeController();
   await controller.initialize();

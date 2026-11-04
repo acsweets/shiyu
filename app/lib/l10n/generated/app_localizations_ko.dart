@@ -17,4 +17,46 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get initializationNotice => '앱의 기반이 준비되었습니다. 시간 및 급여 기능을 개발 중입니다.';
+
+  @override
+  String get retirementTitle => '은퇴 카운트다운';
+
+  @override
+  String get retired => '은퇴 완료';
+
+  @override
+  String get daysRemaining => '일 후 은퇴';
+
+  @override
+  String get chooseRetirement => '은퇴 날짜 선택';
+
+  @override
+  String get configure => '설정';
+
+  @override
+  String get hideWindow => '창 숨기기';
+
+  @override
+  String get timeZoneLabel => 'IANA 시간대';
+
+  @override
+  String get saveSettings => '시간대 저장';
+
+  @override
+  String get clearTarget => '날짜 지우기';
+
+  @override
+  String get addWidget => '홈 화면 위젯 추가';
+
+  @override
+  String get widgetInstructions => '홈 화면을 길게 누른 후 Shiyu 은퇴 위젯을 추가하세요.';
+
+  @override
+  String get settingsError => '날짜, 시간대, 공유 저장소를 확인하고 다시 시도하세요.';
+
+  @override
+  String get calendarFallback => '공휴일 데이터가 아직 연결되지 않아 설정된 주간 근무일을 사용합니다.';
+
+  @override
+  String get currentSlice => '현재 은퇴 카운트다운을 지원합니다. 다른 지표는 후속 단계에서 제공됩니다.';
 }

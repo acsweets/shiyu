@@ -2,23 +2,17 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
-This directory is the Flutter project root. The Git repository is rooted one level above, in `shiyu/`. See the [repository README](../README.en.md) for environment requirements, check commands, requirements, and architecture.
+This directory is the Flutter root. The independent Git repository is its parent, `shiyu/`.
 
-## Current features
-
-- Initialization page showing the app name, tagline, hourglass icon, and development status.
-- Page text follows the system language, supporting Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Spanish, German, and French. Unsupported languages fall back to Simplified Chinese; there is no in-app language selector yet.
-- Adaptive content width, scrolling, safe areas, and system text scaling.
-- Normal startup loads the real Rust library. Flutter/FRB and Android Kotlin/UniFFI probes have passed; `lib/main_probe.dart` is a separate development entry point.
-
-Business countdowns, earnings calculations, the final floating window, persistent settings, and product widgets are pending. See the [repository feature list](../README.en.md#current-features). Windows release/native integration tests and Android x86_64 emulator runtime tests have passed. Apple verification is deferred to the user on a Mac; see the [Apple guide](../native/ios/README.md) (in Chinese).
-
-## Running the app
+Current features include a real retirement countdown, retirement date/time zone settings with atomic local storage, Windows/macOS floating window and tray/shortcut integration, an Android native retirement widget, and an iOS Widget extension connected to Xcode. The foreground displays seconds; widgets display calendar days. Earnings and other metrics remain pending. New Apple code in this node requires user verification on a Mac.
 
 ```powershell
-flutter pub get
+flutter pub get --enforce-lockfile
 flutter gen-l10n
+dart format lib/l10n/generated
 flutter run -d windows
 ```
 
-The entry point is `lib/main.dart`, and the root widget is `lib/app/shiyu_app.dart`. Features are organized by domain under `lib/features/`. Business calculations belong in the Rust core under `../core/`.
+For mobile, use the device ID reported by `flutter devices`. Add the Android widget from the app. Follow the [Apple guide](../native/ios/README.md) for shared-group signing and iOS widget setup.
+
+See the [English repository README](../README.en.md) for scope, toolchains and checks, and the [node 02 acceptance guide](../docs/验收记录/02/README.md) for verification. The entry point is `lib/main.dart`; retirement UI/state is under `lib/features/retirement/`; business rules are in Rust under `../core/`.

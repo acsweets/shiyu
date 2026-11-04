@@ -2,5 +2,19 @@
   "@@locale": "en",
   "appName": "Time Remaining",
   "tagline": "Make time for life.",
-  "initializationNotice": "The app foundation is ready. Time and salary features are under development."
+  "initializationNotice": "The app foundation is ready. Time and salary features are under development.",
+  "retirementTitle": "Retirement countdown",
+  "retired": "Retired",
+  "daysRemaining": "days remaining",
+  "chooseRetirement": "Choose retirement date",
+  "configure": "Configure",
+  "hideWindow": "Hide window",
+  "timeZoneLabel": "IANA time zone",
+  "saveSettings": "Save time zone",
+  "clearTarget": "Clear date",
+  "addWidget": "Add home screen widget",
+  "widgetInstructions": "Long-press your home screen and add the Shiyu retirement widget.",
+  "settingsError": "Check the date, time zone, and shared storage permissions, then try again.",
+  "calendarFallback": "Holiday data is not connected yet; the configured weekly workdays are used.",
+  "currentSlice": "Retirement countdown is available. Other built-in metrics are planned for later nodes."
 }

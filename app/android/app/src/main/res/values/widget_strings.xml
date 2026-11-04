@@ -1,0 +1,9 @@
+<resources>
+    <string name="widget_title">Shiyu · Retirement</string>
+    <string name="widget_days">%1$s days left</string>
+    <string name="widget_retired">Retired</string>
+    <string name="widget_setup">Open Shiyu to set a date</string>
+    <string name="widget_error">Open Shiyu to check settings</string>
+    <string name="widget_updated">Updated %1$s</string>
+    <string name="widget_refresh">Refresh</string>
+</resources>

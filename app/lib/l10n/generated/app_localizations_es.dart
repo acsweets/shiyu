@@ -18,4 +18,50 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get initializationNotice =>
       'La base de la aplicación está lista. Las funciones de tiempo y salario están en desarrollo.';
+
+  @override
+  String get retirementTitle => 'Cuenta atrás para la jubilación';
+
+  @override
+  String get retired => 'Jubilado/a';
+
+  @override
+  String get daysRemaining => 'días restantes';
+
+  @override
+  String get chooseRetirement => 'Elegir fecha de jubilación';
+
+  @override
+  String get configure => 'Configurar';
+
+  @override
+  String get hideWindow => 'Ocultar ventana';
+
+  @override
+  String get timeZoneLabel => 'Zona horaria IANA';
+
+  @override
+  String get saveSettings => 'Guardar zona horaria';
+
+  @override
+  String get clearTarget => 'Borrar fecha';
+
+  @override
+  String get addWidget => 'Añadir widget de inicio';
+
+  @override
+  String get widgetInstructions =>
+      'Mantén pulsada la pantalla de inicio y añade el widget de jubilación de Shiyu.';
+
+  @override
+  String get settingsError =>
+      'Comprueba la fecha, la zona horaria y el almacenamiento compartido e inténtalo de nuevo.';
+
+  @override
+  String get calendarFallback =>
+      'Los datos de festivos aún no están conectados; se usan los días laborables semanales configurados.';
+
+  @override
+  String get currentSlice =>
+      'La cuenta atrás para la jubilación está disponible. Los demás indicadores llegarán en etapas posteriores.';
 }

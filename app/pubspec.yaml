@@ -16,6 +16,7 @@ dependencies:
   flutter_rust_bridge: 2.12.0
   hotkey_manager: 0.2.3
   intl: ^0.20.3
+  path_provider: ^2.1.6
   shiyu_bridge:
     path: rust_builder
   tray_manager: 0.5.2

@@ -2,5 +2,19 @@
   "@@locale": "zh_Hant",
   "appName": "時餘",
   "tagline": "感知時間，留住生活。",
-  "initializationNotice": "工程已就緒，時間與薪資功能正在建置中。"
+  "initializationNotice": "工程已就緒，時間與薪資功能正在建置中。",
+  "retirementTitle": "退休倒數",
+  "retired": "已退休",
+  "daysRemaining": "天後退休",
+  "chooseRetirement": "選擇退休日期",
+  "configure": "設定",
+  "hideWindow": "隱藏浮窗",
+  "timeZoneLabel": "IANA 時區",
+  "saveSettings": "儲存時區",
+  "clearTarget": "清除日期",
+  "addWidget": "加入桌面小工具",
+  "widgetInstructions": "長按手機主畫面，加入「時餘 · 退休倒數」小工具。",
+  "settingsError": "操作失敗，請檢查日期、時區及共用儲存空間後重試。",
+  "calendarFallback": "尚未接入假日資料，目前依每週工作日設定計算。",
+  "currentSlice": "目前支援退休倒數，其他內建指標將於後續節點提供。"
 }

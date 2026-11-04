@@ -2,5 +2,19 @@
   "@@locale": "ja",
   "appName": "時余",
   "tagline": "時間を感じ、暮らしを大切に。",
-  "initializationNotice": "アプリの基盤が整いました。時間と給与の機能は開発中です。"
+  "initializationNotice": "アプリの基盤が整いました。時間と給与の機能は開発中です。",
+  "retirementTitle": "退職までのカウントダウン",
+  "retired": "退職済み",
+  "daysRemaining": "日後に退職",
+  "chooseRetirement": "退職日を選択",
+  "configure": "設定",
+  "hideWindow": "ウィンドウを隠す",
+  "timeZoneLabel": "IANA タイムゾーン",
+  "saveSettings": "タイムゾーンを保存",
+  "clearTarget": "日付をクリア",
+  "addWidget": "ホーム画面にウィジェットを追加",
+  "widgetInstructions": "ホーム画面を長押しして、Shiyu の退職ウィジェットを追加してください。",
+  "settingsError": "日付、タイムゾーン、共有ストレージを確認して再試行してください。",
+  "calendarFallback": "祝日データは未接続のため、設定された毎週の勤務日を使用します。",
+  "currentSlice": "現在は退職カウントダウンに対応しています。他の指標は今後追加予定です。"
 }

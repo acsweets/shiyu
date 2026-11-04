@@ -3,3 +3,5 @@ template-arb-file: app_zh.arb
 output-localization-file: app_localizations.dart
 output-dir: lib/l10n/generated
 nullable-getter: false
+# 单独格式化，避免 Windows 嵌套构建进程启动 dart format 时挂起。
+format: false

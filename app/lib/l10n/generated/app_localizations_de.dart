@@ -18,4 +18,50 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get initializationNotice =>
       'Die App-Grundlage ist bereit. Zeit- und Gehaltsfunktionen sind in Entwicklung.';
+
+  @override
+  String get retirementTitle => 'Countdown bis zur Rente';
+
+  @override
+  String get retired => 'Im Ruhestand';
+
+  @override
+  String get daysRemaining => 'Tage verbleibend';
+
+  @override
+  String get chooseRetirement => 'Rentendatum wählen';
+
+  @override
+  String get configure => 'Einstellungen';
+
+  @override
+  String get hideWindow => 'Fenster ausblenden';
+
+  @override
+  String get timeZoneLabel => 'IANA-Zeitzone';
+
+  @override
+  String get saveSettings => 'Zeitzone speichern';
+
+  @override
+  String get clearTarget => 'Datum löschen';
+
+  @override
+  String get addWidget => 'Startbildschirm-Widget hinzufügen';
+
+  @override
+  String get widgetInstructions =>
+      'Halte den Startbildschirm gedrückt und füge das Shiyu-Renten-Widget hinzu.';
+
+  @override
+  String get settingsError =>
+      'Prüfe Datum, Zeitzone und gemeinsamen Speicher und versuche es erneut.';
+
+  @override
+  String get calendarFallback =>
+      'Feiertagsdaten sind noch nicht verbunden; die eingestellten wöchentlichen Arbeitstage werden verwendet.';
+
+  @override
+  String get currentSlice =>
+      'Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten.';
 }

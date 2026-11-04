@@ -18,4 +18,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get initializationNotice =>
       'The app foundation is ready. Time and salary features are under development.';
+
+  @override
+  String get retirementTitle => 'Retirement countdown';
+
+  @override
+  String get retired => 'Retired';
+
+  @override
+  String get daysRemaining => 'days remaining';
+
+  @override
+  String get chooseRetirement => 'Choose retirement date';
+
+  @override
+  String get configure => 'Configure';
+
+  @override
+  String get hideWindow => 'Hide window';
+
+  @override
+  String get timeZoneLabel => 'IANA time zone';
+
+  @override
+  String get saveSettings => 'Save time zone';
+
+  @override
+  String get clearTarget => 'Clear date';
+
+  @override
+  String get addWidget => 'Add home screen widget';
+
+  @override
+  String get widgetInstructions =>
+      'Long-press your home screen and add the Shiyu retirement widget.';
+
+  @override
+  String get settingsError =>
+      'Check the date, time zone, and shared storage permissions, then try again.';
+
+  @override
+  String get calendarFallback =>
+      'Holiday data is not connected yet; the configured weekly workdays are used.';
+
+  @override
+  String get currentSlice =>
+      'Retirement countdown is available. Other built-in metrics are planned for later nodes.';
 }

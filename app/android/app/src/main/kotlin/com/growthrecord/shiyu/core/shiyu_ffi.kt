@@ -676,6 +676,12 @@ internal object IntegrityCheckingUniffiLib {
     internal fun ensureInitialized() = Unit
     external fun uniffi_shiyu_ffi_checksum_func_bridge_probe(
     ): Int
+    external fun uniffi_shiyu_ffi_checksum_func_compute_snapshot(
+    ): Int
+    external fun uniffi_shiyu_ffi_checksum_func_default_settings(
+    ): Int
+    external fun uniffi_shiyu_ffi_checksum_func_validate_settings(
+    ): Int
     external fun ffi_shiyu_ffi_uniffi_contract_version(
     ): Int
 
@@ -692,6 +698,12 @@ internal object UniffiLib {
 
     internal fun ensureInitialized() = Unit
     external fun uniffi_shiyu_ffi_fn_func_bridge_probe(`challenge`: Int,uniffi_out_err: UniffiRustCallStatus,
+    ): RustBuffer.ByValue
+    external fun uniffi_shiyu_ffi_fn_func_compute_snapshot(`settingsJson`: RustBuffer.ByValue,`holidayJson`: RustBuffer.ByValue,`nowMillis`: Long,uniffi_out_err: UniffiRustCallStatus,
+    ): RustBuffer.ByValue
+    external fun uniffi_shiyu_ffi_fn_func_default_settings(uniffi_out_err: UniffiRustCallStatus,
+    ): RustBuffer.ByValue
+    external fun uniffi_shiyu_ffi_fn_func_validate_settings(`settingsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
     external fun ffi_shiyu_ffi_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
@@ -815,6 +827,15 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_shiyu_ffi_checksum_func_bridge_probe() and 0xFFFF) != 50872) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_shiyu_ffi_checksum_func_compute_snapshot() and 0xFFFF) != 39006) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_shiyu_ffi_checksum_func_default_settings() and 0xFFFF) != 23853) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_shiyu_ffi_checksum_func_validate_settings() and 0xFFFF) != 13879) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
 }
 
 /**
@@ -934,6 +955,29 @@ public object FfiConverterUInt: FfiConverter<UInt, Int> {
 /**
  * @suppress
  */
+public object FfiConverterLong: FfiConverter<Long, Long> {
+    override fun lift(value: Long): Long {
+        return value
+    }
+
+    override fun read(buf: ByteBuffer): Long {
+        return buf.getLong()
+    }
+
+    override fun lower(value: Long): Long {
+        return value
+    }
+
+    override fun allocationSize(value: Long) = 8UL
+
+    override fun write(value: Long, buf: ByteBuffer) {
+        buf.putLong(value)
+    }
+}
+
+/**
+ * @suppress
+ */
 public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
     // Note: we don't inherit from FfiConverterRustBuffer, because we use a
     // special encoding when lowering/lifting.  We can use `RustBuffer.len` to
@@ -996,6 +1040,49 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
 
 
         FfiConverterUInt.lower(`challenge`),_status)
+}
+    )
+    }
+
+
+        /**
+         * 原生小组件独立计算快照，不依赖 Flutter 引擎。
+         */ fun `computeSnapshot`(`settingsJson`: kotlin.String, `holidayJson`: kotlin.String, `nowMillis`: kotlin.Long): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_shiyu_ffi_fn_func_compute_snapshot(
+
+
+        FfiConverterString.lower(`settingsJson`),
+        FfiConverterString.lower(`holidayJson`),
+        FfiConverterLong.lower(`nowMillis`),_status)
+}
+    )
+    }
+
+
+        /**
+         * 生成初始配置，首次运行不设置任何虚构目标。
+         */ fun `defaultSettings`(): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_shiyu_ffi_fn_func_default_settings(
+
+        _status)
+}
+    )
+    }
+
+
+        /**
+         * 校验配置并返回不含敏感原值的字段错误。
+         */ fun `validateSettings`(`settingsJson`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_shiyu_ffi_fn_func_validate_settings(
+
+
+        FfiConverterString.lower(`settingsJson`),_status)
 }
     )
     }

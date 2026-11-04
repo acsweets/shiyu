@@ -2,104 +2,79 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
-A local-first tool for keeping track of time and earnings, targeting Windows, macOS, iOS, and Android.
+A local-first time and earnings tool for Windows, macOS, iOS, and Android. `workspace/shiyu` is an independent Git repository; its parent holds unrelated projects with separate dependencies and histories.
 
 ## Current features
 
-The project is at the M0 minimal runtime stage. The normal entry point still opens a development status page. The table below describes capabilities present in the code; time and earnings calculations have not been implemented.
+Node 02 delivers a **working retirement countdown slice**, with the remaining MVP features still pending.
 
-| Implemented | Current behavior |
+| Feature | Current behavior |
 | --- | --- |
-| Initialization page | Displays an hourglass icon, app name, tagline, and development status |
-| System language support | Page text is available in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Spanish, German, and French; unsupported languages fall back to Simplified Chinese. There is no in-app language selector yet |
-| Adaptive layout | Centers content, limits its maximum width, and allows scrolling when space is limited; respects system text scaling and safe areas |
-| Rust runtime integration | Normal startup loads the real Rust library. Flutter/FRB and Android Kotlin/UniFFI share the same core and have passed probe tests |
-| Separate development entry point | `lib/main_probe.dart` provides Rust and desktop window/tray/shortcut probes; it is not the final product UI |
+| Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
+| Desktop floating window | Windows/macOS frameless, transparent background, always on top, draggable header, expandable settings and hiding. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
+| Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
+| Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
+| Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |
+| iOS native widget | Independent embedded WidgetKit target, App Group and Rust static-library build are connected. Small/medium retirement widget with system-scheduled timelines; this node requires user verification on a Mac |
+| Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
+| Localization/probes | Flutter ARB for eight languages, including translated new feature strings; native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
-Platform status: the Windows release build and real native integration tests have passed. An Android 16 / API 36 / x86_64 emulator has passed build, installation, and integration runtime tests. macOS/iOS build adapters and verification scripts are provided for the user to validate on a Mac. MVP product acceptance testing remains incomplete on all four platforms; emulator success does not establish physical device support.
+Widgets currently show **retirement days only**, with no promise of second-by-second background updates. Android requests a system-controlled 30-minute interval, plus manual/settings-triggered refreshes. iOS requests a timeline after the next Rust calendar boundary; the OS controls delivery. Foreground and widget display precision differs while sharing the same rules.
 
-### Planned MVP features
+Node 01 Windows/Android runtime checks passed, and the user has reported Mac validation ready. See the [node 02 acceptance record](docs/验收记录/02/README.md) for this node’s executed checks and outstanding acceptance items. New iOS widget compilation, signing and runtime verification require the user’s Mac; static checks on Windows do not establish an Apple runtime pass.
 
-The following features are part of the frozen requirements and are all pending implementation:
+## Still pending
 
-| Feature | Planned behavior |
-| --- | --- |
-| Life countdown | Show remaining time based on date of birth and expected lifespan |
-| Work status | Show work status and countdowns based on schedules, lunch breaks, working days, and holidays |
-| Daily/monthly earnings | Calculate earnings from effective working time using decimal arithmetic, with an option to hide amounts |
-| Payday countdown | Support a fixed monthly date, the last working day of the month, and twice-monthly paydays |
-| Next break | Identify consecutive days off and show countdowns to the start and end of a break |
-| Retirement countdown | Show remaining time until the user's chosen retirement date |
-| Custom desktop countdowns | Create, edit, delete, and reorder countdowns with updates every second |
-| Desktop floating window and system integration | Mini, standard, and expanded modes; transparency, always-on-top behavior, dragging, edge snapping, click-through behavior, multiple displays, system tray/menu bar access, and shortcuts |
-| Local settings and holidays | Persist, import, and export settings; configure region and language; bundle holiday data with online updates and offline fallback |
-| Skins and resource packs | Two built-in skins, plus resource pack validation, import, export, and installation |
-| Mobile app and widgets | Full-screen mobile feature UI and iOS/Android countdown and earnings widgets; mobile custom countdowns are outside version 1.0 |
+- Life, work status, daily/monthly earnings, payday and next-break calculations and complete settings.
+- Custom desktop countdowns; full three-mode window/metric ordering, edge snapping, click-through, multiple displays, full-screen behavior, skins and resource packs.
+- Bundled six-region holiday data and updates; import/export, migration/backup/recovery and onboarding.
+- All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 
-See the [Frozen MVP requirements 1.0](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md) for the full scope and acceptance criteria (in Chinese).
+These remain in the [node plan](docs/开发计划/README.md). Early retirement integration does not complete nodes 08–12. See the [frozen MVP scope](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md).
 
-## Repository boundaries
+## Run and verify
 
-`workspace` holds multiple independent repositories. It is neither a Git repository nor a shared Dart/Cargo workspace. This repository is rooted at `workspace/shiyu`, with `https://github.com/acsweets/shiyu.git` configured as `origin`. Future projects belong alongside `shiyu`, each with its own Git history, dependencies, and build configuration.
-
-```text
-workspace/
-├── shiyu/                     # This independent repository
-│   ├── app/                   # Flutter app for four platforms; package: shiyu
-│   │   ├── lib/app/           # App composition, theme, and routing
-│   │   ├── lib/features/      # UI and state organized by feature
-│   │   └── lib/l10n/          # ARB files for eight languages and generated code
-│   ├── core/                  # Rust workspace within this repository
-│   │   └── crates/engine/     # shiyu_core pure computation engine
-│   ├── doc/                   # Existing product and technical documentation
-│   ├── docs/                  # Development milestones, node plans, and future evidence
-│   ├── scripts/               # Repository check scripts
-│   └── .github/workflows/     # CI
-└── <other-projects>/          # Separate repositories
-```
-
-## Environment and running the app
-
-The project was initialized with Flutter **3.47.2 stable** / Dart **3.13.2** and Rust **1.95.0**. CI pins the same versions. The app's `pubspec.lock` and Rust's `Cargo.lock` are committed. The Apple/Android application identifier is `com.growthrecord.shiyu`. The current development version is `0.1.0+1`, targeting MVP 1.0.
-
-From the repository root:
+Pinned tools: Flutter **3.47.2** / Dart **3.13.2**, Rust **1.95.0**, with committed lockfiles. Minimums: iOS 15, macOS 12, Android API 24. Application ID: `com.growthrecord.shiyu`; development version: `0.1.0+1`.
 
 ```powershell
 cd app
-flutter pub get
+flutter pub get --enforce-lockfile
 flutter gen-l10n
+dart format lib/l10n/generated
 flutter run -d windows
+# Use a device ID returned by flutter devices
+flutter run -d emulator-5554
 ```
 
-For Android, use a device ID reported by `flutter devices`. For macOS, run `flutter run -d macos` on a Mac. iOS requires a Mac, Xcode, and an available simulator or device signing setup. The project targets iOS 15.0+, macOS 12.0+, and Android API 24+. The Windows product target is Windows 10+, which still requires validation on the target systems.
+On Mac, use `flutter run -d macos`. The [Apple guide](native/ios/README.md) covers widget builds, signing and adding the widget. On Android, tap “Add home screen widget” or add the Shiyu retirement widget from the launcher. Choose your own retirement date first.
 
-## Checks and conventions
+From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native node 02 checks:
 
-Run `./scripts/check.ps1` from the repository root to generate localizations, check formatting, run static analysis and startup smoke tests, and check the Rust workspace. Add `-BuildWindows` to verify a Windows release build. CI includes these checks and the Windows build. CI for other platforms and device acceptance testing will be added later.
+```powershell
+cd app
+flutter test integration_test/retirement_test.dart -d windows
+flutter test integration_test/retirement_test.dart -d emulator-5554
+```
 
-On November 4, 2026, Windows release builds, Flutter formatting/analysis/two startup tests, Rust fmt/clippy/test, and real Windows/Android native integration tests passed. Run `./scripts/check_m0.ps1 -AndroidDeviceId <device-ID>` to check the runtime paths; optionally pass `-GradleUserHome <short-cache-path>` to isolate local proxy or path configuration. CI includes Windows and Android APK builds with a Rust library packaging check; consult Actions for remote results.
+Tests use synthetic dates and restore existing mobile settings; desktop tests use temporary storage. Run platform builds sequentially in this Flutter project. Localization formatting runs explicitly in the check script to avoid an observed nested Windows formatter hang. A separate short-path `GRADLE_USER_HOME` can isolate local proxy/path issues without changing global settings. CI checks Windows/Android; consult Actions for actual remote results.
 
-See the [M0 verification report](docs/验收记录/01/README.md) for commands, artifacts, and environment limitations. Run `flutter run -d windows -t lib/main_probe.dart` from `app/` for the desktop probes. The [Mac verification guide](native/ios/README.md) covers Apple builds and the generated Swift binding probe (in Chinese).
+## Repository layout
 
-An ARM64 debug APK for phone testing has also passed compilation and packaged Rust ABI checks. Physical device runtime verification remains pending; local artifact paths are listed in the report.
+```text
+workspace/
+├── shiyu/                # This independent repository
+│   ├── app/              # Flutter app and platform hosts
+│   ├── core/             # Internal Rust workspace: engine / Flutter bridge / UniFFI
+│   ├── native/ios/       # Swift bindings and host smoke check
+│   ├── doc/              # Original requirements and technical documents
+│   ├── docs/             # Node plans, contracts, decisions and acceptance records
+│   └── scripts/          # Build, binding generation and checks
+└── <other-repositories>/
+```
 
-Flutter code is organized by feature. Dart variables use explicit types, function types are named through typedefs, and anonymous callbacks longer than three lines are extracted into named functions. Comments in handwritten code are in Chinese, with purpose comments for member fields and core methods. Native templates and bindings are maintained through their generation tools.
+Rust owns business calculations; views only present results. There are no accounts, telemetry or personal configuration uploads. The retirement slice makes no network requests. Both Git author and committer must be `star <1395723441@qq.com>`.
 
-## Engineering scope and progress
-
-The repository includes scaffolding for four platforms, a root Riverpod container, ARB localization, and a responsive initialization page. FRB and UniFFI now call the same Rust core, which currently provides only a runtime probe. jiff, rust_decimal, formal data contracts, business calculations, and settings storage remain planned. Android debug builds contain a native probe widget; product countdown/earnings widgets and independent widget cold-start acceptance remain pending.
-
-See “Current features” above for progress. At the user's request, the first milestone covers Windows/Android runtime success, with Apple verification deferred to the user. This does not complete the original four-platform G0 or the MVP. The initialization page contains no fabricated earnings or countdown values.
-
-This initialization adds no accounts, telemetry, or application network requests. Future implementation must preserve the principle that salary data and personal settings stay on the device.
-
-## Requirements
-
-The following source documents are in Chinese:
-
-- [Sequential development plan and milestones](docs/开发计划/README.md): an existing baseline followed by nodes 01–14, each with implementation TODOs, review steps, and completion criteria.
-- [Project information](doc/桌面悬浮计时器/项目基础信息.md)
-- [Frozen MVP requirements 1.0](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md)
-- [Development steps, schedule, and testing](doc/桌面悬浮计时器/需求/最终开发步骤-排期-测试验证.md)
-
-The frozen requirements take precedence over historical proposals. In the development plan's example directory structure, `workspace/` corresponds to this repository's `shiyu/` directory, rather than the outer container for multiple repositories.
+- [Node 02 plan and user checklist](docs/开发计划/02-数据契约与基础日历.md)
+- [Data contract v1](docs/技术说明/数据契约-v1.md)
+- [Project background](doc/桌面悬浮计时器/项目基础信息.md)
+- [Historical M0 acceptance](docs/验收记录/01/README.md)

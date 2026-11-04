@@ -248,6 +248,22 @@ typedef void (*UniffiForeignFutureCompleteVoid)(uint64_t, UniffiForeignFutureRes
 RustBuffer uniffi_shiyu_ffi_fn_func_bridge_probe(uint32_t challenge, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_COMPUTE_SNAPSHOT
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_COMPUTE_SNAPSHOT
+RustBuffer uniffi_shiyu_ffi_fn_func_compute_snapshot(RustBuffer settings_json, RustBuffer holiday_json, int64_t now_millis, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_DEFAULT_SETTINGS
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_DEFAULT_SETTINGS
+RustBuffer uniffi_shiyu_ffi_fn_func_default_settings(RustCallStatus *_Nonnull out_status
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_VALIDATE_SETTINGS
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_VALIDATE_SETTINGS
+RustBuffer uniffi_shiyu_ffi_fn_func_validate_settings(RustBuffer settings_json, RustCallStatus *_Nonnull out_status
+);
+#endif
 #ifndef UNIFFI_FFIDEF_FFI_SHIYU_FFI_RUSTBUFFER_ALLOC
 #define UNIFFI_FFIDEF_FFI_SHIYU_FFI_RUSTBUFFER_ALLOC
 RustBuffer ffi_shiyu_ffi_rustbuffer_alloc(uint64_t size, RustCallStatus *_Nonnull out_status
@@ -511,6 +527,24 @@ void ffi_shiyu_ffi_rust_future_complete_void(uint64_t handle, RustCallStatus *_N
 #ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_BRIDGE_PROBE
 #define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_BRIDGE_PROBE
 uint16_t uniffi_shiyu_ffi_checksum_func_bridge_probe(void
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_COMPUTE_SNAPSHOT
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_COMPUTE_SNAPSHOT
+uint16_t uniffi_shiyu_ffi_checksum_func_compute_snapshot(void
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_DEFAULT_SETTINGS
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_DEFAULT_SETTINGS
+uint16_t uniffi_shiyu_ffi_checksum_func_default_settings(void
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_VALIDATE_SETTINGS
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_VALIDATE_SETTINGS
+uint16_t uniffi_shiyu_ffi_checksum_func_validate_settings(void
 
 );
 #endif

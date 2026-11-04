@@ -481,6 +481,22 @@ fileprivate struct FfiConverterUInt32: FfiConverterPrimitive {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
+fileprivate struct FfiConverterInt64: FfiConverterPrimitive {
+    typealias FfiType = Int64
+    typealias SwiftType = Int64
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Int64 {
+        return try lift(readInt(&buf))
+    }
+
+    public static func write(_ value: Int64, into buf: inout [UInt8]) {
+        writeInt(&buf, lower(value))
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 fileprivate struct FfiConverterString: FfiConverter {
     typealias SwiftType = String
     typealias FfiType = RustBuffer
@@ -534,6 +550,40 @@ public func bridgeProbe(challenge: UInt32) -> String  {
     )
 })
 }
+/**
+ * 原生小组件独立计算快照，不依赖 Flutter 引擎。
+ */
+public func computeSnapshot(settingsJson: String, holidayJson: String, nowMillis: Int64) -> String  {
+    return try!  FfiConverterString.lift(try! rustCall() {
+        uniffiCallStatus in
+    uniffi_shiyu_ffi_fn_func_compute_snapshot(
+        FfiConverterString.lower(settingsJson),
+        FfiConverterString.lower(holidayJson),
+        FfiConverterInt64.lower(nowMillis),uniffiCallStatus
+    )
+})
+}
+/**
+ * 生成初始配置，首次运行不设置任何虚构目标。
+ */
+public func defaultSettings() -> String  {
+    return try!  FfiConverterString.lift(try! rustCall() {
+        uniffiCallStatus in
+    uniffi_shiyu_ffi_fn_func_default_settings(uniffiCallStatus
+    )
+})
+}
+/**
+ * 校验配置并返回不含敏感原值的字段错误。
+ */
+public func validateSettings(settingsJson: String) -> String  {
+    return try!  FfiConverterString.lift(try! rustCall() {
+        uniffiCallStatus in
+    uniffi_shiyu_ffi_fn_func_validate_settings(
+        FfiConverterString.lower(settingsJson),uniffiCallStatus
+    )
+})
+}
 
 private enum InitializationResult {
     case ok
@@ -551,6 +601,15 @@ private let initializationResult: InitializationResult = {
         return InitializationResult.contractVersionMismatch
     }
     if (uniffi_shiyu_ffi_checksum_func_bridge_probe() != 50872) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_shiyu_ffi_checksum_func_compute_snapshot() != 39006) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_shiyu_ffi_checksum_func_default_settings() != 23853) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_shiyu_ffi_checksum_func_validate_settings() != 13879) {
         return InitializationResult.apiChecksumMismatch
     }
 

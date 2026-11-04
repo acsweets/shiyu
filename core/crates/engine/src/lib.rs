@@ -1,8 +1,13 @@
 //! 时余的纯计算核心。
 //!
 //! 时间、日历和薪资计算将在此实现，调用方需显式提供当前时间与时区。
-//! 当前仅提供 M0 链路探测，不包含业务计算。
+//! 当前提供版本化契约、基础日历和退休倒计时。
 
+mod calendar;
+mod contract;
 mod diagnostics;
+mod snapshot;
+mod validation;
 
 pub use diagnostics::bridge_probe;
+pub use snapshot::{compute_snapshot, default_settings, validate_settings};

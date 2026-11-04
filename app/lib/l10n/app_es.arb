@@ -2,5 +2,19 @@
   "@@locale": "es",
   "appName": "Time Remaining",
   "tagline": "Haz tiempo para la vida.",
-  "initializationNotice": "La base de la aplicación está lista. Las funciones de tiempo y salario están en desarrollo."
+  "initializationNotice": "La base de la aplicación está lista. Las funciones de tiempo y salario están en desarrollo.",
+  "retirementTitle": "Cuenta atrás para la jubilación",
+  "retired": "Jubilado/a",
+  "daysRemaining": "días restantes",
+  "chooseRetirement": "Elegir fecha de jubilación",
+  "configure": "Configurar",
+  "hideWindow": "Ocultar ventana",
+  "timeZoneLabel": "Zona horaria IANA",
+  "saveSettings": "Guardar zona horaria",
+  "clearTarget": "Borrar fecha",
+  "addWidget": "Añadir widget de inicio",
+  "widgetInstructions": "Mantén pulsada la pantalla de inicio y añade el widget de jubilación de Shiyu.",
+  "settingsError": "Comprueba la fecha, la zona horaria y el almacenamiento compartido e inténtalo de nuevo.",
+  "calendarFallback": "Los datos de festivos aún no están conectados; se usan los días laborables semanales configurados.",
+  "currentSlice": "La cuenta atrás para la jubilación está disponible. Los demás indicadores llegarán en etapas posteriores."
 }

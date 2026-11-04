@@ -126,6 +126,90 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'工程已就绪，时间与薪资功能正在构建中。'**
   String get initializationNotice;
+
+  /// No description provided for @retirementTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'退休倒计时'**
+  String get retirementTitle;
+
+  /// No description provided for @retired.
+  ///
+  /// In zh, this message translates to:
+  /// **'已退休'**
+  String get retired;
+
+  /// No description provided for @daysRemaining.
+  ///
+  /// In zh, this message translates to:
+  /// **'天后退休'**
+  String get daysRemaining;
+
+  /// No description provided for @chooseRetirement.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择退休日期'**
+  String get chooseRetirement;
+
+  /// No description provided for @configure.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置'**
+  String get configure;
+
+  /// No description provided for @hideWindow.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏浮窗'**
+  String get hideWindow;
+
+  /// No description provided for @timeZoneLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'IANA 时区'**
+  String get timeZoneLabel;
+
+  /// No description provided for @saveSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存时区'**
+  String get saveSettings;
+
+  /// No description provided for @clearTarget.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除日期'**
+  String get clearTarget;
+
+  /// No description provided for @addWidget.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加桌面小组件'**
+  String get addWidget;
+
+  /// No description provided for @widgetInstructions.
+  ///
+  /// In zh, this message translates to:
+  /// **'长按手机桌面，添加“时余 · 退休倒计时”小组件。'**
+  String get widgetInstructions;
+
+  /// No description provided for @settingsError.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置或共享数据操作失败，请检查日期、时区和存储权限后重试。'**
+  String get settingsError;
+
+  /// No description provided for @calendarFallback.
+  ///
+  /// In zh, this message translates to:
+  /// **'节假日数据尚未接入，当前按每周工作日设置计算。'**
+  String get calendarFallback;
+
+  /// No description provided for @currentSlice.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前已接入退休倒计时，其他内置指标将在后续节点提供。'**
+  String get currentSlice;
 }
 
 class _AppLocalizationsDelegate

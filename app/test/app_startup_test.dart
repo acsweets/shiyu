@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shiyu/app/shiyu_app.dart';
 
+import 'support/test_controller.dart';
+
+import 'package:shiyu/features/retirement/application/retirement_controller.dart';
+
 void main() {
   testWidgets('中文环境可以启动', _verifyChineseStartup);
   testWidgets('英文小屏和大字号下可以启动', _verifyEnglishCompactStartup);
@@ -11,11 +15,15 @@ void main() {
 Future<void> _verifyChineseStartup(WidgetTester tester) async {
   tester.platformDispatcher.localesTestValue = const <Locale>[Locale('zh')];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-  await tester.pumpWidget(const ProviderScope(child: ShiyuApp()));
+  final RetirementController controller = await createTestController();
+  addTearDown(controller.dispose);
+  await tester.pumpWidget(
+    ProviderScope(child: ShiyuApp(controller: controller)),
+  );
   await tester.pumpAndSettle();
 
   expect(find.text('时余'), findsOneWidget);
-  expect(find.text('感知时间，留住生活。'), findsOneWidget);
+  expect(find.text('退休倒计时'), findsOneWidget);
   expect(tester.takeException(), isNull);
 }
 
@@ -27,7 +35,11 @@ Future<void> _verifyEnglishCompactStartup(WidgetTester tester) async {
   addTearDown(tester.platformDispatcher.clearAllTestValues);
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  await tester.pumpWidget(const ProviderScope(child: ShiyuApp()));
+  final RetirementController controller = await createTestController();
+  addTearDown(controller.dispose);
+  await tester.pumpWidget(
+    ProviderScope(child: ShiyuApp(controller: controller)),
+  );
   await tester.pumpAndSettle();
 
   expect(find.text('Time Remaining'), findsOneWidget);

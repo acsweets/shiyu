@@ -14,6 +14,7 @@ mkdir -p "$project_root/.tooling"
 swiftc "$project_root/native/ios/Generated/ShiyuCore.swift" \
   "$project_root/native/ios/Smoke/main.swift" \
   -I "$project_root/native/ios/Generated" -L "$target_dir/debug" \
+  -Xcc "-fmodule-map-file=$project_root/native/ios/Generated/ShiyuCoreFFI.modulemap" \
   -lshiyu_ffi -o "$project_root/.tooling/swift-probe"
 DYLD_LIBRARY_PATH="$target_dir/debug${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}" "$project_root/.tooling/swift-probe"
 cd "$project_root/app"
