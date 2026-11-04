@@ -1,5 +1,7 @@
 # 时余 · shiyu
 
+[简体中文](README.md) | [English](README.en.md)
+
 本地优先的时间与薪资感知工具，面向 Windows、macOS、iOS 和 Android。
 
 ## 仓库边界

@@ -1,5 +1,7 @@
 # 时余 Flutter 应用
 
+[简体中文](README.md) | [English](README.en.md)
+
 此目录为 Flutter 工程根目录；Git 根目录在上一级 `shiyu/`。环境、检查命令、需求入口与架构说明见[仓库说明](../README.md)。
 
 ```powershell
