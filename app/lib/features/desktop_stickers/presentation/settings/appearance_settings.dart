@@ -18,18 +18,18 @@ class AppearanceSettings extends StatelessWidget {
   Widget _layout(BuildContext context, BoxConstraints constraints) {
     final Widget controls = _controls();
     final Widget preview = _preview();
-    if (constraints.maxWidth < 625) {
+    if (constraints.maxWidth < 682) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[controls, const SizedBox(height: 22), preview],
+        children: <Widget>[controls, const SizedBox(height: 28), preview],
       );
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(child: controls),
-        const SizedBox(width: 24),
-        SizedBox(width: 274, child: preview),
+        const SizedBox(width: 28),
+        SizedBox(width: 282, child: preview),
       ],
     );
   }
@@ -37,21 +37,17 @@ class AppearanceSettings extends StatelessWidget {
   Widget _controls() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
+      const Text('浮窗配色', style: TextStyle(fontSize: 17)),
+      const SizedBox(height: 8),
       const Text(
-        '浮窗配色',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        '为桌面上的浮窗选择一套颜色。',
+        style: TextStyle(color: SettingsPaper.muted),
       ),
-      const SizedBox(height: 4),
-      const Text('为桌面上的浮窗选择一套颜色。'),
-      const SizedBox(height: 12),
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: StickerPalette.values.map(_colorCard).toList(),
-      ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 18),
+      LayoutBuilder(builder: _paletteGrid),
+      const SizedBox(height: 26),
       const Divider(height: 1),
-      const SizedBox(height: 12),
+      const SizedBox(height: 16),
       PaperSettingRow(
         title: '提示文字大小',
         detail: '调整「距离下班」这类标题',
@@ -78,6 +74,25 @@ class AppearanceSettings extends StatelessWidget {
     ],
   );
 
+  /// 统一各色卡宽度，小窗口换行时保留相同间距。
+  Widget _paletteGrid(BuildContext context, BoxConstraints constraints) {
+    const double gap = 14;
+    final int columns = switch (constraints.maxWidth) {
+      >= 372 => 3,
+      >= 242 => 2,
+      _ => 1,
+    };
+    final double width = (constraints.maxWidth - (columns - 1) * gap) / columns;
+    return Wrap(
+      spacing: gap,
+      runSpacing: gap,
+      children: <Widget>[
+        for (final StickerPalette palette in StickerPalette.values)
+          SizedBox(width: width, child: _colorCard(palette)),
+      ],
+    );
+  }
+
   Widget _colorCard(StickerPalette palette) {
     final bool selected = session.state.palette == palette;
     return Semantics(
@@ -85,56 +100,62 @@ class AppearanceSettings extends StatelessWidget {
       child: OutlinedButton(
         style:
             OutlinedButton.styleFrom(
-              padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
-              backgroundColor: selected
-                  ? SettingsPaper.hover
-                  : SettingsPaper.surface,
+              padding: const EdgeInsets.fromLTRB(14, 13, 14, 14),
+              backgroundColor: SettingsPaper.surface,
             ).copyWith(
-              side: WidgetStatePropertyAll<BorderSide>(
-                BorderSide(
-                  color: selected ? SettingsPaper.accent : SettingsPaper.line,
-                ),
+              side: WidgetStateProperty.resolveWith<BorderSide>(
+                (Set<WidgetState> states) => _cardBorder(selected, states),
               ),
             ),
         onPressed: () => session.change(
           StickerSetting.palette,
           <String, Object?>{'value': palette.name},
         ),
-        child: SizedBox(
-          width: 84,
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      palette.label,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-                  if (selected)
-                    const Icon(
-                      Icons.check,
-                      size: 14,
-                      color: SettingsPaper.accent,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: SizedBox(
-                  height: 18,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: palette.swatches.map(_swatch).toList(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    palette.label,
+                    style: const TextStyle(fontSize: 13),
                   ),
                 ),
+                SizedBox(
+                  width: 16,
+                  child: selected
+                      ? const Icon(
+                          Icons.check,
+                          size: 15,
+                          color: SettingsPaper.accent,
+                        )
+                      : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: SizedBox(
+                height: 22,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: palette.swatches.map(_swatch).toList(),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  BorderSide _cardBorder(bool selected, Set<WidgetState> states) {
+    final bool focused = states.contains(WidgetState.focused);
+    return BorderSide(
+      color: selected || focused ? SettingsPaper.accent : SettingsPaper.line,
+      width: focused ? 2 : 1,
     );
   }
 
@@ -147,17 +168,17 @@ class AppearanceSettings extends StatelessWidget {
 
   Widget _preview() => DecoratedBox(
     decoration: BoxDecoration(
-      color: const Color(0xFFF5EDE1),
+      color: SettingsPaper.surface,
       border: Border.all(color: SettingsPaper.line),
       borderRadius: BorderRadius.circular(14),
     ),
     child: Padding(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text('浮窗预览', style: TextStyle(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 3),
+          const Text('浮窗预览', style: TextStyle(fontSize: 17)),
+          const SizedBox(height: 8),
           const Text('当前主窗口', style: TextStyle(color: SettingsPaper.muted)),
           SizedBox(
             height:

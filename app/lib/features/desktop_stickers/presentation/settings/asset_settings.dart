@@ -53,9 +53,9 @@ class AssetSettings extends StatelessWidget {
     final File? character = window.character;
     return Container(
       width: 140,
-      padding: const EdgeInsets.fromLTRB(8, 10, 8, 12),
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
       decoration: BoxDecoration(
-        color: SettingsPaper.sidebar,
+        border: Border.all(color: SettingsPaper.line),
         borderRadius: SettingsPaper.corners,
       ),
       child: Column(
@@ -74,10 +74,8 @@ class AssetSettings extends StatelessWidget {
                     ) => Image.asset(pose.asset, cacheWidth: 288),
                   ),
           ),
-          Text(
-            '窗口 ${pose.index + 1}',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+          const SizedBox(height: 6),
+          Text('窗口 ${pose.index + 1}'),
           Text(
             pose.overrideFileName,
             style: const TextStyle(fontSize: 11, color: SettingsPaper.muted),

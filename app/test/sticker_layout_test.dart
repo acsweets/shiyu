@@ -124,6 +124,7 @@ Future<void> _groupView(WidgetTester tester) async {
   await tester.pumpAndSettle();
   await tester.tap(find.byIcon(Icons.tune_rounded));
   await tester.pumpAndSettle();
+  _expectSettingsStyle(tester);
   final Finder coolSwatch = find.byWidgetPredicate(_isCoolSwatch);
   expect(tester.getSize(coolSwatch).height, greaterThan(0));
   await tester.tap(find.widgetWithText(OutlinedButton, '冷酷色系'));
@@ -208,6 +209,25 @@ Future<void> _groupView(WidgetTester tester) async {
   layout.dispose();
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
+}
+
+void _expectSettingsStyle(WidgetTester tester) {
+  for (final String label in <String>['浮窗配色', '为桌面上的浮窗选择一套颜色。', '冷酷色系']) {
+    final BuildContext context = tester.element(find.text(label));
+    expect(DefaultTextStyle.of(context).style.fontWeight, FontWeight.w700);
+    expect(Theme.of(context).scaffoldBackgroundColor, Colors.white);
+  }
+  final Rect macaron = tester.getRect(
+    find.widgetWithText(OutlinedButton, '马卡龙色系'),
+  );
+  final Rect cool = tester.getRect(find.widgetWithText(OutlinedButton, '冷酷色系'));
+  final Rect sunset = tester.getRect(
+    find.widgetWithText(OutlinedButton, '日落暖调'),
+  );
+  expect(macaron.width, closeTo(cool.width, 0.01));
+  expect(cool.width, closeTo(sunset.width, 0.01));
+  expect(cool.left - macaron.right, closeTo(14, 0.01));
+  expect(sunset.left - cool.right, closeTo(14, 0.01));
 }
 
 void _expectTitleSize(WidgetTester tester, String id) {

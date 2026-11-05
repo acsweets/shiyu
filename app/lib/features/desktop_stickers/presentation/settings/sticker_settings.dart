@@ -64,13 +64,12 @@ class _StickerSettingsState extends State<StickerSettings> {
 
   Widget _sidebar() => Container(
     width: 164,
-    color: SettingsPaper.sidebar,
-    padding: const EdgeInsets.fromLTRB(12, 24, 12, 12),
+    padding: const EdgeInsets.fromLTRB(14, 28, 14, 16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const Padding(
-          padding: EdgeInsets.fromLTRB(10, 0, 0, 22),
+          padding: EdgeInsets.fromLTRB(12, 0, 0, 24),
           child: Text(
             '设置',
             style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
@@ -84,7 +83,7 @@ class _StickerSettingsState extends State<StickerSettings> {
   Widget _navigation(_SettingsPane pane) {
     final bool selected = pane == _pane;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Semantics(
         selected: selected,
         child: TextButton(
@@ -114,7 +113,12 @@ class _StickerSettingsState extends State<StickerSettings> {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
       Padding(
-        padding: const EdgeInsets.fromLTRB(26, 21, 26, 15),
+        padding: const EdgeInsets.fromLTRB(
+          SettingsPaper.contentInset,
+          26,
+          SettingsPaper.contentInset,
+          22,
+        ),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -128,7 +132,7 @@ class _StickerSettingsState extends State<StickerSettings> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 6),
                   Text(
                     _pane.detail,
                     style: const TextStyle(color: SettingsPaper.muted),
@@ -157,7 +161,12 @@ class _StickerSettingsState extends State<StickerSettings> {
     final StickerSettingsState state = session.state;
     return SingleChildScrollView(
       key: PageStorageKey<_SettingsPane>(_pane),
-      padding: const EdgeInsets.fromLTRB(26, 22, 26, 24),
+      padding: const EdgeInsets.fromLTRB(
+        SettingsPaper.contentInset,
+        28,
+        SettingsPaper.contentInset,
+        32,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[

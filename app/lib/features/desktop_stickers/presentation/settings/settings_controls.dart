@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// 设置窗独立使用的暖白文具色板。
+/// 设置窗统一使用白色底面、粗体和少量陶土色强调。
 abstract final class SettingsPaper {
-  static const Color surface = Color(0xFFFFFCF6);
-  static const Color sidebar = Color(0xFFF5EEE3);
+  static const Color surface = Colors.white;
   static const Color ink = Color(0xFF332B26);
   static const Color muted = Color(0xFF6D5D52);
-  static const Color line = Color(0xFFDDCFC1);
+  static const Color line = Color(0xFFE6E0DB);
   static const Color accent = Color(0xFF854A39);
-  static const Color selection = Color(0xFFF1DBCE);
-  static const Color hover = Color(0xFFF5E8DB);
+  static const Color selection = Color(0xFFF8EEEA);
+  static const Color hover = Color(0xFFF7F4F2);
+
+  /// 内容标题与正文的字号分别设置，字重共用这一档。
+  static const TextStyle _bold = TextStyle(fontWeight: FontWeight.w700);
+
+  /// 标题和正文共享左右对齐线。
+  static const double contentInset = 32;
 
   static final BorderRadius corners = BorderRadius.circular(9);
 
@@ -23,12 +28,44 @@ abstract final class SettingsPaper {
       secondaryContainer: selection,
       onSecondaryContainer: ink,
       surface: surface,
+      surfaceTint: Colors.transparent,
+      surfaceContainerLowest: surface,
+      surfaceContainerLow: surface,
+      surfaceContainer: surface,
+      surfaceContainerHigh: surface,
+      surfaceContainerHighest: surface,
       onSurface: ink,
       onSurfaceVariant: muted,
       outline: line,
       outlineVariant: line,
     ),
+    textTheme: const TextTheme(
+      displayLarge: _bold,
+      displayMedium: _bold,
+      displaySmall: _bold,
+      headlineLarge: _bold,
+      headlineMedium: _bold,
+      headlineSmall: _bold,
+      titleLarge: _bold,
+      titleMedium: _bold,
+      titleSmall: _bold,
+      bodyLarge: _bold,
+      bodyMedium: _bold,
+      bodySmall: _bold,
+      labelLarge: _bold,
+      labelMedium: _bold,
+      labelSmall: _bold,
+    ),
     dividerTheme: const DividerThemeData(color: line, thickness: 1),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: surface,
+      contentTextStyle: _bold.copyWith(color: ink, fontSize: 14),
+      actionTextColor: accent,
+      shape: RoundedRectangleBorder(
+        borderRadius: corners,
+        side: const BorderSide(color: line),
+      ),
+    ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 38),
@@ -210,7 +247,7 @@ class PaperOption extends StatelessWidget {
                 detail!,
                 style: const TextStyle(
                   color: SettingsPaper.muted,
-                  fontSize: 12,
+                  fontSize: 13,
                 ),
               ),
           ],
@@ -240,19 +277,21 @@ class PaperSettingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
+    padding: const EdgeInsets.symmetric(vertical: 10),
     child: Row(
       children: <Widget>[
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-              if (detail != null)
+              Text(title),
+              if (detail != null) ...<Widget>[
+                const SizedBox(height: 4),
                 Text(
                   detail!,
                   style: const TextStyle(color: SettingsPaper.muted),
                 ),
+              ],
             ],
           ),
         ),
