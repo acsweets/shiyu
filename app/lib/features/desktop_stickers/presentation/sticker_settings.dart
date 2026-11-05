@@ -99,7 +99,9 @@ class _StickerSettingsState extends State<StickerSettings> {
         folder.path,
       ]);
       if (mounted) {
-        setState(() => _message = '将透明角色图命名为 character.png 放入此文件夹，再点“重新载入猫猫”。');
+        setState(
+          () => _message = '将透明角色图命名为 character-1.png 至 character-4.png，再点“重新载入猫猫”。旧的 character.png 仍可替换主窗。',
+        );
       }
     } catch (_) {
       if (mounted) setState(() => _message = '无法打开素材目录');

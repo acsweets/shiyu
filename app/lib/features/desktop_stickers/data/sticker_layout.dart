@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'sticker_cat_pose.dart';
 import 'sticker_palette.dart';
 
 /// 保存窗口分组与外观，不改变 Rust 业务设置。
@@ -56,8 +57,11 @@ class StickerLayout extends ChangeNotifier {
   /// 隐藏的窗口槽位，保留其成员和几何信息。
   final Set<int> _hiddenGroups = <int>{};
 
-  /// 独立替换角色图。
-  File? character;
+  /// 编号图片只覆盖同一窗口槽位。
+  final Map<StickerCatPose, File> _characters = <StickerCatPose, File>{};
+
+  /// 保留旧版主窗口角色图的替换方式。
+  File? _mainCharacter;
 
   /// 磁盘状态加载完成后启用编辑。
   bool ready = false;
@@ -80,6 +84,10 @@ class StickerLayout extends ChangeNotifier {
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
   Rect? boundsOf(int group) => _bounds[group];
+
+  File? characterOf(int group) =>
+      _characters[StickerCatPose.values[group]] ??
+      (group == mainGroup ? _mainCharacter : null);
 
   List<String> members(int group) => titles.keys
       .where((String id) => enabled.contains(id) && groupOf(id) == group)
@@ -331,13 +339,34 @@ class StickerLayout extends ChangeNotifier {
   Future<void> reloadCharacter() async {
     final Directory? folder = directory;
     if (folder == null) return;
-    final File file = File('${folder.path}/character.png');
-    character = await file.exists() && await file.length() <= 8 * 1024 * 1024
-        ? file
-        : null;
-    if (character != null) await FileImage(character!).evict();
+    final Map<StickerCatPose, File> characters = <StickerCatPose, File>{};
+    for (final StickerCatPose pose in StickerCatPose.values) {
+      final File? file = await _readCharacter(folder, pose.overrideFileName);
+      if (file != null) characters[pose] = file;
+    }
+    final File? main = await _readCharacter(
+      folder,
+      StickerCatPose.sitting.fileName,
+    );
+    _characters
+      ..clear()
+      ..addAll(characters);
+    _mainCharacter = main;
     assetRevision++;
     if (!_disposed) notifyListeners();
+  }
+
+  Future<File?> _readCharacter(Directory folder, String name) async {
+    final File file = File('${folder.path}/$name');
+    try {
+      if (!await file.exists() || await file.length() > 8 * 1024 * 1024) {
+        return null;
+      }
+      await FileImage(file).evict();
+      return file;
+    } on FileSystemException {
+      return null;
+    }
   }
 
   /// 关闭前等待最后一次位置保存。

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -14,21 +15,20 @@ class StickerGroupSurface extends StatelessWidget {
   /// 当前分组的可见状态与完整计时。
   final StickerGroupView view;
 
-  /// 主窗的设置入口，子窗只有倒计时。
+  /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
 
-  /// 内置独立猫猫图。
-  static const String catAsset = 'assets/stickers/character.png';
+  Widget _builtInCat() =>
+      Image.asset(view.catAsset, fit: BoxFit.contain, cacheWidth: 384);
 
   Widget _fallback(BuildContext context, Object error, StackTrace? stack) =>
-      Image.asset(catAsset, fit: BoxFit.contain);
+      _builtInCat();
 
   Widget _cat() {
-    if (view.character == null) {
-      return Image.asset(catAsset, fit: BoxFit.contain);
-    }
+    final File? character = view.character;
+    if (character == null) return _builtInCat();
     return Image.file(
-      view.character!,
+      character,
       key: ValueKey<int>(view.assetRevision),
       fit: BoxFit.contain,
       errorBuilder: _fallback,
@@ -53,7 +53,6 @@ class StickerGroupSurface extends StatelessWidget {
   );
 
   Widget _surface(BuildContext context, BoxConstraints constraints) {
-    if (onSettings == null) return _paper();
     final double catHeight = (constraints.maxHeight - 64)
         .clamp(0, 96)
         .toDouble();
@@ -68,21 +67,22 @@ class StickerGroupSurface extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child: SizedBox.square(dimension: catHeight, child: _cat()),
               ),
-              Positioned(
-                right: 2,
-                bottom: 4,
-                child: IconButton.filled(
-                  tooltip: '浮窗设置',
-                  onPressed: onSettings,
-                  style: IconButton.styleFrom(
-                    backgroundColor: view.background,
-                    foregroundColor: view.foreground,
-                    minimumSize: const Size(34, 34),
-                    padding: EdgeInsets.zero,
+              if (onSettings != null)
+                Positioned(
+                  right: 2,
+                  bottom: 4,
+                  child: IconButton.filled(
+                    tooltip: '浮窗设置',
+                    onPressed: onSettings,
+                    style: IconButton.styleFrom(
+                      backgroundColor: view.background,
+                      foregroundColor: view.foreground,
+                      minimumSize: const Size(34, 34),
+                      padding: EdgeInsets.zero,
+                    ),
+                    icon: const Icon(Icons.tune_rounded, size: 18),
                   ),
-                  icon: const Icon(Icons.tune_rounded, size: 18),
                 ),
-              ),
             ],
           ),
         ),

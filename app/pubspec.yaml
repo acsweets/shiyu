@@ -38,3 +38,6 @@ flutter:
     - assets/diagnostics/icon.ico
     - assets/diagnostics/icon.png
     - assets/stickers/character.png
+    - assets/stickers/character-stretch.png
+    - assets/stickers/character-wave.png
+    - assets/stickers/character-sleep.png

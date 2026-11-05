@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 
 import '../../retirement/application/retirement_controller.dart';
+import '../data/sticker_cat_pose.dart';
 import '../data/sticker_layout.dart';
 
 /// 跨窗口只传输可见文本与外观信息，子窗无需加载 Rust。
@@ -27,8 +28,9 @@ class StickerGroupView {
     'visible': visible,
     'background': layout.palette.backgroundFor(group).toARGB32(),
     'foreground': layout.palette.foreground.toARGB32(),
-    if (group == layout.mainGroup) 'character': layout.character?.path,
-    if (group == layout.mainGroup) 'assetRevision': layout.assetRevision,
+    'catAsset': StickerCatPose.values[group].asset,
+    'character': layout.characterOf(group)?.path,
+    'assetRevision': layout.assetRevision,
     'initialBounds': StickerLayout.encodeBounds(
       layout.boundsOf(group) ?? layout.initialBounds(group),
     ),
@@ -41,6 +43,7 @@ class StickerGroupView {
   bool get visible => data['visible'] as bool;
   Color get background => Color(data['background'] as int);
   Color get foreground => Color(data['foreground'] as int);
+  String get catAsset => data['catAsset'] as String;
   int get assetRevision => data['assetRevision'] as int;
   File? get character {
     final String? path = data['character'] as String?;

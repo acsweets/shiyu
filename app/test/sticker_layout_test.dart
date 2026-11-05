@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shiyu/features/desktop_stickers/application/sticker_group_view.dart';
+import 'package:shiyu/features/desktop_stickers/data/sticker_cat_pose.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_palette.dart';
 import 'package:shiyu/features/desktop_stickers/presentation/countdown_sticker.dart';
@@ -55,6 +56,17 @@ Future<void> _persistence() async {
   expect(restored.activeGroups.length, 2);
   expect(restored.members(group), <String>['retirement']);
   expect(restored.showsGroup(restored.groupOf('work')), isTrue);
+  final File source = File(StickerCatPose.sitting.asset);
+  final File legacy = await source.copy('${directory.path}/character.png');
+  await restored.reloadCharacter();
+  expect(restored.characterOf(group)?.path, legacy.path);
+  final int splitGroup = restored.groupOf('work');
+  expect(restored.characterOf(splitGroup), isNull);
+  final String name = StickerCatPose.values[splitGroup].overrideFileName;
+  final File custom = await source.copy('${directory.path}/$name');
+  await restored.reloadCharacter();
+  expect(restored.characterOf(splitGroup)?.path, custom.path);
+  expect(restored.characterOf(group)?.path, legacy.path);
   await restored.flush();
   layout.dispose();
   restored.dispose();
@@ -86,6 +98,7 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text('时余'), findsNothing);
   expect(find.text('示例'), findsNothing);
   expect(find.byType(Image), findsOneWidget);
+  expect(_catAsset(tester), StickerCatPose.sitting.asset);
   expect(
     _windowBackground(tester),
     StickerPalette.macaron.backgroundFor(layout.mainGroup),
@@ -126,6 +139,11 @@ Future<void> _groupView(WidgetTester tester) async {
   );
 
   tester.view.physicalSize = const Size(500, 146);
+  final Set<String> poses = <String>{
+    for (int group = 0; group < StickerLayout.titles.length; group++)
+      StickerGroupView.fromLayout(layout, controller, group, true).catAsset,
+  };
+  expect(poses, hasLength(4));
   await tester.pumpWidget(
     MaterialApp(
       home: StickerGroupSurface(
@@ -140,7 +158,16 @@ Future<void> _groupView(WidgetTester tester) async {
   );
   await tester.pumpAndSettle();
   expect(find.text(StickerLayout.examples['payday']!), findsOneWidget);
-  expect(find.byType(Image), findsNothing);
+  expect(find.byType(Image), findsOneWidget);
+  expect(_catAsset(tester), StickerCatPose.waving.asset);
+  expect(
+    tester.getBottomLeft(find.byType(Image)).dy,
+    lessThanOrEqualTo(
+      tester
+          .getTopLeft(find.byKey(const ValueKey<String>('sticker-payday')))
+          .dy,
+    ),
+  );
   expect(find.byType(IconButton), findsNothing);
   expect(
     _windowBackground(tester),
@@ -152,6 +179,12 @@ Future<void> _groupView(WidgetTester tester) async {
   layout.dispose();
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
+}
+
+String _catAsset(WidgetTester tester) {
+  final Image image = tester.widget<Image>(find.byType(Image));
+  final ResizeImage resized = image.image as ResizeImage;
+  return (resized.imageProvider as AssetImage).assetName;
 }
 
 bool _isCoolSwatch(Widget widget) =>

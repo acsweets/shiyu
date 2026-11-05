@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
@@ -131,6 +132,10 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
       }
       _reported = bounds;
       final StickerGroupView next = StickerGroupView(data);
+      final File? character = next.character;
+      if (next.assetRevision != _view.assetRevision && character != null) {
+        await FileImage(character).evict();
+      }
       if (next.visible != _view.visible) {
         if (next.visible) {
           await windowManager.show(inactive: true);
