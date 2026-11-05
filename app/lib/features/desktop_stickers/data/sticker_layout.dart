@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../platform/desktop/desktop_options.dart';
 import '../../../platform/desktop/desktop_placement.dart';
+import 'skins/sticker_appearance.dart';
+import 'skins/sticker_skin_settings.dart';
 import 'sticker_cat_pose.dart';
 import 'sticker_character.dart';
 import 'sticker_mode.dart';
@@ -49,6 +51,7 @@ class StickerLayout extends ChangeNotifier {
 
   /// 所有窗口共用的当前色系。
   StickerPalette _palette = StickerPalette.macaron;
+  StickerAppearance? appearance;
 
   /// 所有浮窗共用的标题字号。
   int _titleSize = defaultTitleSize;
@@ -95,7 +98,9 @@ class StickerLayout extends ChangeNotifier {
   bool _disposed = false;
 
   int get mainGroup => groupOf(main);
-  StickerPalette get palette => _palette;
+  StickerPalette get palette => appearance?.palette ?? _palette;
+  StickerSkinSettings get skin =>
+      appearance?.skin ?? const StickerSkinSettings();
   int get titleSize => _titleSize;
   int groupOf(String id) => _groups[id] ?? _groups[main]!;
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
@@ -105,7 +110,8 @@ class StickerLayout extends ChangeNotifier {
 
   StickerCharacter? characterOf(int group) =>
       _characters[StickerCatPose.values[group]] ??
-      (group == mainGroup ? _mainCharacter : null);
+      (group == mainGroup ? _mainCharacter : null) ??
+      appearance?.character(StickerCatPose.values[group]);
 
   List<String> members(int group) => titles.keys
       .where((String id) => enabled.contains(id) && groupOf(id) == group)
@@ -147,6 +153,8 @@ class StickerLayout extends ChangeNotifier {
         _groups.updateAll(_mainSlot);
       }
       await reloadCharacter();
+      appearance = StickerAppearance(directory!);
+      await appearance!.load();
     } catch (_) {
       writeFailed = true;
     } finally {
@@ -368,10 +376,20 @@ class StickerLayout extends ChangeNotifier {
   }
 
   /// 保存配色并让主窗口和子窗口读取新颜色。
-  void setPalette(StickerPalette value) {
-    if (_palette == value) return;
-    _palette = value;
-    _changed();
+  Future<void> setPalette(StickerPalette value) async {
+    if (palette == value) return;
+    if (appearance case final StickerAppearance style) {
+      await style.update(skin, value);
+    } else {
+      _palette = value;
+      persist();
+    }
+    appearanceChanged();
+  }
+
+  void appearanceChanged({bool assets = false}) {
+    if (assets) assetRevision++;
+    if (!_disposed) notifyListeners();
   }
 
   /// 保存字号并同步给所有浮窗。

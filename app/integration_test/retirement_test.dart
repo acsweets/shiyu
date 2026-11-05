@@ -18,6 +18,7 @@ import 'package:window_manager/window_manager.dart';
 import 'support/holiday_flow.dart';
 import 'support/business_settings_flow.dart';
 import 'support/desktop_behavior_flow.dart';
+import 'support/desktop_skin_flow.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +86,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
       );
       await _verifyMainWindowVisibility(tester, window!, layout);
       await verifyDesktopBehavior(tester, window);
+      await verifyDesktopSkin(tester, layout, temporary);
     }
   } finally {
     await controller.save(originalDate, originalZone);

@@ -41,7 +41,7 @@ Future<void> _persistence() async {
   layout.setTitleVisible(group, false);
   expect(layout.showsGroup(group), isTrue);
   layout.setGroupVisible(group, false);
-  layout.setPalette(StickerPalette.cool);
+  await layout.setPalette(StickerPalette.cool);
   layout.setTitleSize(99);
   expect(layout.titleSize, StickerLayout.maxTitleSize);
   layout.setTitleSize(22);
@@ -130,7 +130,9 @@ Future<void> _groupView(WidgetTester tester) async {
   await tester.tap(find.widgetWithText(OutlinedButton, '冷酷色系'));
   await tester.pumpAndSettle();
   expect(layout.palette, StickerPalette.cool);
-  final Finder slider = find.byType(Slider);
+  final Finder slider = find.byKey(
+    const ValueKey<String>('sticker-title-size'),
+  );
   await tester.drag(slider, const Offset(300, 0));
   await tester.pumpAndSettle();
   expect(layout.titleSize, StickerLayout.maxTitleSize);

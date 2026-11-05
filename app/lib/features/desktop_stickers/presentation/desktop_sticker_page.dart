@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show setEquals;
+import 'package:flutter/services.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../platform/desktop/floating_window_controller.dart';
 import '../../../platform/desktop/desktop_placement.dart';
 import '../../../platform/desktop/desktop_window_bounds.dart';
+import '../../../platform/desktop/desktop_bridge.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../application/sticker_group_view.dart';
 import '../application/sticker_metric_selection.dart';
@@ -25,6 +27,7 @@ class DesktopStickerPage extends StatefulWidget {
     required this.window,
     this.layout,
     this.onboarding = false,
+    this.startupPack,
     super.key,
   });
 
@@ -37,6 +40,7 @@ class DesktopStickerPage extends StatefulWidget {
   /// 可选的测试外观配置。
   final StickerLayout? layout;
   final bool onboarding;
+  final String? startupPack;
 
   @override
   State<DesktopStickerPage> createState() => _DesktopStickerPageState();
@@ -84,6 +88,9 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     _layout.addListener(_layoutChanged);
     widget.controller.addListener(_rebuild);
     _syncTickerVisibility();
+    if (widget.window.initialized) {
+      desktopPackChannel.setMethodCallHandler(_receivePack);
+    }
     unawaited(_initialize());
   }
 
@@ -111,6 +118,9 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       await WidgetsBinding.instance.endOfFrame;
       await widget.window.applyInitialVisibility();
       if (mounted) await windows.start();
+      if (mounted && widget.startupPack != null) {
+        await _showPackResult(widget.startupPack);
+      }
       if (mounted && widget.onboarding && widget.controller.needsOnboarding) {
         await _settings();
       }
@@ -128,6 +138,19 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     } catch (_) {
       // 显示器服务不可用时保留最近的原生位置。
     }
+  }
+
+  Future<void> _receivePack(MethodCall call) async {
+    if (call.method == 'install') await _showPackResult(call.arguments);
+  }
+
+  Future<void> _showPackResult(Object? source) async {
+    final String message = await _settingsHost.installSkin(source);
+    if (!mounted) return;
+    await widget.window.reopen();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -341,6 +364,9 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   @override
   void dispose() {
     _boundsTimer?.cancel();
+    if (widget.window.initialized) {
+      desktopPackChannel.setMethodCallHandler(null);
+    }
     windowManager.removeListener(this);
     screenRetriever.removeListener(this);
     widget.window.closeGroups = null;

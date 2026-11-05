@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../retirement/application/retirement_controller.dart';
 import '../../retirement/presentation/metrics/snapshot_metrics.dart';
+import '../data/skins/sticker_skin_settings.dart';
 import '../data/sticker_cat_pose.dart';
 import '../data/sticker_character.dart';
 import '../data/sticker_layout.dart';
@@ -44,6 +45,7 @@ class StickerGroupView {
               : metrics.read(id, coreFailed: controller.problem == 'core'),
       },
       'mode': layout.mode.name,
+      'skin': layout.skin.data,
       'clickThrough': layout.desktop.clickThrough,
       'coverFullscreen': layout.desktop.coverFullscreen,
       'emptyLabel': metrics.strings.noVisibleMetrics,
@@ -85,6 +87,7 @@ class StickerGroupView {
   String get emptyLabel => data['emptyLabel'] as String;
   String? get fallback => data['fallback'] as String?;
   StickerMode get mode => StickerMode.read(data['mode']);
+  StickerSkinSettings get skin => StickerSkinSettings.read(data['skin']);
   bool get clickThrough => data['clickThrough'] == true;
   bool get coverFullscreen => data['coverFullscreen'] == true;
 

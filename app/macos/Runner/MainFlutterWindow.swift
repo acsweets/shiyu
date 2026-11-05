@@ -9,6 +9,7 @@ import window_manager
 class MainFlutterWindow: NSWindow {
   private var runtimeObservers: [(NotificationCenter, NSObjectProtocol)] = []
   private var desktopChannel: FlutterMethodChannel?
+  private var packChannel: FlutterMethodChannel?
   private var shortcuts: DesktopShortcuts?
 
   override func awakeFromNib() {
@@ -19,6 +20,11 @@ class MainFlutterWindow: NSWindow {
 
     RegisterGeneratedPlugins(registry: flutterViewController)
     registerRuntimeEvents(flutterViewController.engine.binaryMessenger)
+    let packs = FlutterMethodChannel(
+      name: "shiyu/timerpack", binaryMessenger: flutterViewController.engine.binaryMessenger
+    )
+    packs.resizeChannelBuffer(8)
+    packChannel = packs
 
     // 子窗仅控制自己的窗口，业务状态与全局入口由主窗管理。
     FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
@@ -56,6 +62,20 @@ class MainFlutterWindow: NSWindow {
 
   func reopenShiyu() {
     desktopChannel?.invokeMethod("reopen", arguments: nil)
+  }
+
+  func installTimerPack(_ url: URL) {
+    let access = url.startAccessingSecurityScopedResource()
+    defer { if access { url.stopAccessingSecurityScopedResource() } }
+    let limit = 8 * 1024 * 1024
+    guard let file = try? FileHandle(forReadingFrom: url) else {
+      packChannel?.invokeMethod("install", arguments: nil)
+      return
+    }
+    defer { try? file.close() }
+    let data = try? file.read(upToCount: limit + 1)
+    let payload = data.flatMap { $0.count <= limit ? FlutterStandardTypedData(bytes: $0) : nil }
+    packChannel?.invokeMethod("install", arguments: payload)
   }
 
   private func handleDesktop(_ call: FlutterMethodCall, result: FlutterResult) {

@@ -10,6 +10,35 @@
 	<string></string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Shiyu Timer Pack</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array><string>com.growthrecord.shiyu.timerpack</string></array>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.growthrecord.shiyu.timerpack</string>
+			<key>UTTypeDescription</key>
+			<string>Shiyu Timer Pack</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.zip-archive</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array><string>timerpack</string></array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleDisplayName</key>

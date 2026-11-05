@@ -17,6 +17,7 @@ class ShiyuApp extends StatelessWidget {
     this.window,
     this.desktopLayout,
     this.onboarding = false,
+    this.startupPack,
     this.locale,
     super.key,
   });
@@ -30,6 +31,7 @@ class ShiyuApp extends StatelessWidget {
   /// 集成测试的独立桌面布局存储。
   final StickerLayout? desktopLayout;
   final bool onboarding;
+  final String? startupPack;
   final Locale? locale;
 
   @override
@@ -64,6 +66,7 @@ class ShiyuApp extends StatelessWidget {
               window: window!,
               layout: desktopLayout,
               onboarding: onboarding,
+              startupPack: startupPack,
             ),
     );
   }

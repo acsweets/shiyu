@@ -17,6 +17,7 @@ import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
 import 'sticker_metric_selection.dart';
 import 'sticker_settings_state.dart';
+import 'sticker_skin_actions.dart';
 
 typedef StickerWindowResize = void Function(int group, int step);
 typedef StickerWindowFailure = bool Function();
@@ -32,7 +33,7 @@ class StickerSettingsHost {
     required this.windowFailed,
     required this.changeMode,
     required this.window,
-  });
+  }) : skins = StickerSkinActions(layout);
 
   /// 主引擎的外观配置。
   final StickerLayout layout;
@@ -50,6 +51,7 @@ class StickerSettingsHost {
   final StickerWindowFailure windowFailed;
   final StickerModeChange changeMode;
   final FloatingWindowController window;
+  final StickerSkinActions skins;
   Future<void> _desktopQueue = Future<void>.value();
 
   Future<bool> setClickThrough(bool locked) =>
@@ -106,6 +108,7 @@ class StickerSettingsHost {
       'main': layout.main,
       'preview': layout.preview,
       'palette': layout.palette.name,
+      'skin': layout.skin.data,
       'titleSize': layout.titleSize,
       'groups': StickerMetricSelection(layout, controller).activeGroups.toList()
         ..sort(),
@@ -212,9 +215,14 @@ class StickerSettingsHost {
     bool canUndo = false;
     bool saved = true;
     SettingsValues? privateSalary;
+    Uint8List? assetBundle;
     switch (action) {
       case StickerSetting.palette:
-        layout.setPalette(StickerPalette.fromId(args['value']));
+        try {
+          await skins.setPalette(StickerPalette.fromId(args['value']));
+        } catch (_) {
+          message = '无法保存浮窗配色';
+        }
       case StickerSetting.titleSize:
         layout.setTitleSize(args['value'] as int);
       case StickerSetting.groupVisible:
@@ -285,13 +293,46 @@ class StickerSettingsHost {
       case StickerSetting.reloadAssets:
         await layout.reloadCharacter();
         message = '已重新载入猫猫素材';
+      case StickerSetting.skinOptions:
+        try {
+          await skins.change(args['key'] as String, args['value']);
+        } catch (_) {
+          message = '无法保存皮肤设置';
+        }
+      case StickerSetting.skinImport:
+        message = await installSkin(args['bundle']);
+      case StickerSetting.skinExport:
+        try {
+          assetBundle = await skins.export();
+        } catch (_) {
+          message = '无法导出皮肤包，请检查素材格式和大小';
+        }
+      case StickerSetting.skinReset:
+        try {
+          await skins.reset();
+          message = '已恢复默认皮肤';
+        } catch (_) {
+          message = '无法恢复默认皮肤';
+        }
     }
     return StickerSettingsReply(
       snapshot(saved: saved),
       message: message,
       canUndo: canUndo,
       privateSalary: privateSalary,
+      assetBundle: assetBundle,
     );
+  }
+
+  Future<String> installSkin(Object? source) async {
+    try {
+      await skins.install(source);
+      return '已安装皮肤包';
+    } on FormatException {
+      return '皮肤包无效或版本不兼容，已保留当前皮肤';
+    } catch (_) {
+      return '无法读取或保存皮肤包，已保留当前皮肤';
+    }
   }
 
   String? _move(String id, int? target) {

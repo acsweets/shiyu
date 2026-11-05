@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 const MethodChannel desktopRuntimeChannel = MethodChannel('shiyu/runtime');
+const MethodChannel desktopPackChannel = MethodChannel('shiyu/timerpack');
 
 Future<bool> desktopFlag(String method, [Object? argument]) async {
   try {

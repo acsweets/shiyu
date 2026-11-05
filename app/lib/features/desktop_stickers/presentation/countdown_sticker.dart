@@ -10,6 +10,7 @@ import '../application/sticker_group_view.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_mode.dart';
 import 'sticker_window_drag.dart';
+import 'sticker_surface_style.dart';
 
 /// 每个系统窗口使用相同的贴纸排版和缩放入口。
 class StickerGroupSurface extends StatelessWidget {
@@ -99,6 +100,10 @@ class StickerGroupSurface extends StatelessWidget {
   }
 
   Widget _surface(BuildContext context, BoxConstraints constraints) {
+    final StickerSurfaceStyle style = StickerSurfaceStyle(
+      view,
+      MediaQuery.platformBrightnessOf(context),
+    );
     final double catHeight =
         (constraints.maxHeight - _minimumRowHeight - _gridSpacing)
             .clamp(0, 96)
@@ -110,7 +115,7 @@ class StickerGroupSurface extends StatelessWidget {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onDoubleTap: interactive ? onToggleMode : null,
-            child: _paper(),
+            child: _paper(style),
           ),
         ),
         Positioned(
@@ -137,8 +142,8 @@ class StickerGroupSurface extends StatelessWidget {
                     tooltip: '浮窗设置',
                     onPressed: onSettings,
                     style: IconButton.styleFrom(
-                      backgroundColor: view.background,
-                      foregroundColor: view.foreground,
+                      backgroundColor: style.fill,
+                      foregroundColor: style.foreground,
                       minimumSize: const Size(34, 34),
                       padding: EdgeInsets.zero,
                     ),
@@ -152,21 +157,21 @@ class StickerGroupSurface extends StatelessWidget {
     );
   }
 
-  Widget _paper() => DecoratedBox(
+  Widget _paper(StickerSurfaceStyle style) => DecoratedBox(
     key: const ValueKey<String>('sticker-window-background'),
     decoration: BoxDecoration(
-      color: view.background,
-      border: Border.all(
-        color: Color.alphaBlend(
-          view.foreground.withValues(alpha: 0.30),
-          view.background,
-        ),
-      ),
-      borderRadius: BorderRadius.circular(18),
+      color: style.background,
+      border: Border.all(color: style.border),
+      borderRadius: BorderRadius.circular(style.radius),
     ),
     child: Column(
       children: <Widget>[
-        Expanded(child: LayoutBuilder(builder: _grid)),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints limits) =>
+                _grid(context, limits, style),
+          ),
+        ),
         if (view.mode.showsDetails && view.fallback != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
@@ -174,19 +179,23 @@ class StickerGroupSurface extends StatelessWidget {
               view.fallback!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: view.foreground, fontSize: 11),
+              style: TextStyle(color: style.foreground, fontSize: 11),
             ),
           ),
       ],
     ),
   );
 
-  Widget _grid(BuildContext context, BoxConstraints constraints) {
+  Widget _grid(
+    BuildContext context,
+    BoxConstraints constraints,
+    StickerSurfaceStyle style,
+  ) {
     final Map<String, MetricFields> metrics = view.metrics;
     final List<String> ids = metrics.keys.toList();
     if (ids.isEmpty) {
       return Center(
-        child: Text(view.emptyLabel, style: TextStyle(color: view.foreground)),
+        child: Text(view.emptyLabel, style: TextStyle(color: style.foreground)),
       );
     }
     final int columns = !view.preview && view.mode == StickerMode.mini
@@ -200,8 +209,8 @@ class StickerGroupSurface extends StatelessWidget {
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: GridView.builder(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
+        padding: EdgeInsets.symmetric(
+          horizontal: style.inset,
           vertical: _gridSpacing / 2,
         ),
         itemCount: ids.length,
@@ -212,12 +221,16 @@ class StickerGroupSurface extends StatelessWidget {
           mainAxisSpacing: _gridSpacing,
         ),
         itemBuilder: (BuildContext context, int index) =>
-            _card(ids[index], metrics[ids[index]]!),
+            _card(ids[index], metrics[ids[index]]!, style),
       ),
     );
   }
 
-  Widget _card(String id, MetricFields metric) => Padding(
+  Widget _card(
+    String id,
+    MetricFields metric,
+    StickerSurfaceStyle style,
+  ) => Padding(
     key: ValueKey<String>('sticker-$id'),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: _cellPadding),
     child: Column(
@@ -235,7 +248,7 @@ class StickerGroupSurface extends StatelessWidget {
                 style: TextStyle(
                   fontSize: view.titleSize,
                   height: 1.25,
-                  color: view.foreground,
+                  color: style.foreground,
                 ),
               ),
             ),
@@ -251,8 +264,8 @@ class StickerGroupSurface extends StatelessWidget {
               maxLines: 1,
               softWrap: false,
               style: TextStyle(
-                color: view.foreground,
-                fontSize: 18,
+                color: style.foreground,
+                fontSize: style.valueSize,
                 fontWeight: FontWeight.w700,
                 fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
               ),
@@ -265,7 +278,7 @@ class StickerGroupSurface extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: LinearProgressIndicator(
                 value: progress,
-                color: view.foreground,
+                color: style.accent,
                 minHeight: 3,
               ),
             ),
@@ -274,7 +287,7 @@ class StickerGroupSurface extends StatelessWidget {
               detail,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: view.foreground, fontSize: 11),
+              style: TextStyle(color: style.foreground, fontSize: 11),
             ),
         ],
       ],

@@ -33,6 +33,7 @@ class FlutterWindow : public Win32Window {
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>>
       runtime_channel_;
+  std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> pack_channel_;
   HWND session_window_ = nullptr;
   HWND desktop_window_ = nullptr;
   bool fullscreen_ = false;

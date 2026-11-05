@@ -24,12 +24,14 @@ class RuntimeShiyuApp extends ConsumerStatefulWidget {
     this.window,
     this.desktopLayout,
     this.onboarding = true,
+    this.startupPack,
     super.key,
   });
 
   final FloatingWindowController? window;
   final StickerLayout? desktopLayout;
   final bool onboarding;
+  final String? startupPack;
 
   @override
   ConsumerState<RuntimeShiyuApp> createState() => _RuntimeShiyuAppState();
@@ -111,6 +113,7 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
     window: widget.window,
     desktopLayout: widget.desktopLayout,
     onboarding: widget.onboarding,
+    startupPack: widget.startupPack,
     locale: settingsLocale(_locale),
   );
 

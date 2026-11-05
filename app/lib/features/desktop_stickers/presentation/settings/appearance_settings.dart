@@ -5,6 +5,7 @@ import '../../data/sticker_layout.dart';
 import '../../data/sticker_palette.dart';
 import '../countdown_sticker.dart';
 import 'settings_controls.dart';
+import 'skin_settings.dart';
 
 class AppearanceSettings extends StatelessWidget {
   const AppearanceSettings({required this.session, super.key});
@@ -63,6 +64,7 @@ class AppearanceSettings extends StatelessWidget {
       Semantics(
         label: '提示文字大小',
         child: Slider(
+          key: const ValueKey<String>('sticker-title-size'),
           min: StickerLayout.minTitleSize.toDouble(),
           max: StickerLayout.maxTitleSize.toDouble(),
           divisions: StickerLayout.maxTitleSize - StickerLayout.minTitleSize,
@@ -71,6 +73,10 @@ class AppearanceSettings extends StatelessWidget {
           onChanged: _setSize,
         ),
       ),
+      const SizedBox(height: 20),
+      const Divider(height: 1),
+      const SizedBox(height: 18),
+      SkinSettings(session: session),
     ],
   );
 

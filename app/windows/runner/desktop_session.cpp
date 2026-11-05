@@ -31,12 +31,21 @@ void DesktopSession::Attach(HWND window) const {
   SetPropW(window, kWindowProperty, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
 }
 
-void DesktopSession::NotifyExisting() const {
+void DesktopSession::NotifyExisting(const std::string& pack_path) const {
   for (int attempt = 0; attempt < 60; ++attempt) {
     HWND window = nullptr;
     EnumWindows(FindInstance, reinterpret_cast<LPARAM>(&window));
     if (window != nullptr) {
-      PostMessageW(window, kShiyuReopen, 0, 0);
+      if (pack_path.empty() || pack_path.size() > kShiyuPackPathLimit) {
+        PostMessageW(window, kShiyuReopen, 0, 0);
+      } else {
+        COPYDATASTRUCT payload{
+            kShiyuPackMessage, static_cast<DWORD>(pack_path.size()),
+            const_cast<char*>(pack_path.data())};
+        SendMessageTimeoutW(window, WM_COPYDATA, 0,
+                            reinterpret_cast<LPARAM>(&payload),
+                            SMTO_ABORTIFHUNG, 2000, nullptr);
+      }
       return;
     }
     Sleep(30);

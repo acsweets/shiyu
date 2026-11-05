@@ -6,6 +6,7 @@ import '../../../platform/desktop/desktop_options.dart';
 import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/settings_access.dart';
 import '../../retirement/data/settings_repository.dart';
+import '../data/skins/sticker_skin_settings.dart';
 import '../data/sticker_mode.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
@@ -37,6 +38,10 @@ enum StickerSetting {
   businessPeek,
   openAssets,
   reloadAssets,
+  skinOptions,
+  skinImport,
+  skinExport,
+  skinReset,
 }
 
 typedef SettingsRead = Future<StickerSettingsState> Function();
@@ -56,6 +61,7 @@ class StickerSettingsState {
   String get main => data['main'] as String;
   bool get preview => data['preview'] as bool;
   StickerPalette get palette => StickerPalette.fromId(data['palette']);
+  StickerSkinSettings get skin => StickerSkinSettings.read(data['skin']);
   int get titleSize => data['titleSize'] as int;
   List<int> get groups => (data['groups'] as List<Object?>).cast<int>();
   Set<String> get enabled =>
@@ -103,6 +109,7 @@ class StickerSettingsReply {
     this.message,
     this.canUndo = false,
     this.privateSalary,
+    this.assetBundle,
   });
 
   /// 操作后的配置。
@@ -114,6 +121,7 @@ class StickerSettingsReply {
   /// 本次移动可撤销。
   final bool canUndo;
   final SettingsValues? privateSalary;
+  final Uint8List? assetBundle;
 
   factory StickerSettingsReply.fromData(Map<Object?, Object?> data) =>
       StickerSettingsReply(
@@ -122,6 +130,7 @@ class StickerSettingsReply {
         canUndo: data['canUndo'] as bool,
         privateSalary: (data['privateSalary'] as Map<Object?, Object?>?)
             ?.cast<String, dynamic>(),
+        assetBundle: data['assetBundle'] as Uint8List?,
       );
 
   Map<String, Object?> get data => <String, Object?>{
@@ -129,6 +138,7 @@ class StickerSettingsReply {
     'message': message,
     'canUndo': canUndo,
     'privateSalary': privateSalary,
+    'assetBundle': assetBundle,
   };
 }
 

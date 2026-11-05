@@ -33,7 +33,12 @@ Future<void> main(List<String> arguments) async {
     }
     return;
   }
-  await runShiyu();
+  final String? pack =
+      arguments.length == 1 &&
+          arguments.single.toLowerCase().endsWith('.timerpack')
+      ? arguments.single
+      : null;
+  await runShiyu(startupPack: pack);
 }
 
 /// 测试可关闭浮窗行为或替换存储，避免修改用户的真实设置。
@@ -43,6 +48,7 @@ Future<RetirementController> runShiyu({
   StickerLayout? desktopLayout,
   bool checkHolidays = true,
   bool showOnboarding = true,
+  String? startupPack,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
@@ -102,6 +108,7 @@ Future<RetirementController> runShiyu({
         window: window,
         desktopLayout: desktopLayout,
         onboarding: showOnboarding && storage == null,
+        startupPack: startupPack,
       ),
     ),
   );

@@ -79,6 +79,9 @@ bool FlutterWindow::OnCreate() {
       [this](const auto& call, auto result) {
         HandleDesktopMethod(call, std::move(result));
       });
+  pack_channel_ = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+      flutter_controller_->engine()->messenger(), "shiyu/timerpack",
+      &flutter::StandardMethodCodec::GetInstance());
   desktop_window_ = GetHandle();
   RegisterDesktopGeometry(flutter_controller_->engine()->messenger(), desktop_window_);
   fullscreen_ = IsExternalFullscreen();
@@ -129,6 +132,7 @@ void FlutterWindow::OnDestroy() {
     session_window_ = nullptr;
   }
   runtime_channel_.reset();
+  pack_channel_.reset();
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
@@ -191,6 +195,16 @@ LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
+  if (message == WM_COPYDATA && pack_channel_ && lparam != 0) {
+    const auto* data = reinterpret_cast<const COPYDATASTRUCT*>(lparam);
+    if (data->dwData == kShiyuPackMessage && data->lpData != nullptr &&
+        data->cbData > 0 && data->cbData <= kShiyuPackPathLimit) {
+      const std::string path(static_cast<const char*>(data->lpData), data->cbData);
+      if (path.find('\0') != std::string::npos) return FALSE;
+      pack_channel_->InvokeMethod("install", std::make_unique<flutter::EncodableValue>(path));
+      return TRUE;
+    }
+  }
   if (runtime_channel_) {
     if (message == kShiyuReopen) {
       runtime_channel_->InvokeMethod("reopen", nullptr);

@@ -9,8 +9,14 @@
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
   const DesktopSession session;
+  std::vector<std::string> command_line_arguments = GetCommandLineArguments();
   if (!session.IsPrimary()) {
-    session.NotifyExisting();
+    constexpr char extension[] = ".timerpack";
+    const std::string path = command_line_arguments.size() == 1
+        ? command_line_arguments.front() : "";
+    const size_t suffix = sizeof(extension) - 1;
+    session.NotifyExisting(path.size() > suffix &&
+        _stricmp(path.c_str() + path.size() - suffix, extension) == 0 ? path : "");
     return EXIT_SUCCESS;
   }
   // Attach to console when present (e.g., 'flutter run') or create a
@@ -24,9 +30,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
   flutter::DartProject project(L"data");
-
-  std::vector<std::string> command_line_arguments =
-      GetCommandLineArguments();
 
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 

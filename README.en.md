@@ -20,6 +20,7 @@ The retirement countdown is available in desktop floating windows and mobile hom
 | Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, per-window visibility and title controls, and an adjustable title font size. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
 | Desktop modes | Mini, Standard, and Expanded share the live Rust snapshot. Double-click to switch between Mini and Standard, or choose Expanded in settings. Reorder or hide metrics and add custom countdowns. Expanded shows available progress and dates while respecting amount visibility |
 | Desktop system controls | The tray or menu bar controls visibility, click-through, amount masking, refresh, and holiday checks. Settings support edge snapping, per-display placement, full-screen coverage, an earnings shortcut, and launch at login. Login items require macOS 13 or later |
+| Desktop skins and cat assets | Choose Simple Card or Dark Tech, light, dark, or system appearance, 30–100% background opacity, one of three number sizes, and an accent. Replace PNGs locally or import, export, and open `.timerpack` files. [Resource guide](docs/界面设计/04-用户资源制作指南.md) |
 | Mobile settings | The app opens directly to settings for the retirement date, time zone, and home screen widget appearance. Choose from three palettes, show or hide the title, and adjust its size |
 | Onboarding and full settings | New installs guide you through personal information, work and pay, and a live preview. Configure paydays, date overrides, holidays, and one of eight languages. Settings autosave and can be imported or exported as local JSON. Desktop settings include custom countdowns and mini-window metric preferences |
 | Local settings | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving. Legacy settings can migrate, and users can restore the last valid backup after archiving the damaged file |
@@ -39,7 +40,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 ## Still pending
 
 - Integrate the six built-in metrics and earnings into the mobile home screen.
-- Two production skins and resource packs. See the [node 09 record](docs/验收记录/09/README.md) for pending multi-display, full-screen, and Apple manual checks.
+- Multi-display, full-screen, and Apple manual checks are tracked in the [node 09 record](docs/验收记录/09/README.md) and [node 10 record](docs/验收记录/10/README.md).
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 
 These remain in the [node plan](docs/开发计划/README.md). Early retirement integration does not complete nodes 08–12. See the [frozen MVP scope](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md).
