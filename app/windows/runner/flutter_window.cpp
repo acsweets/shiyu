@@ -4,8 +4,23 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include "desktop_multi_window/desktop_multi_window_plugin.h"
+#include "resource.h"
 #include "window_manager/window_manager_plugin.h"
 #include "screen_retriever_windows/screen_retriever_windows_plugin_c_api.h"
+
+namespace {
+
+// 子窗口复用可执行文件中的应用图标，异步设置以避免创建时重入。
+void ApplyAppIcon(HWND window, WPARAM type, int width, int height) {
+  const HICON icon = static_cast<HICON>(
+      LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_APP_ICON),
+                 IMAGE_ICON, width, height, LR_SHARED));
+  if (icon != nullptr) {
+    PostMessageW(window, WM_SETICON, type, reinterpret_cast<LPARAM>(icon));
+  }
+}
+
+}  // namespace
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -36,6 +51,13 @@ bool FlutterWindow::OnCreate() {
         view->engine()->GetRegistrarForPlugin("WindowManagerPlugin"));
     ScreenRetrieverWindowsPluginCApiRegisterWithRegistrar(
         view->engine()->GetRegistrarForPlugin("ScreenRetrieverWindowsPluginCApi"));
+    const HWND window = GetAncestor(view->view()->GetNativeWindow(), GA_ROOT);
+    if (window != nullptr) {
+      ApplyAppIcon(window, ICON_SMALL, GetSystemMetrics(SM_CXSMICON),
+                   GetSystemMetrics(SM_CYSMICON));
+      ApplyAppIcon(window, ICON_BIG, GetSystemMetrics(SM_CXICON),
+                   GetSystemMetrics(SM_CYICON));
+    }
   });
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

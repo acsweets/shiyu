@@ -58,9 +58,7 @@ class FloatingWindowController with TrayListener, WindowListener {
     await windowManager.setTitle('时余');
     trayManager.addListener(this);
     await trayManager.setIcon(
-      Platform.isWindows
-          ? 'assets/diagnostics/icon.ico'
-          : 'assets/diagnostics/icon.png',
+      Platform.isWindows ? 'assets/brand/tray.ico' : 'assets/brand/tray.png',
     );
     await trayManager.setContextMenu(
       Menu(

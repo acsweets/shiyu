@@ -37,6 +37,8 @@ flutter:
   assets:
     - assets/diagnostics/icon.ico
     - assets/diagnostics/icon.png
+    - assets/brand/tray.ico
+    - assets/brand/tray.png
     - assets/stickers/character.png
     - assets/stickers/character-stretch.png
     - assets/stickers/character-wave.png
