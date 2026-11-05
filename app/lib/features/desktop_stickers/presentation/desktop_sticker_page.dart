@@ -6,10 +6,12 @@ import 'package:window_manager/window_manager.dart';
 import '../../../platform/desktop/floating_window_controller.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../application/sticker_group_view.dart';
+import '../application/sticker_settings_host.dart';
+import '../application/sticker_settings_state.dart';
 import '../application/sticker_windows.dart';
 import '../data/sticker_layout.dart';
 import 'countdown_sticker.dart';
-import 'sticker_settings.dart';
+import 'settings/sticker_settings.dart';
 
 class DesktopStickerPage extends StatefulWidget {
   const DesktopStickerPage({
@@ -46,8 +48,8 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   /// 在原生操作完成后保存几何信息。
   Timer? _boundsTimer;
 
-  /// 设置打开时主窗临时变大，禁止覆盖贴纸尺寸。
-  bool _settingsOpen = false;
+  /// 独立设置窗的主引擎入口。
+  late final StickerSettingsHost _settingsHost;
 
   /// 正在恢复窗口尺寸。
   bool _applyingBounds = false;
@@ -59,6 +61,13 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   void initState() {
     super.initState();
     _layout = widget.layout ?? StickerLayout();
+    _settingsHost = StickerSettingsHost(
+      layout: _layout,
+      controller: widget.controller,
+      resetBounds: _resetBounds,
+      resize: _resizeWindow,
+      windowFailed: _windowFailed,
+    );
     _layout.addListener(_layoutChanged);
     widget.controller.addListener(_rebuild);
     widget.controller.setVisible(true);
@@ -72,6 +81,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     final StickerWindows windows = StickerWindows(
       layout: _layout,
       controller: widget.controller,
+      settings: _settingsHost,
       reportFailure: _reportFailure,
     );
     _windows = windows;
@@ -93,6 +103,8 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     if (mounted && !_failed) setState(() => _failed = true);
   }
 
+  bool _windowFailed() => _failed;
+
   void _rebuild() {
     if (mounted) setState(() {});
   }
@@ -100,12 +112,11 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   void _layoutChanged() {
     _rebuild();
     _windows?.sync();
-    if (_settingsOpen) return;
     unawaited(_syncMainVisibility());
     if (_appliedGroup != _layout.mainGroup) unawaited(_applyMainBounds());
   }
 
-  /// 主窗关闭后由托盘临时打开设置。
+  /// 显示开关只作用于主浮窗，设置窗有自己的生命周期。
   Future<void> _syncMainVisibility() async {
     if (!widget.window.initialized) return;
     await widget.window.setMainVisible(_layout.showsGroup(_layout.mainGroup));
@@ -127,19 +138,16 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   }
 
   void _scheduleBounds() {
-    if (_settingsOpen || _applyingBounds || _appliedGroup == null) return;
+    if (_applyingBounds || _appliedGroup == null) return;
     _boundsTimer?.cancel();
     _boundsTimer = Timer(const Duration(milliseconds: 180), _captureBounds);
   }
 
   Future<void> _captureBounds() async {
     final int? group = _appliedGroup;
-    if (!mounted || group == null || _settingsOpen || _applyingBounds) return;
+    if (!mounted || group == null || _applyingBounds) return;
     final Rect bounds = await windowManager.getBounds();
-    if (mounted &&
-        group == _appliedGroup &&
-        !_settingsOpen &&
-        !_applyingBounds) {
+    if (mounted && group == _appliedGroup && !_applyingBounds) {
       _layout.saveBounds(group, bounds);
     }
   }
@@ -151,45 +159,46 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
 
   void _openSettings() => unawaited(_settings());
 
-  /// 在主窗中临时打开可读尺寸的设置，关闭后恢复当前分组。
+  /// 正常桌面环境只打开独立设置窗。
   Future<void> _settings() async {
     if (!mounted || !_layout.ready) return;
-    if (_settingsOpen) {
-      if (widget.window.initialized) await widget.window.show();
+    if (widget.window.initialized) {
+      try {
+        await _windows?.openSettings();
+      } catch (_) {
+        _reportFailure();
+      }
       return;
     }
-    await _captureBounds();
-    if (!mounted || _settingsOpen) return;
-    _settingsOpen = true;
-    _boundsTimer?.cancel();
+    final StickerSettingsSession session = StickerSettingsSession(
+      _settingsHost.snapshot(),
+      _settingsHost.read,
+      _settingsHost.dispatch,
+    );
     try {
-      if (widget.window.initialized) {
-        await windowManager.setMinimumSize(const Size(420, 420));
-        await windowManager.setSize(const Size(470, 650));
-        await windowManager.center();
-        await widget.window.setMainVisible(true);
-        await widget.window.show();
-      }
-      if (mounted) {
-        await showDialog<void>(context: context, builder: _settingsDialog);
-      }
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => _settingsDialog(context, session),
+      );
     } finally {
-      if (widget.window.initialized) {
-        await windowManager.setMinimumSize(StickerLayout.minimum);
-        await _applyMainBounds();
-      }
-      _settingsOpen = false;
-      _windows?.sync();
-      await _syncMainVisibility();
+      session.dispose();
     }
   }
 
-  Widget _settingsDialog(BuildContext context) => StickerSettings(
-    layout: _layout,
-    controller: widget.controller,
-    resetWindowBounds: _resetBounds,
-    resizeWindow: _resizeWindow,
-    windowFailed: _failed,
+  Widget _settingsDialog(
+    BuildContext context,
+    StickerSettingsSession session,
+  ) => Dialog(
+    insetPadding: const EdgeInsets.all(12),
+    clipBehavior: Clip.antiAlias,
+    child: SizedBox(
+      width: 940,
+      height: 660,
+      child: StickerSettings(
+        session: session,
+        onClose: () => Navigator.of(context).pop(),
+      ),
+    ),
   );
 
   void _resizeWindow(int group, int step) {
@@ -202,11 +211,16 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       current.height + 72 * step,
     ])!;
     _layout.saveBounds(group, bounds);
-    _windows?.applyBounds(group, bounds);
+    if (group == _layout.mainGroup) {
+      unawaited(_applyMainBounds());
+    } else {
+      _windows?.applyBounds(group, bounds);
+    }
   }
 
   void _resetBounds() {
     _layout.reset();
+    unawaited(_applyMainBounds());
     _windows?.resetBounds();
   }
 

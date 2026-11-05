@@ -11,13 +11,21 @@ import 'sticker_window_drag.dart';
 
 /// 每个系统窗口使用相同的贴纸排版和缩放入口。
 class StickerGroupSurface extends StatelessWidget {
-  const StickerGroupSurface({required this.view, this.onSettings, super.key});
+  const StickerGroupSurface({
+    required this.view,
+    this.onSettings,
+    this.interactive = true,
+    super.key,
+  });
 
   /// 当前分组的可见状态与完整计时。
   final StickerGroupView view;
 
   /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
+
+  /// 设置页预览只绘制内容，禁用系统窗口拖动和缩放。
+  final bool interactive;
 
   /// 时间行保持独立高度，标题变大时只增加所需空间。
   static const double _timeHeight = 28;
@@ -65,21 +73,23 @@ class StickerGroupSurface extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Colors.transparent,
-    body: Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        StickerWindowDrag(
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: LayoutBuilder(builder: _surface),
-          ),
-        ),
-        const Positioned(right: 0, bottom: 0, child: _ResizeGrip()),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final Widget surface = Padding(
+      padding: const EdgeInsets.all(4),
+      child: LayoutBuilder(builder: _surface),
+    );
+    if (!interactive) return surface;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          StickerWindowDrag(child: surface),
+          const Positioned(right: 0, bottom: 0, child: _ResizeGrip()),
+        ],
+      ),
+    );
+  }
 
   Widget _surface(BuildContext context, BoxConstraints constraints) {
     final double catHeight =

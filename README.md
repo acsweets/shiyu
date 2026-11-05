@@ -4,6 +4,8 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
+独立桌面设置窗提供外观、窗口管理、倒计时和猫猫素材四页，支持实时预览和撤销窗口移动。见[桌面设置设计](docs/界面设计/07-桌面设置设计.md)。
+
 本地优先的时间与薪资感知工具，面向 Windows、macOS、iOS 和 Android。`workspace/shiyu` 是独立仓库，上级 `workspace` 仅容纳不同项目，不共享 Git 或依赖。
 
 ## 当前功能

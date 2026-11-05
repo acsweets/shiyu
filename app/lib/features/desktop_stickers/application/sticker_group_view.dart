@@ -44,8 +44,15 @@ class StickerGroupView {
     });
   }
 
-  Map<String, String> get values =>
-      (data['values'] as Map<Object?, Object?>).cast<String, String>();
+  Map<String, String> get values {
+    final Map<Object?, Object?> values =
+        data['values'] as Map<Object?, Object?>;
+    return <String, String>{
+      for (final String id in StickerLayout.titles.keys)
+        if (values[id] case final String text) id: text,
+    };
+  }
+
   bool get showsTitle => data['titles'] as bool;
   double get titleSize => (data['titleSize'] as int).toDouble();
   bool get preview => data['preview'] as bool;

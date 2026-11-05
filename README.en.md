@@ -4,6 +4,8 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
+The separate desktop Settings window includes Appearance, Window Management, Countdowns, and Cat Assets, with live preview and undo for moving countdowns. See the [desktop settings design](docs/界面设计/07-桌面设置设计.md).
+
 A local-first time and earnings tool for Windows, macOS, iOS, and Android. `workspace/shiyu` is an independent Git repository; its parent holds unrelated projects with separate dependencies and histories.
 
 ## Current features

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/shiyu_app.dart';
 import 'features/desktop_stickers/data/sticker_layout.dart';
+import 'features/desktop_stickers/presentation/settings/sticker_settings_window.dart';
 import 'features/desktop_stickers/presentation/sticker_child.dart';
 import 'platform/rust/generated/frb_generated.dart';
 import 'features/retirement/application/retirement_controller.dart';
@@ -16,7 +18,13 @@ import 'platform/desktop/floating_window_controller.dart';
 /// 启动应用并在根节点提供 Riverpod 容器。
 Future<void> main(List<String> arguments) async {
   if (arguments.length == 3 && arguments.first == 'multi_window') {
-    await runStickerChild(arguments[2]);
+    final Map<String, dynamic> options =
+        jsonDecode(arguments[2]) as Map<String, dynamic>;
+    if (options['settings'] == true) {
+      await runStickerSettingsWindow(options['owner'] as String);
+    } else {
+      await runStickerChild(options);
+    }
     return;
   }
   await runShiyu();

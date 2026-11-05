@@ -12,7 +12,6 @@ import 'package:shiyu/features/retirement/data/settings_store.dart';
 import 'package:shiyu/platform/rust/generated/api/snapshot.dart' as rust;
 import 'package:shiyu/features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import 'package:shiyu/platform/desktop/floating_window_controller.dart';
-import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
@@ -90,12 +89,9 @@ Future<void> _verifyMainWindowVisibility(
   StickerLayout layout,
 ) async {
   expect(await windowManager.isVisible(), isFalse);
-  window.onTrayMenuItemClick(MenuItem(key: 'settings', label: '设置'));
-  await tester.pumpAndSettle();
-  expect(await windowManager.isVisible(), isTrue);
-  expect(find.text('显示主窗口'), findsOneWidget);
-  await tester.tap(find.text('显示主窗口'));
-  await tester.tap(find.text('完成'));
+  await window.show();
+  expect(await windowManager.isVisible(), isFalse);
+  layout.setGroupVisible(layout.mainGroup, true);
   await tester.pumpAndSettle();
   expect(layout.showsGroup(layout.mainGroup), isTrue);
   expect(await windowManager.isVisible(), isTrue);

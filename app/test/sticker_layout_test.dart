@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shiyu/features/desktop_stickers/application/sticker_group_view.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_cat_pose.dart';
@@ -119,20 +120,41 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
   expect(tester.takeException(), isNull);
 
-  tester.view.physicalSize = const Size(470, 650);
+  tester.view.physicalSize = const Size(940, 660);
   await tester.pumpAndSettle();
   await tester.tap(find.byIcon(Icons.tune_rounded));
   await tester.pumpAndSettle();
   final Finder coolSwatch = find.byWidgetPredicate(_isCoolSwatch);
   expect(tester.getSize(coolSwatch).height, greaterThan(0));
-  await tester.tap(find.widgetWithText(ChoiceChip, '冷酷色系'));
+  await tester.tap(find.widgetWithText(OutlinedButton, '冷酷色系'));
   await tester.pumpAndSettle();
   expect(layout.palette, StickerPalette.cool);
   final Finder slider = find.byType(Slider);
   await tester.drag(slider, const Offset(300, 0));
   await tester.pumpAndSettle();
   expect(layout.titleSize, StickerLayout.maxTitleSize);
-  await tester.tap(find.text('完成'));
+  await tester.tap(find.widgetWithText(TextButton, '窗口管理'));
+  await tester.pumpAndSettle();
+  await tester.tap(
+    find.descendant(
+      of: find.byTooltip('移动距离放假'),
+      matching: find.byType(OutlinedButton),
+    ),
+  );
+  await tester.pumpAndSettle();
+  expect(find.widgetWithText(MenuItemButton, '新的独立窗口'), findsOneWidget);
+  await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+  await tester.pump();
+  await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+  await tester.pump();
+  await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+  await tester.pumpAndSettle();
+  expect(layout.groupOf('holiday'), isNot(layout.mainGroup));
+  expect(layout.groupOf('holiday'), 1);
+  await tester.tap(find.text('撤销'));
+  await tester.pumpAndSettle();
+  expect(layout.groupOf('holiday'), layout.mainGroup);
+  await tester.tap(find.byTooltip('关闭设置'));
   await tester.pumpAndSettle();
   expect(
     _windowBackground(tester),

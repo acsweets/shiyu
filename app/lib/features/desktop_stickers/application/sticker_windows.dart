@@ -8,12 +8,14 @@ import 'package:flutter/services.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
 import 'sticker_group_view.dart';
+import 'sticker_settings_host.dart';
 
 /// 主引擎拥有分组与 Rust 快照，每个外围槽位对应一个系统窗口。
 class StickerWindows {
   StickerWindows({
     required this.layout,
     required this.controller,
+    required this.settings,
     required this.reportFailure,
   });
 
@@ -22,6 +24,9 @@ class StickerWindows {
 
   /// 主窗口业务快照。
   final RetirementController controller;
+
+  /// 独立设置窗的请求和生命周期。
+  final StickerSettingsHost settings;
 
   /// 窗口初始化失败时交给设置界面提示。
   final VoidCallback reportFailure;
@@ -47,12 +52,29 @@ class StickerWindows {
   /// 防止关闭途中继续创建窗口。
   bool _closed = false;
 
+  /// 让设置入口等待主窗口通道完成注册。
+  final Completer<void> _ready = Completer<void>();
+
   Future<void> start() async {
-    final WindowController owner = await WindowController.fromCurrentEngine();
-    if (_closed) return;
-    _owner = owner;
-    await owner.setWindowMethodHandler(_handle);
-    sync();
+    try {
+      final WindowController owner = await WindowController.fromCurrentEngine();
+      if (_closed) return;
+      await owner.setWindowMethodHandler(_handle);
+      if (_closed) {
+        await owner.setWindowMethodHandler(null);
+        return;
+      }
+      _owner = owner;
+      sync();
+    } finally {
+      if (!_ready.isCompleted) _ready.complete();
+    }
+  }
+
+  Future<void> openSettings() async {
+    await _ready.future;
+    final WindowController? owner = _owner;
+    if (!_closed && owner != null) await settings.open(owner);
   }
 
   /// 根据分组增减子窗口，已有窗口继续读取当前分组。
@@ -134,6 +156,9 @@ class StickerWindows {
   }
 
   Future<Object?> _handle(MethodCall call) async {
+    if (call.method == 'settings.read' || call.method == 'settings.change') {
+      return settings.handle(call);
+    }
     final Map<Object?, Object?> request =
         call.arguments as Map<Object?, Object?>;
     final int group = request['group'] as int;
@@ -163,7 +188,9 @@ class StickerWindows {
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
+    if (!_ready.isCompleted) _ready.complete();
     _tokens.clear();
+    await settings.close();
     await _pending;
     for (final WindowController child in _children.values) {
       await _hide(child);

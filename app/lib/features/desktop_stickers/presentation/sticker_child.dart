@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -12,10 +11,8 @@ import '../data/sticker_layout.dart';
 import 'countdown_sticker.dart';
 
 /// 子窗引擎直接进入展示页面，不重复注册托盘或读取业务配置。
-Future<void> runStickerChild(String arguments) async {
+Future<void> runStickerChild(Map<String, dynamic> options) async {
   WidgetsFlutterBinding.ensureInitialized();
-  final Map<String, dynamic> options =
-      jsonDecode(arguments) as Map<String, dynamic>;
   final WindowController owner = WindowController.fromWindowId(
     options['owner'] as String,
   );
