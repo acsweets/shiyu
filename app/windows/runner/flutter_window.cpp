@@ -1,8 +1,11 @@
-#include "flutter_window.h"
+﻿#include "flutter_window.h"
 
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "desktop_multi_window/desktop_multi_window_plugin.h"
+#include "window_manager/window_manager_plugin.h"
+#include "screen_retriever_windows/screen_retriever_windows_plugin_c_api.h"
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -24,8 +27,16 @@ bool FlutterWindow::OnCreate() {
   if (!flutter_controller_->engine() || !flutter_controller_->view()) {
     return false;
   }
-  RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
+  RegisterPlugins(flutter_controller_->engine());
+  // 子窗只注册窗口控制，托盘、快捷键与业务仍由主引擎负责。
+  DesktopMultiWindowSetWindowCreatedCallback([](void* controller) {
+    auto* view = static_cast<flutter::FlutterViewController*>(controller);
+    WindowManagerPluginRegisterWithRegistrar(
+        view->engine()->GetRegistrarForPlugin("WindowManagerPlugin"));
+    ScreenRetrieverWindowsPluginCApiRegisterWithRegistrar(
+        view->engine()->GetRegistrarForPlugin("ScreenRetrieverWindowsPluginCApi"));
+  });
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();

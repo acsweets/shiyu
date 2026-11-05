@@ -1,21 +1,17 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// 外观偏好与业务设置分开保存，示例时间永远不写入业务配置。
+/// 保存窗口分组与外观，不改变 Rust 业务设置。
 class StickerLayout extends ChangeNotifier {
   StickerLayout({this.directory});
 
-  /// 测试可传入独立目录。
+  /// 本机外观目录，测试可指定隔离目录。
   Directory? directory;
 
-  /// 固定设计画布，窗口缩放时整组等比适配。
-  static const Size canvas = Size(760, 560);
-
-  /// 稳定的指标标识与中文标题。
+  /// 每项倒计时的稳定 ID 和名称。
   static const Map<String, String> titles = <String, String>{
     'work': '距离下班',
     'holiday': '距离放假',
@@ -23,7 +19,7 @@ class StickerLayout extends ChangeNotifier {
     'retirement': '距离退休',
   };
 
-  /// 仅供观察版式的静态示例，不冒充业务计算。
+  /// 仅用于效果预览的固定示例。
   static const Map<String, String> examples = <String, String>{
     'work': '00天 02小时 36分 18秒',
     'holiday': '02天 06小时 15分 00秒',
@@ -31,44 +27,76 @@ class StickerLayout extends ChangeNotifier {
     'retirement': '8459天 02小时 36分 18秒',
   };
 
-  /// 首次展示效果预览，界面始终标明示例。
+  /// 保证单张贴纸和窗口操作始终可用。
+  static const Size minimum = Size(260, 146);
+
+  /// 当前是否展示示例。
   bool preview = true;
 
-  /// 用户指定的主指标。
+  /// 主指标带猫猫，并负责打开设置。
   String main = 'work';
 
-  /// 开启的外围贴纸。
-  Set<String> enabled = <String>{'work', 'holiday', 'payday', 'retirement'};
+  /// 当前开启的倒计时。
+  Set<String> enabled = titles.keys.toSet();
 
-  /// 每张贴纸在设计画布内的位置。
-  Map<String, Offset> positions = defaults();
+  /// 每项只归属一个窗口槽位，空槽位可用于拆分。
+  final Map<String, int> _groups = _separateGroups();
 
-  /// 可选的本地替换角色。
+  /// 各窗口上次保存的桌面位置与尺寸。
+  final Map<int, Rect> _bounds = <int, Rect>{};
+
+  /// 隐藏标题的窗口槽位。
+  final Set<int> _hiddenTitles = <int>{};
+
+  /// 独立替换角色图。
   File? character;
 
-  /// 文件读取完成前不允许拖动，防止覆盖旧布局。
+  /// 磁盘状态加载完成后启用编辑。
   bool ready = false;
 
-  /// 外观文件写入失败时显示提示。
+  /// 外观读取或写入异常。
   bool writeFailed = false;
 
-  /// 图片刷新版本，用于清除旧图缓存。
+  /// 同名角色图重新加载时更新缓存。
   int assetRevision = 0;
 
-  /// 串行落盘，拖动事件不会互相覆盖。
+  /// 串行保存，避免较早的布局覆盖新布局。
   Future<void> _writes = Future<void>.value();
 
-  /// 释放后不再通知。
+  /// 释放后不再发送更新。
   bool _disposed = false;
 
-  static Map<String, Offset> defaults() => <String, Offset>{
-    'work': const Offset(212, 148),
-    'holiday': const Offset(466, 58),
-    'payday': const Offset(28, 400),
-    'retirement': const Offset(462, 400),
+  int get mainGroup => groupOf(main);
+  int groupOf(String id) => _groups[id]!;
+  bool showsTitle(int group) => !_hiddenTitles.contains(group);
+  Rect? boundsOf(int group) => _bounds[group];
+
+  List<String> members(int group) => titles.keys
+      .where((String id) => enabled.contains(id) && groupOf(id) == group)
+      .toList();
+
+  Set<int> get activeGroups => enabled.map(groupOf).toSet();
+
+  static Map<String, int> _separateGroups() => <String, int>{
+    for (int index = 0; index < titles.length; index++)
+      titles.keys.elementAt(index): index,
   };
 
-  /// 从本机应用目录恢复排布，不修改 Rust 设置。
+  /// 初次拆分后按旧画布方位分散，用户可继续移动。
+  Rect initialBounds(int group) {
+    final int count = members(group).length;
+    final double width = count > 1 ? 488 : 280;
+    final double height = count > 2 ? 272 : 172;
+    final Offset offset = switch (group) {
+      0 => const Offset(160, 100),
+      1 => const Offset(460, 80),
+      2 => const Offset(100, 312),
+      _ => const Offset(450, 300),
+    };
+    return offset & Size(width, height);
+  }
+
+  /// 兼容旧版外观设置，并将旧画布内位置转换为窗口初始位置。
   Future<void> load() async {
     try {
       directory ??= Directory(
@@ -76,32 +104,7 @@ class StickerLayout extends ChangeNotifier {
       );
       final File file = File('${directory!.path}/layout.json');
       if (await file.exists() && await file.length() < 32768) {
-        final Map<String, dynamic> data =
-            jsonDecode(await file.readAsString()) as Map<String, dynamic>;
-        if (data['version'] == 1) {
-          preview = data['preview'] as bool? ?? true;
-          final String candidate = data['main'] as String? ?? 'work';
-          if (titles.containsKey(candidate)) main = candidate;
-          final List<dynamic>? items = data['enabled'] as List<dynamic>?;
-          if (items != null) {
-            enabled = items
-                .whereType<String>()
-                .where(titles.containsKey)
-                .toSet();
-          }
-          enabled.add(main);
-          final Map<String, dynamic> saved =
-              data['positions'] as Map<String, dynamic>? ?? <String, dynamic>{};
-          for (final String id in titles.keys) {
-            final List<dynamic>? xy = saved[id] as List<dynamic>?;
-            if (xy != null && xy.length == 2 && xy.every(_finite)) {
-              positions[id] = constrain(
-                id,
-                Offset((xy[0] as num).toDouble(), (xy[1] as num).toDouble()),
-              );
-            }
-          }
-        }
+        _restore(jsonDecode(await file.readAsString()) as Map<String, dynamic>);
       }
       await reloadCharacter();
     } catch (_) {
@@ -112,21 +115,120 @@ class StickerLayout extends ChangeNotifier {
     }
   }
 
-  static bool _finite(dynamic value) => value is num && value.isFinite;
-  Size size(String id) =>
-      id == main ? const Size(336, 230) : const Size(252, 120);
-  Offset constrain(String id, Offset point) => Offset(
-    point.dx.clamp(8, canvas.width - size(id).width - 8).toDouble(),
-    point.dy.clamp(48, canvas.height - size(id).height - 24).toDouble(),
-  );
-  /// 在画布边界内移动单张贴纸。
-  void move(String id, Offset delta) {
-    if (!ready) return;
-    positions[id] = constrain(id, positions[id]! + delta);
-    notifyListeners();
+  void _restore(Map<String, dynamic> data) {
+    final Object? version = data['version'];
+    if (version != 1 && version != 2) return;
+    preview = data['preview'] is! bool || data['preview'] == true;
+    final Object? candidate = data['main'];
+    if (candidate is String && titles.containsKey(candidate)) main = candidate;
+    final Object? items = data['enabled'];
+    if (items is List<dynamic>) {
+      enabled = items.whereType<String>().where(titles.containsKey).toSet();
+    }
+    enabled.add(main);
+    if (version == 1) {
+      _migratePositions(data['positions']);
+      return;
+    }
+    final Object? groups = data['groups'];
+    if (groups is Map<String, dynamic>) {
+      for (final String id in titles.keys) {
+        final Object? group = groups[id];
+        if (group is int && group >= 0 && group < titles.length) {
+          _groups[id] = group;
+        }
+      }
+    }
+    final Object? bounds = data['bounds'];
+    if (bounds is Map<String, dynamic>) {
+      for (int group = 0; group < titles.length; group++) {
+        final Rect? rect = decodeBounds(bounds['$group']);
+        if (rect != null) _bounds[group] = rect;
+      }
+    }
+    final Object? hidden = data['hiddenTitles'];
+    if (hidden is List<dynamic>) {
+      _hiddenTitles.addAll(hidden.whereType<int>());
+    }
   }
 
-  /// 主项保持开启，其余贴纸可以自由开关。
+  void _migratePositions(Object? positions) {
+    if (positions is! Map<String, dynamic>) return;
+    for (final String id in titles.keys) {
+      final Object? pair = positions[id];
+      if (pair is List<dynamic> && pair.length == 2 && pair.every(_finite)) {
+        final int group = groupOf(id);
+        final Offset position = Offset(
+          (pair[0] as num).toDouble(),
+          (pair[1] as num).toDouble(),
+        );
+        _bounds[group] =
+            (position + const Offset(20, 36)) & initialBounds(group).size;
+      }
+    }
+  }
+
+  static bool _finite(Object? value) => value is num && value.isFinite;
+
+  static Rect? decodeBounds(Object? value) {
+    if (value is! List<dynamic> || value.length != 4 || !value.every(_finite)) {
+      return null;
+    }
+    return Rect.fromLTWH(
+      (value[0] as num).toDouble(),
+      (value[1] as num).toDouble(),
+      (value[2] as num).clamp(minimum.width, 4096).toDouble(),
+      (value[3] as num).clamp(minimum.height, 4096).toDouble(),
+    );
+  }
+
+  static List<double> encodeBounds(Rect rect) => <double>[
+    rect.left,
+    rect.top,
+    rect.width,
+    rect.height,
+  ];
+
+  /// 空槽位会继承拆出前窗口附近的起始位置。
+  void assign(String id, int? target) {
+    final int current = groupOf(id);
+    if (target == null) {
+      if (_groups.values.where((int group) => group == current).length == 1) {
+        return;
+      }
+      final int preferred = titles.keys.toList().indexOf(id);
+      target = _groups.containsValue(preferred)
+          ? List<int>.generate(
+              titles.length,
+              _groupIndex,
+            ).firstWhere((int group) => !_groups.containsValue(group))
+          : preferred;
+      final Rect source = boundsOf(current) ?? initialBounds(current);
+      _bounds[target] ??=
+          (source.topLeft + const Offset(32, 32)) & const Size(280, 172);
+    }
+    if (target == current) return;
+    _groups[id] = target;
+    _changed();
+  }
+
+  static int _groupIndex(int index) => index;
+
+  void setTitleVisible(int group, bool value) {
+    if (value) {
+      _hiddenTitles.remove(group);
+    } else {
+      _hiddenTitles.add(group);
+    }
+    _changed();
+  }
+
+  void saveBounds(int group, Rect rect) {
+    if (!ready || _bounds[group] == rect) return;
+    _bounds[group] = rect;
+    persist();
+  }
+
   void toggle(String id, bool value) {
     if (id == main) return;
     if (value) {
@@ -134,57 +236,58 @@ class StickerLayout extends ChangeNotifier {
     } else {
       enabled.remove(id);
     }
-    persist();
-    notifyListeners();
+    _changed();
+  }
+
+  void hideGroup(int group) {
+    if (group == mainGroup) return;
+    enabled.removeAll(members(group));
+    _changed();
   }
 
   void setPreview(bool value) {
     preview = value;
-    persist();
-    notifyListeners();
+    _changed();
   }
 
-  /// 更换主项并复用主贴纸的位置。
   void setMain(String id) {
     if (main == id) return;
-    final Offset center = positions[main]!;
-    positions[main] = positions[id]!;
     main = id;
     enabled.add(id);
-    positions[id] = constrain(id, center);
-    for (final String item in titles.keys) {
-      positions[item] = constrain(item, positions[item]!);
-    }
-    persist();
-    notifyListeners();
+    _changed();
   }
 
-  /// 恢复默认位置但保留指标开关。
+  /// 复位窗口位置与尺寸，保留分组和标题选项。
   void reset() {
-    positions = defaults();
-    for (final String id in titles.keys) {
-      positions[id] = constrain(id, positions[id]!);
+    for (final int group in activeGroups) {
+      _bounds[group] = initialBounds(group);
     }
+    _changed();
+  }
+
+  void _changed() {
     persist();
     notifyListeners();
   }
 
-  /// 只在拖动结束落盘；失败不影响当前画布。
   void persist() {
     final Directory? folder = directory;
     if (!ready || folder == null) return;
     final String json = jsonEncode(<String, dynamic>{
-      'version': 1,
+      'version': 2,
       'preview': preview,
       'main': main,
       'enabled': enabled.toList(),
-      'positions': positions.map(_encodePosition),
+      'groups': _groups,
+      'bounds': _bounds.map(_encodeGroupBounds),
+      'hiddenTitles': _hiddenTitles.toList(),
     });
     _writes = _writes.then((_) => _write(folder, json));
   }
 
-  MapEntry<String, List<double>> _encodePosition(String id, Offset value) =>
-      MapEntry<String, List<double>>(id, <double>[value.dx, value.dy]);
+  MapEntry<String, List<double>> _encodeGroupBounds(int group, Rect rect) =>
+      MapEntry<String, List<double>>('$group', encodeBounds(rect));
+
   Future<void> _write(Directory folder, String json) async {
     try {
       await folder.create(recursive: true);
@@ -197,7 +300,7 @@ class StickerLayout extends ChangeNotifier {
     }
   }
 
-  /// 读取用户覆盖图，缺失或解码失败由视图回退内置猫猫。
+  /// 缺失或无法解码时由视图回退到内置猫猫。
   Future<void> reloadCharacter() async {
     final Directory? folder = directory;
     if (folder == null) return;
@@ -210,7 +313,7 @@ class StickerLayout extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  /// 供测试等待拖动落盘完成。
+  /// 关闭前等待最后一次位置保存。
   Future<void> flush() => _writes;
 
   @override

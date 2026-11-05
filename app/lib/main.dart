@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/shiyu_app.dart';
+import 'features/desktop_stickers/data/sticker_layout.dart';
+import 'features/desktop_stickers/presentation/sticker_child.dart';
 import 'platform/rust/generated/frb_generated.dart';
 import 'features/retirement/application/retirement_controller.dart';
 import 'features/retirement/data/settings_store.dart';
@@ -12,7 +14,11 @@ import 'platform/widgets/widget_bridge.dart';
 import 'platform/desktop/floating_window_controller.dart';
 
 /// 启动应用并在根节点提供 Riverpod 容器。
-Future<void> main() async {
+Future<void> main(List<String> arguments) async {
+  if (arguments.length == 3 && arguments.first == 'multi_window') {
+    await runStickerChild(arguments[2]);
+    return;
+  }
   await runShiyu();
 }
 
@@ -20,6 +26,7 @@ Future<void> main() async {
 Future<RetirementController> runShiyu({
   bool floating = true,
   SettingsStore? storage,
+  StickerLayout? desktopLayout,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
@@ -37,7 +44,11 @@ Future<RetirementController> runShiyu({
   }
   runApp(
     ProviderScope(
-      child: ShiyuApp(controller: controller, window: window),
+      child: ShiyuApp(
+        controller: controller,
+        window: window,
+        desktopLayout: desktopLayout,
+      ),
     ),
   );
   return controller;

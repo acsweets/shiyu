@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+
+import '../../features/desktop_stickers/data/sticker_layout.dart';
 
 typedef WindowVisibilityChanged = void Function(bool visible);
 
@@ -15,6 +18,15 @@ class FloatingWindowController with TrayListener, WindowListener {
 
   /// 隐藏时停止 UI 刷新，重新显示后立即重算。
   final WindowVisibilityChanged onVisibilityChanged;
+
+  /// 原生窗口已完成初始化。
+  bool initialized = false;
+
+  /// 同步所有子窗的显隐。
+  WindowVisibilityChanged? onGroupVisibility;
+
+  /// 退出前回收子窗并等待布局保存。
+  AsyncCallback? closeGroups;
 
   /// 仅释放本程序注册的快捷键。
   final HotKey _hotKey = HotKey(
@@ -52,24 +64,28 @@ class FloatingWindowController with TrayListener, WindowListener {
     await windowManager.setAsFrameless();
     await windowManager.setBackgroundColor(Colors.transparent);
     await windowManager.setAlwaysOnTop(true);
-    await windowManager.setMinimumSize(const Size(760, 560));
-    await setExpanded(false);
+    await windowManager.setMinimumSize(StickerLayout.minimum);
+    await windowManager.setSize(const Size(280, 172));
     await windowManager.setSkipTaskbar(true);
+    initialized = true;
     await show();
   }
 
-  Future<void> setExpanded(bool expanded) =>
-      windowManager.setSize(const Size(760, 560));
+  Future<void> setExpanded(bool expanded) => windowManager.setSize(
+    expanded ? const Size(460, 640) : const Size(280, 172),
+  );
   Future<void> drag() => windowManager.startDragging();
   Future<void> show() async {
     await windowManager.show();
     await windowManager.focus();
     onVisibilityChanged(true);
+    onGroupVisibility?.call(true);
   }
 
   Future<void> hide() async {
     await windowManager.hide();
     onVisibilityChanged(false);
+    onGroupVisibility?.call(false);
   }
 
   Future<void> _toggle(HotKey key) async {
@@ -107,6 +123,8 @@ class FloatingWindowController with TrayListener, WindowListener {
 
   /// 测试和退出时仅清理本窗口注册资源。
   Future<void> dispose() async {
+    await closeGroups?.call();
+    initialized = false;
     await hotKeyManager.unregister(_hotKey);
     await trayManager.destroy();
     windowManager.removeListener(this);

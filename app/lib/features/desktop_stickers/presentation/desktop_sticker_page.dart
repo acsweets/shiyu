@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
-import '../../retirement/application/retirement_controller.dart';
 import '../../../platform/desktop/floating_window_controller.dart';
+import '../../retirement/application/retirement_controller.dart';
+import '../application/sticker_group_view.dart';
+import '../application/sticker_windows.dart';
 import '../data/sticker_layout.dart';
 import 'countdown_sticker.dart';
 import 'sticker_settings.dart';
@@ -16,205 +19,224 @@ class DesktopStickerPage extends StatefulWidget {
     super.key,
   });
 
-  /// 真实核心快照与业务设置。
+  /// 主引擎的业务快照。
   final RetirementController controller;
 
-  /// 系统窗口、托盘和快捷键入口。
+  /// 托盘、快捷键和主窗控制。
   final FloatingWindowController window;
 
-  /// 测试可以传入临时外观存储。
+  /// 可选的测试外观配置。
   final StickerLayout? layout;
+
   @override
   State<DesktopStickerPage> createState() => _DesktopStickerPageState();
 }
 
 class _DesktopStickerPageState extends State<DesktopStickerPage>
-    with WidgetsBindingObserver {
-  /// 当前贴纸位置、开关与资源。
+    with WindowListener {
+  /// 持久化分组。
   late final StickerLayout _layout;
+
+  /// 原生子窗协调器。
+  StickerWindows? _windows;
+
+  /// 记录实际应用到主窗的分组。
+  int? _appliedGroup;
+
+  /// 在原生操作完成后保存几何信息。
+  Timer? _boundsTimer;
+
+  /// 设置打开时主窗临时变大，禁止覆盖贴纸尺寸。
+  bool _settingsOpen = false;
+
+  /// 正在恢复窗口尺寸。
+  bool _applyingBounds = false;
+
+  /// 多窗口启动异常时仍保留主窗及设置入口。
+  bool _failed = false;
+
   @override
   void initState() {
     super.initState();
     _layout = widget.layout ?? StickerLayout();
-    if (!_layout.ready) unawaited(_layout.load());
-    _layout.addListener(_changed);
-    widget.controller.addListener(_changed);
-    WidgetsBinding.instance.addObserver(this);
+    _layout.addListener(_layoutChanged);
+    widget.controller.addListener(_rebuild);
     widget.controller.setVisible(true);
+    unawaited(_initialize());
   }
 
-  void _changed() {
+  Future<void> _initialize() async {
+    if (!_layout.ready) await _layout.load();
+    if (!mounted || !widget.window.initialized) return;
+    windowManager.addListener(this);
+    final StickerWindows windows = StickerWindows(
+      layout: _layout,
+      controller: widget.controller,
+      openSettings: _settings,
+      reportFailure: _reportFailure,
+    );
+    _windows = windows;
+    widget.window.onGroupVisibility = windows.setVisible;
+    widget.window.closeGroups = _closeGroups;
+    try {
+      await _applyMainBounds();
+      if (mounted) await windows.start();
+    } catch (_) {
+      _reportFailure();
+    }
+  }
+
+  void _reportFailure() {
+    if (mounted && !_failed) setState(() => _failed = true);
+  }
+
+  void _rebuild() {
     if (mounted) setState(() {});
+  }
+
+  void _layoutChanged() {
+    _rebuild();
+    _windows?.sync();
+    if (_settingsOpen) return;
+    if (_appliedGroup != _layout.mainGroup) unawaited(_applyMainBounds());
+  }
+
+  Future<void> _applyMainBounds() async {
+    if (!widget.window.initialized || _applyingBounds) return;
+    _applyingBounds = true;
+    _boundsTimer?.cancel();
+    final int group = _layout.mainGroup;
+    try {
+      await windowManager.setBounds(
+        _layout.boundsOf(group) ?? _layout.initialBounds(group),
+      );
+      _appliedGroup = group;
+    } finally {
+      _applyingBounds = false;
+    }
+  }
+
+  void _scheduleBounds() {
+    if (_settingsOpen || _applyingBounds || _appliedGroup == null) return;
+    _boundsTimer?.cancel();
+    _boundsTimer = Timer(const Duration(milliseconds: 180), _captureBounds);
+  }
+
+  Future<void> _captureBounds() async {
+    final int? group = _appliedGroup;
+    if (!mounted || group == null || _settingsOpen || _applyingBounds) return;
+    final Rect bounds = await windowManager.getBounds();
+    if (mounted &&
+        group == _appliedGroup &&
+        !_settingsOpen &&
+        !_applyingBounds) {
+      _layout.saveBounds(group, bounds);
+    }
+  }
+
+  @override
+  void onWindowMove() => _scheduleBounds();
+  @override
+  void onWindowResize() => _scheduleBounds();
+
+  void _openSettings() => unawaited(_settings());
+  void _hide() => unawaited(widget.window.hide());
+
+  /// 在主窗中临时打开可读尺寸的设置，关闭后恢复当前分组。
+  Future<void> _settings() async {
+    if (_settingsOpen || !mounted || !_layout.ready) return;
+    await _captureBounds();
+    if (!mounted || _settingsOpen) return;
+    _settingsOpen = true;
+    _boundsTimer?.cancel();
+    try {
+      if (widget.window.initialized) {
+        await widget.window.show();
+        await windowManager.setMinimumSize(const Size(420, 420));
+        await windowManager.setSize(const Size(470, 650));
+        await windowManager.center();
+      }
+      if (mounted) {
+        await showDialog<void>(context: context, builder: _settingsDialog);
+      }
+    } finally {
+      if (widget.window.initialized) {
+        await windowManager.setMinimumSize(StickerLayout.minimum);
+        await _applyMainBounds();
+      }
+      _settingsOpen = false;
+      _windows?.sync();
+    }
+  }
+
+  Widget _settingsDialog(BuildContext context) => StickerSettings(
+    layout: _layout,
+    controller: widget.controller,
+    resetWindowBounds: _resetBounds,
+    resizeWindow: _resizeWindow,
+  );
+
+  void _resizeWindow(int group, int step) {
+    final Rect current =
+        _layout.boundsOf(group) ?? _layout.initialBounds(group);
+    final Rect bounds = StickerLayout.decodeBounds(<double>[
+      current.left,
+      current.top,
+      current.width + 120 * step,
+      current.height + 72 * step,
+    ])!;
+    _layout.saveBounds(group, bounds);
+    _windows?.applyBounds(group, bounds);
+  }
+
+  void _resetBounds() {
+    _layout.reset();
+    _windows?.resetBounds();
+  }
+
+  Future<void> _closeGroups() async {
+    await _captureBounds();
+    await _windows?.close();
+    await _layout.flush();
   }
 
   @override
   void dispose() {
+    _boundsTimer?.cancel();
+    windowManager.removeListener(this);
+    widget.window.closeGroups = null;
+    widget.window.onGroupVisibility = null;
     widget.controller.setVisible(false);
-    widget.controller.removeListener(_changed);
-    _layout.removeListener(_changed);
+    widget.controller.removeListener(_rebuild);
+    _layout.removeListener(_layoutChanged);
+    final StickerWindows? windows = _windows;
+    if (windows != null) unawaited(windows.close());
     if (widget.layout == null) _layout.dispose();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) widget.controller.setVisible(true);
-    if (state == AppLifecycleState.hidden ||
-        state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached) {
-      widget.controller.setVisible(false);
-    }
-  }
-
-  void _dragWindow(DragStartDetails details) => unawaited(widget.window.drag());
-  Future<void> _settings() =>
-      showDialog<void>(context: context, builder: _settingsDialog);
-  Widget _settingsDialog(BuildContext context) =>
-      StickerSettings(layout: _layout, controller: widget.controller);
-
-  /// 仅将 Rust 的非负秒数格式化为连贯文字，不另算业务目标。
-  String _value(String id) {
-    if (_layout.preview) return StickerLayout.examples[id]!;
-    if (id != 'retirement') return '待接入';
-    final String? status = widget.controller.snapshot?.status;
-    if (status == 'retired') return '已退休';
-    if (status != 'active') return '请设置退休日期';
-    final Duration time = Duration(
-      seconds: widget.controller.snapshot!.seconds,
-    );
-    return '${time.inDays}天 ${_two(time.inHours % 24)}小时 ${_two(time.inMinutes % 60)}分 ${_two(time.inSeconds % 60)}秒';
-  }
-
-  String _two(int value) => value.toString().padLeft(2, '0');
-  Widget _sticker(String id) {
-    final Offset position = _layout.positions[id]!;
-    final Size size = _layout.size(id);
-    return Positioned(
-      key: ValueKey<String>('position-$id'),
-      left: position.dx,
-      top: position.dy,
-      width: size.width,
-      height: size.height,
-      child: CountdownSticker(
-        id: id,
-        title: StickerLayout.titles[id]!,
-        value: _value(id),
-        main: id == _layout.main,
-        preview: _layout.preview,
-        layout: _layout,
-        onMove: (Offset delta) => _layout.move(id, delta),
-        onEnd: _layout.persist,
+  Widget build(BuildContext context) => Stack(
+    children: <Widget>[
+      StickerGroupSurface(
+        view: StickerGroupView.fromLayout(
+          _layout,
+          widget.controller,
+          _layout.mainGroup,
+          true,
+        ),
+        onSettings: _openSettings,
+        onHide: _hide,
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => Theme(
-    data: ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFFC68A59),
-        surface: const Color(0xFFFFFBF4),
-      ),
-    ),
-    child: Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: FittedBox(
-          fit: BoxFit.contain,
-          child: SizedBox(
-            width: StickerLayout.canvas.width,
-            height: StickerLayout.canvas.height,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: <Widget>[
-                Positioned(
-                  left: 24,
-                  right: 24,
-                  top: 4,
-                  height: 40,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onPanStart: _dragWindow,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFFBF4),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _layout.preview
-                                  ? '时余  /  猫猫贴纸 · 示例预览'
-                                  : '时余  /  猫猫贴纸',
-                              style: const TextStyle(
-                                color: CountdownSticker.ink,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _tool(Icons.tune_rounded, '设置与贴纸开关', _settings),
-                      const SizedBox(width: 8),
-                      _tool(Icons.close_rounded, '隐藏到托盘', widget.window.hide),
-                    ],
-                  ),
-                ),
-                ..._layout.enabled
-                    .where((String id) => id != _layout.main)
-                    .map(_sticker),
-                if (_layout.enabled.contains(_layout.main))
-                  _sticker(_layout.main),
-                Positioned(
-                  left: 24,
-                  right: 24,
-                  bottom: 0,
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFFBF4),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        _layout.writeFailed
-                            ? '排布保存失败，请检查应用目录'
-                            : _layout.preview
-                            ? '拖动贴纸自由摆放 · 示例时间仅供看效果 · Ctrl/Cmd+Shift+T 隐藏/恢复'
-                            : '拖动贴纸自由摆放 · 右上角配置退休日期和时区',
-                        style: const TextStyle(
-                          color: CountdownSticker.ink,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      if (_failed || _layout.writeFailed)
+        Positioned(
+          bottom: 6,
+          left: 16,
+          child: Text(
+            _failed ? '部分浮窗未能打开' : '窗口布局未能保存',
+            style: const TextStyle(fontSize: 11, color: Colors.red),
           ),
         ),
-      ),
-    ),
-  );
-  Widget _tool(IconData icon, String tooltip, VoidCallback action) => Material(
-    color: const Color(0xFFFFFBF4),
-    shape: const CircleBorder(),
-    child: IconButton(
-      onPressed: action,
-      tooltip: tooltip,
-      icon: Icon(icon, size: 18, color: CountdownSticker.ink),
-    ),
+    ],
   );
 }

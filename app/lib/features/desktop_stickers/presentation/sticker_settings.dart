@@ -5,10 +5,14 @@ import 'package:flutter/material.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
 
+typedef StickerWindowResize = void Function(int group, int step);
+
 class StickerSettings extends StatefulWidget {
   const StickerSettings({
     required this.layout,
     required this.controller,
+    required this.resetWindowBounds,
+    required this.resizeWindow,
     super.key,
   });
 
@@ -17,6 +21,13 @@ class StickerSettings extends StatefulWidget {
 
   /// 真实退休设置。
   final RetirementController controller;
+
+  /// 复位真实系统窗口的几何信息。
+  final VoidCallback resetWindowBounds;
+
+  /// 在设置内调整任意分组的窗口大小。
+  final StickerWindowResize resizeWindow;
+
   @override
   State<StickerSettings> createState() => _StickerSettingsState();
 }
@@ -110,6 +121,12 @@ class _StickerSettingsState extends State<StickerSettings> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const Text('窗口分组', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('选择同一窗口即可合并。选择独立窗口可拆出。'),
+            ...widget.layout.enabled.map(_assignment),
+            const SizedBox(height: 8),
+            ...widget.layout.activeGroups.map(_windowOptions),
+            const Divider(),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('效果预览'),
@@ -168,8 +185,8 @@ class _StickerSettingsState extends State<StickerSettings> {
               spacing: 8,
               children: <Widget>[
                 OutlinedButton(
-                  onPressed: widget.layout.reset,
-                  child: const Text('恢复默认排布'),
+                  onPressed: widget.resetWindowBounds,
+                  child: const Text('复位窗口位置与大小'),
                 ),
                 OutlinedButton(
                   onPressed: _openAssets,
@@ -196,6 +213,73 @@ class _StickerSettingsState extends State<StickerSettings> {
     ),
     actions: <Widget>[TextButton(onPressed: _close, child: const Text('完成'))],
   );
+  String _groupName(int group) {
+    final String members = widget.layout.members(group).map(_title).join('、');
+    return '窗口 ${group + 1} · $members';
+  }
+
+  String _title(String id) => StickerLayout.titles[id]!;
+
+  Widget _assignment(String id) {
+    final int group = widget.layout.groupOf(id);
+    final List<DropdownMenuItem<int>> options = <DropdownMenuItem<int>>[
+      const DropdownMenuItem<int>(value: -1, child: Text('独立窗口')),
+      for (final int candidate in widget.layout.activeGroups)
+        if (candidate != group || widget.layout.members(group).length > 1)
+          DropdownMenuItem<int>(
+            value: candidate,
+            child: Text(_groupName(candidate), overflow: TextOverflow.ellipsis),
+          ),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: InputDecorator(
+        decoration: InputDecoration(labelText: _title(id)),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<int>(
+            isDense: true,
+            isExpanded: true,
+            value: widget.layout.members(group).length == 1 ? -1 : group,
+            items: options,
+            onChanged: (int? value) => _assign(id, value),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _assign(String id, int? value) {
+    if (value != null) widget.layout.assign(id, value < 0 ? null : value);
+  }
+
+  Widget _windowOptions(int group) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      SwitchListTile(
+        dense: true,
+        contentPadding: EdgeInsets.zero,
+        title: const Text('显示标题'),
+        subtitle: Text(_groupName(group)),
+        value: widget.layout.showsTitle(group),
+        onChanged: (bool value) => widget.layout.setTitleVisible(group, value),
+      ),
+      Wrap(
+        spacing: 8,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () => widget.resizeWindow(group, -1),
+            child: const Text('缩小窗口'),
+          ),
+          OutlinedButton(
+            onPressed: () => widget.resizeWindow(group, 1),
+            child: const Text('放大窗口'),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+    ],
+  );
+
   DropdownMenuItem<String> _mainItem(String id) => DropdownMenuItem<String>(
     value: id,
     child: Text(StickerLayout.titles[id]!),

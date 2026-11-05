@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shiyu/main.dart' as application;
+import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 import 'package:shiyu/features/retirement/data/settings_store.dart';
 import 'package:shiyu/platform/rust/generated/api/snapshot.dart' as rust;
@@ -23,8 +24,12 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
   final Directory temporary = await Directory.systemTemp.createTemp(
     'shiyu-retirement-',
   );
+  final StickerLayout layout = StickerLayout(directory: temporary)
+    ..main = 'retirement'
+    ..enabled = <String>{'retirement'};
   final RetirementController controller = await application.runShiyu(
     floating: desktop,
+    desktopLayout: desktop ? layout : null,
     storage: desktop ? LocalSettingsStore(temporary) : null,
   );
   await tester.pumpAndSettle();
@@ -62,12 +67,16 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     if (desktop) {
       expect(await windowManager.isAlwaysOnTop(), isTrue);
       expect(await windowManager.isPreventClose(), isTrue);
-      expect((await windowManager.getSize()).width, closeTo(760, 2));
+      expect(
+        (await windowManager.getSize()).width,
+        greaterThanOrEqualTo(StickerLayout.minimum.width - 1),
+      );
     }
   } finally {
     await controller.save(originalDate, originalZone);
     await window?.dispose();
     await tester.pumpWidget(const SizedBox());
     controller.dispose();
+    layout.dispose();
   }
 }

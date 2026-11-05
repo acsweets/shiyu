@@ -1,6 +1,6 @@
 # Shiyu Flutter app
 
-The desktop entry now shows the cat-sticker iteration, with a main sticker and draggable surrounding stickers. Clearly labeled sample preview is on initially; turn it off for real retirement data. See the [desktop delivery notes](../docs/界面设计/05-桌面猫猫贴纸首版.md).
+The desktop cat stickers can be grouped or split into independent, resizable system windows with per-window title controls. Turn off the labeled sample preview for real retirement data. See [desktop window groups](../docs/界面设计/06-桌面浮窗分组.md).
 
 [简体中文](README.md) | [English](README.en.md)
 

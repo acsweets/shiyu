@@ -10,37 +10,51 @@ import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 import 'support/test_controller.dart';
 
 void main() {
-  test('贴纸位置、主指标和开关独立持久化', _persistence);
-  testWidgets('完整示例时间保持连贯，外围贴纸可以拖动', _drag);
+  test('从旧布局迁移并保存合并、拆分和标题开关', _persistence);
+  testWidgets('合并后完整倒计时同窗呈现，隐藏标题不隐藏时间', _groupView);
 }
 
 Future<void> _persistence() async {
   final Directory directory = await Directory.systemTemp.createTemp(
     'shiyu-layout-',
   );
+  await File('${directory.path}/layout.json').writeAsString(
+    '{"version":1,"main":"retirement","preview":false,"enabled":["work","retirement"],"positions":{"work":[120,60]}}',
+  );
   final StickerLayout layout = StickerLayout(directory: directory);
   await layout.load();
-  layout.move('holiday', const Offset(-80, 100));
-  layout.toggle('payday', false);
-  layout.setMain('retirement');
-  layout.setPreview(false);
-  layout.persist();
+  expect(layout.main, 'retirement');
+  expect(layout.preview, isFalse);
+  expect(layout.enabled, <String>{'work', 'retirement'});
+  final int group = layout.mainGroup;
+  final int workGroup = layout.groupOf('work');
+  expect(layout.boundsOf(workGroup)?.topLeft, const Offset(140, 96));
+  layout.assign('work', group);
+  expect(layout.activeGroups, <int>{group});
+  layout.setTitleVisible(group, false);
+  const Rect bounds = Rect.fromLTWH(240, 60, 500, 240);
+  layout.saveBounds(group, bounds);
   await layout.flush();
+
   final StickerLayout restored = StickerLayout(directory: directory);
   await restored.load();
-  expect(restored.main, 'retirement');
-  expect(restored.preview, isFalse);
-  expect(restored.enabled.contains('payday'), isFalse);
-  expect(restored.positions['holiday'], layout.positions['holiday']);
+  expect(restored.members(group), <String>['work', 'retirement']);
+  expect(restored.showsTitle(group), isFalse);
+  expect(restored.boundsOf(group), bounds);
+  restored.assign('work', null);
+  expect(restored.activeGroups.length, 2);
+  expect(restored.members(group), <String>['retirement']);
+  await restored.flush();
   layout.dispose();
   restored.dispose();
   await directory.delete(recursive: true);
 }
 
-Future<void> _drag(WidgetTester tester) async {
-  tester.view.physicalSize = const Size(760, 560);
+Future<void> _groupView(WidgetTester tester) async {
+  tester.view.physicalSize = const Size(500, 160);
   tester.view.devicePixelRatio = 1;
   final StickerLayout layout = StickerLayout()..ready = true;
+  layout.assign('holiday', layout.mainGroup);
   final RetirementController controller = await createTestController();
   final FloatingWindowController window = FloatingWindowController(_visibility);
   await tester.pumpWidget(
@@ -53,20 +67,17 @@ Future<void> _drag(WidgetTester tester) async {
     ),
   );
   await tester.pumpAndSettle();
-  expect(find.text('00天 02小时 36分 18秒'), findsOneWidget);
-  final Offset before = layout.positions['holiday']!;
-  await tester.drag(
-    find.byKey(const ValueKey<String>('sticker-holiday')),
-    const Offset(-50, 80),
-  );
+  expect(find.text(StickerLayout.examples['work']!), findsOneWidget);
+  expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
+  expect(find.text('距离放假'), findsOneWidget);
+  layout.setTitleVisible(layout.mainGroup, false);
   await tester.pumpAndSettle();
-  expect(layout.positions['holiday']!.dy, greaterThan(before.dy));
+  expect(find.text('距离放假'), findsNothing);
+  expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
   expect(tester.takeException(), isNull);
   await tester.pumpWidget(const SizedBox());
   controller.dispose();
-
   layout.dispose();
-
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
 }

@@ -1,6 +1,6 @@
 # Shiyu · 时余
 
-> 2026-11-05: A [desktop cat-sticker preview](docs/界面设计/05-桌面猫猫贴纸首版.md) is available. First launch shows clearly labeled static sample times. Turn off preview in settings for the real Rust retirement countdown. Stickers support dragging, selecting the main metric, saved visibility/layout, and replacing the character PNG. Mobile UI is unchanged in this iteration.
+> Desktop cat stickers support grouping countdowns into one system window or splitting them into separate windows. Move and resize each window independently and hide its titles. Layout and size are saved. Turn off the labeled sample preview for the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
 
 [简体中文](README.md) | [English](README.en.md)
 
@@ -13,7 +13,7 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | Feature | Current behavior |
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
-| Desktop floating window | Windows/macOS frameless, transparent background, always on top, draggable toolbar, independently draggable stickers, settings dialog and hiding. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
+| Desktop floating window | Windows/macOS frameless, transparent background, always on top, countdown groups in independent windows, movement and resizing, a minimum size and per-window title controls. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
 | Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |
