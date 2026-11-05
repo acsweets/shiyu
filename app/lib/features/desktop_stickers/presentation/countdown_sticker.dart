@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -17,6 +18,19 @@ class StickerGroupSurface extends StatelessWidget {
 
   /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
+
+  /// 时间行保持独立高度，标题变大时只增加所需空间。
+  static const double _timeHeight = 28;
+
+  /// 卡片网格和每项内容的纵向留白。
+  static const double _gridSpacing = 8;
+  static const double _cellPadding = 4;
+
+  double get _titleHeight =>
+      view.showsTitle ? math.max(18, view.titleSize * 1.25) : 0;
+
+  double get _minimumRowHeight =>
+      math.max(56, _titleHeight + _timeHeight + 2 * _cellPadding);
 
   /// 让角色轮廓压住卡片上沿两个逻辑像素。
   Widget _anchorCat(double size, double bottomInset, Widget image) =>
@@ -68,9 +82,10 @@ class StickerGroupSurface extends StatelessWidget {
   );
 
   Widget _surface(BuildContext context, BoxConstraints constraints) {
-    final double catHeight = (constraints.maxHeight - 64)
-        .clamp(0, 96)
-        .toDouble();
+    final double catHeight =
+        (constraints.maxHeight - _minimumRowHeight - _gridSpacing)
+            .clamp(0, 96)
+            .toDouble();
     return Stack(
       children: <Widget>[
         Positioned.fill(top: catHeight, child: _paper()),
@@ -133,19 +148,23 @@ class StickerGroupSurface extends StatelessWidget {
     if (ids.isEmpty) return const SizedBox.shrink();
     final int columns = (constraints.maxWidth ~/ 230).clamp(1, ids.length);
     final int rows = (ids.length + columns - 1) ~/ columns;
-    final double rowHeight = ((constraints.maxHeight - rows * 8) / rows)
-        .clamp(56, double.infinity)
-        .toDouble();
+    final double rowHeight = math.max(
+      _minimumRowHeight,
+      (constraints.maxHeight - rows * _gridSpacing) / rows,
+    );
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: _gridSpacing / 2,
+        ),
         itemCount: ids.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
           mainAxisExtent: rowHeight,
           crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
+          mainAxisSpacing: _gridSpacing,
         ),
         itemBuilder: (BuildContext context, int index) => _card(ids[index]),
       ),
@@ -154,23 +173,29 @@ class StickerGroupSurface extends StatelessWidget {
 
   Widget _card(String id) => Padding(
     key: ValueKey<String>('sticker-$id'),
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: _cellPadding),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         if (view.showsTitle)
           SizedBox(
-            height: 18,
+            height: _titleHeight,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 StickerLayout.titles[id]!,
-                style: TextStyle(fontSize: 13, color: view.foreground),
+                maxLines: 1,
+                softWrap: false,
+                style: TextStyle(
+                  fontSize: view.titleSize,
+                  height: 1.25,
+                  color: view.foreground,
+                ),
               ),
             ),
           ),
         SizedBox(
-          height: 28,
+          height: _timeHeight,
           width: double.infinity,
           child: FittedBox(
             fit: BoxFit.scaleDown,

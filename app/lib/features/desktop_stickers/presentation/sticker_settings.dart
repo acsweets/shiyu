@@ -135,6 +135,8 @@ class _StickerSettingsState extends State<StickerSettings> {
               selected: widget.layout.palette,
               onSelected: widget.layout.setPalette,
             ),
+            const SizedBox(height: 8),
+            _titleSizeSetting(),
             const Divider(),
             const Text('窗口显示', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('主窗口关闭后，可从系统托盘或菜单栏打开设置。'),
@@ -232,6 +234,67 @@ class _StickerSettingsState extends State<StickerSettings> {
     ),
     actions: <Widget>[TextButton(onPressed: _close, child: const Text('完成'))],
   );
+
+  Widget _titleSizeSetting() {
+    final StickerLayout layout = widget.layout;
+    final int size = layout.titleSize;
+    return Column(
+      children: <Widget>[
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: StickerLayout.maxTitleSize * 1.25 + 8,
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  '提示文字大小  $size',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Flexible(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: layout.palette.backgroundFor(layout.mainGroup),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      StickerLayout.titles[layout.main]!,
+                      style: TextStyle(
+                        fontSize: size.toDouble(),
+                        height: 1.25,
+                        color: layout.palette.foreground,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Semantics(
+          label: '提示文字大小',
+          child: Slider(
+            min: StickerLayout.minTitleSize.toDouble(),
+            max: StickerLayout.maxTitleSize.toDouble(),
+            divisions: StickerLayout.maxTitleSize - StickerLayout.minTitleSize,
+            value: size.toDouble(),
+            label: '$size',
+            onChanged: _changeTitleSize,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _changeTitleSize(double size) =>
+      widget.layout.setTitleSize(size.round());
+
   String _groupName(int group) {
     final String members = widget.layout.members(group).map(_title).join('、');
     return '窗口 ${group + 1} · $members';

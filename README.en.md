@@ -13,7 +13,7 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | Feature | Current behavior |
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
-| Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, and per-window visibility and title controls. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
+| Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, per-window visibility and title controls, and an adjustable title font size. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
 | Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |

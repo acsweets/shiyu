@@ -34,11 +34,19 @@ class StickerLayout extends ChangeNotifier {
   /// 保证单张贴纸和窗口操作始终可用。
   static const Size minimum = Size(260, 146);
 
+  /// 提示文字的字号范围，旧布局沿用原来的字号。
+  static const int minTitleSize = 10;
+  static const int maxTitleSize = 24;
+  static const int defaultTitleSize = 13;
+
   /// 当前是否展示示例。
   bool preview = true;
 
   /// 所有窗口共用的当前色系。
   StickerPalette _palette = StickerPalette.macaron;
+
+  /// 所有浮窗共用的标题字号。
+  int _titleSize = defaultTitleSize;
 
   /// 主指标带猫猫，并负责打开设置。
   String main = 'work';
@@ -82,6 +90,7 @@ class StickerLayout extends ChangeNotifier {
 
   int get mainGroup => groupOf(main);
   StickerPalette get palette => _palette;
+  int get titleSize => _titleSize;
   int groupOf(String id) => _groups[id]!;
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
@@ -139,6 +148,10 @@ class StickerLayout extends ChangeNotifier {
     final Object? version = data['version'];
     if (version != 1 && version != 2) return;
     _palette = StickerPalette.fromId(data['palette']);
+    final Object? titleSize = data['titleSize'];
+    if (titleSize is int) {
+      _titleSize = titleSize.clamp(minTitleSize, maxTitleSize);
+    }
     preview = data['preview'] is! bool || data['preview'] == true;
     final Object? candidate = data['main'];
     if (candidate is String && titles.containsKey(candidate)) main = candidate;
@@ -285,6 +298,14 @@ class StickerLayout extends ChangeNotifier {
     _changed();
   }
 
+  /// 保存字号并同步给所有浮窗。
+  void setTitleSize(int size) {
+    final int clamped = size.clamp(minTitleSize, maxTitleSize);
+    if (_titleSize == clamped) return;
+    _titleSize = clamped;
+    _changed();
+  }
+
   void setMain(String id) {
     if (main == id) return;
     main = id;
@@ -312,6 +333,7 @@ class StickerLayout extends ChangeNotifier {
       'version': 2,
       'preview': preview,
       'palette': _palette.name,
+      'titleSize': _titleSize,
       'main': main,
       'enabled': enabled.toList(),
       'groups': _groups,

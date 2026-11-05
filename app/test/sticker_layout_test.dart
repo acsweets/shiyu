@@ -14,8 +14,8 @@ import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 import 'support/test_controller.dart';
 
 void main() {
-  test('从旧布局迁移并保存分组、显隐和配色', _persistence);
-  testWidgets('完整倒计时共用窗口底色，设置可切换色系', _groupView);
+  test('从旧布局迁移并保存分组、显隐、配色和字号', _persistence);
+  testWidgets('设置配色和字号后浮窗保留完整倒计时', _groupView);
 }
 
 Future<void> _persistence() async {
@@ -30,6 +30,7 @@ Future<void> _persistence() async {
   expect(layout.main, 'retirement');
   expect(layout.preview, isFalse);
   expect(layout.palette, StickerPalette.macaron);
+  expect(layout.titleSize, StickerLayout.defaultTitleSize);
   expect(layout.enabled, <String>{'work', 'retirement'});
   final int group = layout.mainGroup;
   final int workGroup = layout.groupOf('work');
@@ -40,6 +41,9 @@ Future<void> _persistence() async {
   expect(layout.showsGroup(group), isTrue);
   layout.setGroupVisible(group, false);
   layout.setPalette(StickerPalette.cool);
+  layout.setTitleSize(99);
+  expect(layout.titleSize, StickerLayout.maxTitleSize);
+  layout.setTitleSize(22);
   expect(layout.activeGroups, <int>{group});
   const Rect bounds = Rect.fromLTWH(240, 60, 500, 240);
   layout.saveBounds(group, bounds);
@@ -51,6 +55,7 @@ Future<void> _persistence() async {
   expect(restored.showsTitle(group), isFalse);
   expect(restored.showsGroup(group), isFalse);
   expect(restored.palette, StickerPalette.cool);
+  expect(restored.titleSize, 22);
   expect(restored.boundsOf(group), bounds);
   restored.assign('work', null);
   expect(restored.activeGroups.length, 2);
@@ -123,6 +128,10 @@ Future<void> _groupView(WidgetTester tester) async {
   await tester.tap(find.widgetWithText(ChoiceChip, '冷酷色系'));
   await tester.pumpAndSettle();
   expect(layout.palette, StickerPalette.cool);
+  final Finder slider = find.byType(Slider);
+  await tester.drag(slider, const Offset(300, 0));
+  await tester.pumpAndSettle();
+  expect(layout.titleSize, StickerLayout.maxTitleSize);
   await tester.tap(find.text('完成'));
   await tester.pumpAndSettle();
   expect(
@@ -138,6 +147,11 @@ Future<void> _groupView(WidgetTester tester) async {
   );
 
   tester.view.physicalSize = const Size(500, 146);
+  layout.setTitleVisible(layout.mainGroup, true);
+  await tester.pumpAndSettle();
+  _expectTitleSize(tester, 'work');
+  _expectCatOnCard(tester, StickerCatPose.sitting, 'work');
+  expect(tester.takeException(), isNull);
   final Set<String> poses = <String>{
     for (int group = 0; group < StickerLayout.titles.length; group++)
       StickerGroupView.fromLayout(layout, controller, group, true).catAsset,
@@ -157,6 +171,7 @@ Future<void> _groupView(WidgetTester tester) async {
   );
   await tester.pumpAndSettle();
   expect(find.text(StickerLayout.examples['payday']!), findsOneWidget);
+  _expectTitleSize(tester, 'payday');
   expect(find.byType(Image), findsOneWidget);
   expect(_catAsset(tester), StickerCatPose.waving.asset);
   _expectCatOnCard(tester, StickerCatPose.waving, 'payday');
@@ -171,6 +186,15 @@ Future<void> _groupView(WidgetTester tester) async {
   layout.dispose();
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
+}
+
+void _expectTitleSize(WidgetTester tester, String id) {
+  final Text title = tester.widget<Text>(find.text(StickerLayout.titles[id]!));
+  expect(title.style?.fontSize, StickerLayout.maxTitleSize.toDouble());
+  final Text timer = tester.widget<Text>(
+    find.text(StickerLayout.examples[id]!),
+  );
+  expect(timer.style?.fontSize, 18);
 }
 
 void _expectCatOnCard(WidgetTester tester, StickerCatPose pose, String id) {

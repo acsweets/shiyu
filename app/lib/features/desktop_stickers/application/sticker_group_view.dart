@@ -28,6 +28,7 @@ class StickerGroupView {
           id: _value(id, layout.preview, controller),
       },
       'titles': layout.showsTitle(group),
+      'titleSize': layout.titleSize,
       'preview': layout.preview,
       'visible': visible,
       'background': layout.palette.backgroundFor(group).toARGB32(),
@@ -46,6 +47,7 @@ class StickerGroupView {
   Map<String, String> get values =>
       (data['values'] as Map<Object?, Object?>).cast<String, String>();
   bool get showsTitle => data['titles'] as bool;
+  double get titleSize => (data['titleSize'] as int).toDouble();
   bool get preview => data['preview'] as bool;
   bool get visible => data['visible'] as bool;
   Color get background => Color(data['background'] as int);
