@@ -12,6 +12,7 @@ import 'package:shiyu/features/retirement/data/settings_store.dart';
 import 'package:shiyu/platform/rust/generated/api/snapshot.dart' as rust;
 import 'package:shiyu/features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import 'package:shiyu/platform/desktop/floating_window_controller.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
@@ -27,6 +28,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
   final StickerLayout layout = StickerLayout(directory: temporary)
     ..main = 'retirement'
     ..enabled = <String>{'retirement'};
+  layout.setGroupVisible(layout.mainGroup, false);
   final RetirementController controller = await application.runShiyu(
     floating: desktop,
     desktopLayout: desktop ? layout : null,
@@ -71,6 +73,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
         (await windowManager.getSize()).width,
         greaterThanOrEqualTo(StickerLayout.minimum.width - 1),
       );
+      await _verifyMainWindowVisibility(tester, window!, layout);
     }
   } finally {
     await controller.save(originalDate, originalZone);
@@ -79,4 +82,21 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     controller.dispose();
     layout.dispose();
   }
+}
+
+Future<void> _verifyMainWindowVisibility(
+  WidgetTester tester,
+  FloatingWindowController window,
+  StickerLayout layout,
+) async {
+  expect(await windowManager.isVisible(), isFalse);
+  window.onTrayMenuItemClick(MenuItem(key: 'settings', label: '设置'));
+  await tester.pumpAndSettle();
+  expect(await windowManager.isVisible(), isTrue);
+  expect(find.text('显示主窗口'), findsOneWidget);
+  await tester.tap(find.text('显示主窗口'));
+  await tester.tap(find.text('完成'));
+  await tester.pumpAndSettle();
+  expect(layout.showsGroup(layout.mainGroup), isTrue);
+  expect(await windowManager.isVisible(), isTrue);
 }

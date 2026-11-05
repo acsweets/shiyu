@@ -14,7 +14,6 @@ class StickerWindows {
   StickerWindows({
     required this.layout,
     required this.controller,
-    required this.openSettings,
     required this.reportFailure,
   });
 
@@ -24,10 +23,7 @@ class StickerWindows {
   /// 主窗口业务快照。
   final RetirementController controller;
 
-  /// 子窗点击设置时唤起主窗。
-  final AsyncCallback openSettings;
-
-  /// 窗口初始化失败时交给主界面提示。
+  /// 窗口初始化失败时交给设置界面提示。
   final VoidCallback reportFailure;
 
   /// 当前有效的窗口令牌，避免关闭中的子窗写入复用槽位。
@@ -154,13 +150,10 @@ class StickerWindows {
           layout,
           controller,
           group,
-          _visible && wanted,
+          _visible && wanted && layout.showsGroup(group),
         ).data;
-      case 'settings':
-        unawaited(openSettings());
-        return true;
       case 'hide':
-        layout.hideGroup(group);
+        layout.setGroupVisible(group, false);
         return true;
       default:
         throw MissingPluginException(call.method);

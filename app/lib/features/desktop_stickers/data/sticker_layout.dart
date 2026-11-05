@@ -48,6 +48,9 @@ class StickerLayout extends ChangeNotifier {
   /// 隐藏标题的窗口槽位。
   final Set<int> _hiddenTitles = <int>{};
 
+  /// 隐藏的窗口槽位，保留其成员和几何信息。
+  final Set<int> _hiddenGroups = <int>{};
+
   /// 独立替换角色图。
   File? character;
 
@@ -69,6 +72,7 @@ class StickerLayout extends ChangeNotifier {
   int get mainGroup => groupOf(main);
   int groupOf(String id) => _groups[id]!;
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
+  bool showsGroup(int group) => !_hiddenGroups.contains(group);
   Rect? boundsOf(int group) => _bounds[group];
 
   List<String> members(int group) => titles.keys
@@ -150,6 +154,10 @@ class StickerLayout extends ChangeNotifier {
     if (hidden is List<dynamic>) {
       _hiddenTitles.addAll(hidden.whereType<int>());
     }
+    final Object? hiddenGroups = data['hiddenGroups'];
+    if (hiddenGroups is List<dynamic>) {
+      _hiddenGroups.addAll(hiddenGroups.whereType<int>());
+    }
   }
 
   void _migratePositions(Object? positions) {
@@ -206,6 +214,7 @@ class StickerLayout extends ChangeNotifier {
       final Rect source = boundsOf(current) ?? initialBounds(current);
       _bounds[target] ??=
           (source.topLeft + const Offset(32, 32)) & const Size(280, 172);
+      _hiddenGroups.remove(target);
     }
     if (target == current) return;
     _groups[id] = target;
@@ -239,10 +248,12 @@ class StickerLayout extends ChangeNotifier {
     _changed();
   }
 
-  void hideGroup(int group) {
-    if (group == mainGroup) return;
-    enabled.removeAll(members(group));
-    _changed();
+  /// 只改变窗口显隐，分组中的倒计时继续保持启用。
+  void setGroupVisible(int group, bool value) {
+    final bool changed = value
+        ? _hiddenGroups.remove(group)
+        : _hiddenGroups.add(group);
+    if (changed) _changed();
   }
 
   void setPreview(bool value) {
@@ -281,6 +292,7 @@ class StickerLayout extends ChangeNotifier {
       'groups': _groups,
       'bounds': _bounds.map(_encodeGroupBounds),
       'hiddenTitles': _hiddenTitles.toList(),
+      'hiddenGroups': _hiddenGroups.toList(),
     });
     _writes = _writes.then((_) => _write(folder, json));
   }

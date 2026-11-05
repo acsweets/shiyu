@@ -22,12 +22,11 @@ class StickerGroupView {
       for (final String id in layout.members(group))
         id: _value(id, layout.preview, controller),
     },
-    'main': layout.main,
     'titles': layout.showsTitle(group),
     'preview': layout.preview,
     'visible': visible,
-    'character': layout.character?.path,
-    'assetRevision': layout.assetRevision,
+    if (group == layout.mainGroup) 'character': layout.character?.path,
+    if (group == layout.mainGroup) 'assetRevision': layout.assetRevision,
     'initialBounds': StickerLayout.encodeBounds(
       layout.boundsOf(group) ?? layout.initialBounds(group),
     ),
@@ -35,7 +34,6 @@ class StickerGroupView {
 
   Map<String, String> get values =>
       (data['values'] as Map<Object?, Object?>).cast<String, String>();
-  String get main => data['main'] as String;
   bool get showsTitle => data['titles'] as bool;
   bool get preview => data['preview'] as bool;
   bool get visible => data['visible'] as bool;

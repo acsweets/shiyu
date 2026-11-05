@@ -72,14 +72,17 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     final StickerWindows windows = StickerWindows(
       layout: _layout,
       controller: widget.controller,
-      openSettings: _settings,
       reportFailure: _reportFailure,
     );
     _windows = windows;
+    windows.setVisible(widget.window.visible);
     widget.window.onGroupVisibility = windows.setVisible;
+    widget.window.openSettings = _openSettings;
     widget.window.closeGroups = _closeGroups;
     try {
       await _applyMainBounds();
+      await WidgetsBinding.instance.endOfFrame;
+      await widget.window.applyInitialVisibility();
       if (mounted) await windows.start();
     } catch (_) {
       _reportFailure();
@@ -98,7 +101,14 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     _rebuild();
     _windows?.sync();
     if (_settingsOpen) return;
+    unawaited(_syncMainVisibility());
     if (_appliedGroup != _layout.mainGroup) unawaited(_applyMainBounds());
+  }
+
+  /// 主窗关闭后由托盘临时打开设置。
+  Future<void> _syncMainVisibility() async {
+    if (!widget.window.initialized) return;
+    await widget.window.setMainVisible(_layout.showsGroup(_layout.mainGroup));
   }
 
   Future<void> _applyMainBounds() async {
@@ -140,21 +150,25 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   void onWindowResize() => _scheduleBounds();
 
   void _openSettings() => unawaited(_settings());
-  void _hide() => unawaited(widget.window.hide());
 
   /// 在主窗中临时打开可读尺寸的设置，关闭后恢复当前分组。
   Future<void> _settings() async {
-    if (_settingsOpen || !mounted || !_layout.ready) return;
+    if (!mounted || !_layout.ready) return;
+    if (_settingsOpen) {
+      if (widget.window.initialized) await widget.window.show();
+      return;
+    }
     await _captureBounds();
     if (!mounted || _settingsOpen) return;
     _settingsOpen = true;
     _boundsTimer?.cancel();
     try {
       if (widget.window.initialized) {
-        await widget.window.show();
         await windowManager.setMinimumSize(const Size(420, 420));
         await windowManager.setSize(const Size(470, 650));
         await windowManager.center();
+        await widget.window.setMainVisible(true);
+        await widget.window.show();
       }
       if (mounted) {
         await showDialog<void>(context: context, builder: _settingsDialog);
@@ -166,6 +180,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       }
       _settingsOpen = false;
       _windows?.sync();
+      await _syncMainVisibility();
     }
   }
 
@@ -174,6 +189,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     controller: widget.controller,
     resetWindowBounds: _resetBounds,
     resizeWindow: _resizeWindow,
+    windowFailed: _failed,
   );
 
   void _resizeWindow(int group, int step) {
@@ -205,6 +221,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     _boundsTimer?.cancel();
     windowManager.removeListener(this);
     widget.window.closeGroups = null;
+    widget.window.openSettings = null;
     widget.window.onGroupVisibility = null;
     widget.controller.setVisible(false);
     widget.controller.removeListener(_rebuild);
@@ -216,27 +233,13 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: <Widget>[
-      StickerGroupSurface(
-        view: StickerGroupView.fromLayout(
-          _layout,
-          widget.controller,
-          _layout.mainGroup,
-          true,
-        ),
-        onSettings: _openSettings,
-        onHide: _hide,
-      ),
-      if (_failed || _layout.writeFailed)
-        Positioned(
-          bottom: 6,
-          left: 16,
-          child: Text(
-            _failed ? '部分浮窗未能打开' : '窗口布局未能保存',
-            style: const TextStyle(fontSize: 11, color: Colors.red),
-          ),
-        ),
-    ],
+  Widget build(BuildContext context) => StickerGroupSurface(
+    view: StickerGroupView.fromLayout(
+      _layout,
+      widget.controller,
+      _layout.mainGroup,
+      true,
+    ),
+    onSettings: _openSettings,
   );
 }

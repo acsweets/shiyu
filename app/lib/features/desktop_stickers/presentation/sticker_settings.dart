@@ -13,6 +13,7 @@ class StickerSettings extends StatefulWidget {
     required this.controller,
     required this.resetWindowBounds,
     required this.resizeWindow,
+    required this.windowFailed,
     super.key,
   });
 
@@ -27,6 +28,9 @@ class StickerSettings extends StatefulWidget {
 
   /// 在设置内调整任意分组的窗口大小。
   final StickerWindowResize resizeWindow;
+
+  /// 只在设置中提示子窗打开异常。
+  final bool windowFailed;
 
   @override
   State<StickerSettings> createState() => _StickerSettingsState();
@@ -78,7 +82,7 @@ class _StickerSettingsState extends State<StickerSettings> {
   Widget _metric(String id) => CheckboxListTile(
     dense: true,
     title: Text(StickerLayout.titles[id]!),
-    subtitle: id == widget.layout.main ? const Text('主贴纸保持开启') : null,
+    subtitle: id == widget.layout.main ? const Text('当前主倒计时') : null,
     value: widget.layout.enabled.contains(id),
     onChanged: id == widget.layout.main
         ? null
@@ -121,6 +125,12 @@ class _StickerSettingsState extends State<StickerSettings> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            if (widget.windowFailed) const Text('部分浮窗未能打开'),
+            if (widget.layout.writeFailed) const Text('窗口布局未能保存'),
+            const Text('窗口显示', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('主窗口关闭后，可从系统托盘或菜单栏打开设置。'),
+            ...widget.layout.activeGroups.map(_windowVisibility),
+            const Divider(),
             const Text('窗口分组', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('选择同一窗口即可合并。选择独立窗口可拆出。'),
             ...widget.layout.enabled.map(_assignment),
@@ -251,6 +261,15 @@ class _StickerSettingsState extends State<StickerSettings> {
   void _assign(String id, int? value) {
     if (value != null) widget.layout.assign(id, value < 0 ? null : value);
   }
+
+  Widget _windowVisibility(int group) => SwitchListTile(
+    dense: true,
+    contentPadding: EdgeInsets.zero,
+    title: Text(group == widget.layout.mainGroup ? '显示主窗口' : '显示窗口'),
+    subtitle: Text(_groupName(group)),
+    value: widget.layout.showsGroup(group),
+    onChanged: (bool value) => widget.layout.setGroupVisible(group, value),
+  );
 
   Widget _windowOptions(int group) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,

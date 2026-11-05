@@ -39,8 +39,12 @@ Future<RetirementController> runShiyu({
   await controller.initialize();
   FloatingWindowController? window;
   if (floating && (Platform.isWindows || Platform.isMacOS)) {
+    desktopLayout ??= StickerLayout();
+    if (!desktopLayout.ready) await desktopLayout.load();
     window = FloatingWindowController(controller.setVisible);
-    await window.initialize();
+    await window.initialize(
+      showMain: desktopLayout.showsGroup(desktopLayout.mainGroup),
+    );
   }
   runApp(
     ProviderScope(

@@ -138,11 +138,6 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
           await windowManager.hide();
         }
       }
-      final FileImage? changedImage =
-          next.assetRevision != _view.assetRevision && next.character != null
-          ? FileImage(next.character!)
-          : null;
-      if (changedImage != null) await changedImage.evict();
       if (mounted) setState(() => _view = next);
     } on WindowChannelException {
       await _close();
@@ -168,7 +163,6 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
     }
   }
 
-  void _settings() => unawaited(_request('settings'));
   void _hide() => unawaited(_request('hide'));
 
   @override
@@ -182,6 +176,5 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      StickerGroupSurface(view: _view, onSettings: _settings, onHide: _hide);
+  Widget build(BuildContext context) => StickerGroupSurface(view: _view);
 }

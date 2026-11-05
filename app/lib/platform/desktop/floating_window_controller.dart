@@ -25,6 +25,17 @@ class FloatingWindowController with TrayListener, WindowListener {
   /// 同步所有子窗的显隐。
   WindowVisibilityChanged? onGroupVisibility;
 
+  /// 主浮窗隐藏时仍可从托盘进入设置。
+  VoidCallback? openSettings;
+
+  /// 快捷键控制的全局显隐，独立于各窗自己的开关。
+  bool _visible = true;
+
+  /// 主窗当前可见，设置打开时可以临时覆盖。
+  bool _mainVisible = true;
+
+  bool get visible => _visible;
+
   /// 退出前回收子窗并等待布局保存。
   AsyncCallback? closeGroups;
 
@@ -39,7 +50,8 @@ class FloatingWindowController with TrayListener, WindowListener {
   );
 
   /// 注册恢复入口后再启用无边框和任务栏隐藏，保证浮窗始终可找回。
-  Future<void> initialize() async {
+  Future<void> initialize({bool showMain = true}) async {
+    _mainVisible = showMain;
     await windowManager.ensureInitialized();
     // 初始化 Windows 任务栏 COM 对象后，才可设置隐藏任务栏。
     await windowManager.waitUntilReadyToShow();
@@ -53,7 +65,8 @@ class FloatingWindowController with TrayListener, WindowListener {
     await trayManager.setContextMenu(
       Menu(
         items: <MenuItem>[
-          MenuItem(key: 'show', label: '显示时余 / Show'),
+          MenuItem(key: 'show', label: '显示已开启的浮窗 / Show'),
+          MenuItem(key: 'settings', label: '设置 / Settings'),
           MenuItem(key: 'exit', label: '退出 / Exit'),
         ],
       ),
@@ -75,21 +88,44 @@ class FloatingWindowController with TrayListener, WindowListener {
     expanded ? const Size(460, 640) : const Size(280, 172),
   );
   Future<void> drag() => windowManager.startDragging();
+
+  /// 全局显示时仍遵循主窗的单独开关。
   Future<void> show() async {
-    await windowManager.show();
-    await windowManager.focus();
+    _visible = true;
     onVisibilityChanged(true);
     onGroupVisibility?.call(true);
+    if (_mainVisible) {
+      await windowManager.show();
+      if (_visible && _mainVisible) await windowManager.focus();
+    }
   }
 
   Future<void> hide() async {
-    await windowManager.hide();
+    _visible = false;
     onVisibilityChanged(false);
     onGroupVisibility?.call(false);
+    await windowManager.hide();
+  }
+
+  /// 更新主窗开关，不影响其他窗口或业务时钟。
+  Future<void> setMainVisible(bool visible) async {
+    if (_mainVisible == visible) return;
+    _mainVisible = visible;
+    if (!_visible) return;
+    if (visible) {
+      await windowManager.show();
+    } else {
+      await windowManager.hide();
+    }
+  }
+
+  /// Windows 的首帧由 Runner 显示，主窗关闭时在初始化后隐藏。
+  Future<void> applyInitialVisibility() async {
+    if (!_visible || !_mainVisible) await windowManager.hide();
   }
 
   Future<void> _toggle(HotKey key) async {
-    if (await windowManager.isVisible()) {
+    if (_visible) {
       await hide();
     } else {
       await show();
@@ -111,6 +147,7 @@ class FloatingWindowController with TrayListener, WindowListener {
     if (menuItem.key == 'show') {
       unawaited(show());
     }
+    if (menuItem.key == 'settings') openSettings?.call();
     if (menuItem.key == 'exit') {
       unawaited(_exit());
     }

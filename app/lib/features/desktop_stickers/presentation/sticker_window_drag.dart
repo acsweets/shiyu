@@ -10,7 +10,7 @@ import 'package:window_manager/window_manager.dart';
 class StickerWindowDrag extends StatefulWidget {
   const StickerWindowDrag({required this.child, super.key});
 
-  /// 顶部可拖动区域。
+  /// 浮窗内可拖动的区域。
   final Widget child;
 
   @override

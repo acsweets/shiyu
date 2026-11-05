@@ -1,6 +1,6 @@
 # Shiyu · 时余
 
-> Desktop cat stickers support grouping countdowns into one system window or splitting them into separate windows. Move and resize each window independently and hide its titles. Layout and size are saved. Turn off the labeled sample preview for the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
+> Group desktop countdowns in a single floating window or split them across windows. Move and resize each window independently, and use settings to hide the window or its titles. The cat sits above the main card alongside a settings icon. Open settings from the tray or menu bar when the main window is hidden. Turn off the sample preview to see the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
 
 [简体中文](README.md) | [English](README.en.md)
 
@@ -13,7 +13,7 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | Feature | Current behavior |
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
-| Desktop floating window | Windows/macOS frameless, transparent background, always on top, countdown groups in independent windows, movement and resizing, a minimum size and per-window title controls. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
+| Desktop floating window | Frameless, transparent, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, and per-window visibility and title controls. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
 | Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |
