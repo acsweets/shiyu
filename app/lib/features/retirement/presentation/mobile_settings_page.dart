@@ -6,10 +6,12 @@ import '../../../app/theme/settings_paper.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../application/holiday_status.dart';
 import '../application/retirement_controller.dart';
+import '../application/settings_access.dart';
 import '../data/mobile_appearance.dart';
 import 'holiday_panel.dart';
 import 'mobile_appearance_panel.dart';
 import 'mobile_target_form.dart';
+import 'settings/business_settings_page.dart';
 
 class MobileSettingsPage extends StatefulWidget {
   const MobileSettingsPage({required this.controller, super.key});
@@ -30,6 +32,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
 
   /// 串行写入，避免快速切换时旧外观覆盖新选择。
   Future<void> _pendingWrite = Future<void>.value();
+  int _formGeneration = 0;
 
   @override
   void initState() {
@@ -82,10 +85,19 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
               padding: const EdgeInsets.fromLTRB(24, 14, 24, 32),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
+                FilledButton.icon(
+                  icon: const Icon(Icons.tune_rounded),
+                  onPressed: _openBusinessSettings,
+                  label: Text(strings.businessSettings),
+                ),
+                const SizedBox(height: 22),
                 _SettingsSection(
                   title: strings.retirementTitle,
                   icon: Icons.hourglass_bottom_rounded,
-                  child: MobileTargetForm(controller: widget.controller),
+                  child: MobileTargetForm(
+                    key: ValueKey<int>(_formGeneration),
+                    controller: widget.controller,
+                  ),
                 ),
                 const SizedBox(height: 28),
                 _SettingsSection(
@@ -122,6 +134,18 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
       ),
     );
   }
+
+  Future<void> _openBusinessSettings() async {
+    await Navigator.of(context)
+        .push<void>(MaterialPageRoute<void>(builder: _businessPage));
+    if (mounted) setState(() => _formGeneration++);
+  }
+
+  Widget _businessPage(BuildContext context) => BusinessSettingsPage(
+    access: SettingsAccess.local(widget.controller),
+    initial: SettingsView.fromController(widget.controller),
+    desktop: false,
+  );
 
   Widget _buildHolidayPanel(BuildContext context, Widget? child) =>
       HolidayPanel(

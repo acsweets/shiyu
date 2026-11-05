@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../retirement/application/holiday_status.dart';
+import '../../retirement/application/settings_access.dart';
+import '../../retirement/data/settings_repository.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
@@ -24,6 +26,11 @@ enum StickerSetting {
   pause,
   holidayCheck,
   holidayImport,
+  businessRead,
+  businessSave,
+  businessImport,
+  businessCountdown,
+  businessPeek,
   openAssets,
   reloadAssets,
 }
@@ -61,6 +68,10 @@ class StickerSettingsState {
 
   bool get windowFailed => data['windowFailed'] as bool;
   bool get writeFailed => data['writeFailed'] as bool;
+  SettingsView? get business {
+    final Object? raw = data['business'];
+    return raw is Map<Object?, Object?> ? SettingsView(raw) : null;
+  }
 
   StickerGroupView window(int group) => StickerGroupView(
     (data['windows'] as List<Object?>)[group] as Map<Object?, Object?>,
@@ -76,7 +87,12 @@ class StickerSettingsState {
 
 /// 单次设置操作返回的新快照和可选反馈。
 class StickerSettingsReply {
-  const StickerSettingsReply(this.state, {this.message, this.canUndo = false});
+  const StickerSettingsReply(
+    this.state, {
+    this.message,
+    this.canUndo = false,
+    this.privateSalary,
+  });
 
   /// 操作后的配置。
   final StickerSettingsState state;
@@ -86,18 +102,22 @@ class StickerSettingsReply {
 
   /// 本次移动可撤销。
   final bool canUndo;
+  final SettingsValues? privateSalary;
 
   factory StickerSettingsReply.fromData(Map<Object?, Object?> data) =>
       StickerSettingsReply(
         StickerSettingsState(data['state'] as Map<Object?, Object?>),
         message: data['message'] as String?,
         canUndo: data['canUndo'] as bool,
+        privateSalary: (data['privateSalary'] as Map<Object?, Object?>?)
+            ?.cast<String, dynamic>(),
       );
 
   Map<String, Object?> get data => <String, Object?>{
     'state': state.data,
     'message': message,
     'canUndo': canUndo,
+    'privateSalary': privateSalary,
   };
 }
 
@@ -155,7 +175,7 @@ class StickerSettingsSession extends ChangeNotifier {
   void _ignoreReply(StickerSettingsReply reply) {}
 
   void _ignoreFailure(Object error, StackTrace stack) {
-    debugPrint('设置窗口通讯失败: $error');
+    debugPrint('设置窗口通讯失败');
   }
 
   @override

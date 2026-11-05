@@ -35,6 +35,12 @@ pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
     if !["CN", "US", "JP", "KR", "HK", "TW"].contains(&settings.region.as_str()) {
         errors.push(error("region", "unsupported_region"));
     }
+    if !settings.display.valid_locale() {
+        errors.push(error("display.locale", "unsupported_locale"));
+    }
+    if !settings.display.valid_metrics() {
+        errors.push(error("display.metric_order", "invalid_metrics"));
+    }
     if let Some(date) = &settings.retirement_date {
         match Date::from_str(date) {
             Err(_) => errors.push(error("retirement_date", "invalid_date")),

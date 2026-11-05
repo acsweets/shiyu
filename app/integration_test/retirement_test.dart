@@ -15,6 +15,7 @@ import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'support/holiday_flow.dart';
+import 'support/business_settings_flow.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     desktopLayout: desktop ? layout : null,
     storage: desktop ? LocalSettingsStore(temporary) : null,
     checkHolidays: false,
+    showOnboarding: false,
   );
   await tester.pumpAndSettle();
   final String? originalDate = controller.retirementDate;
@@ -56,6 +58,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     expect(controller.timeZone, 'Asia/Shanghai');
     await _verifyTimeMetrics();
     await verifyHolidayFlow(temporary);
+    await verifyBusinessSettingsFlow(temporary);
     const int now = 1793764800000;
     // 原生退休小组件在节点 11 再接入共享假日数据。
     final String dartJson = await rust.computeSnapshot(

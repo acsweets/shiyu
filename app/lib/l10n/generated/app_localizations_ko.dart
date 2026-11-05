@@ -10,6 +10,270 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get addCountdown => '카운트다운 추가';
+
+  @override
+  String get addDateOverride => '날짜 설정 추가';
+
+  @override
+  String get addHoliday => '휴일 추가';
+
+  @override
+  String get appLanguage => '앱 언어';
+
+  @override
+  String get backStep => '이전';
+
+  @override
+  String get birthDate => '생년월일 (선택)';
+
+  @override
+  String get birthTime => '출생 시각 (선택)';
+
+  @override
+  String get businessSettings => '전체 설정';
+
+  @override
+  String get calendarSection => '날짜 및 휴일';
+
+  @override
+  String get currencyCode => '통화 코드';
+
+  @override
+  String get customCountdown => '사용자 지정 카운트다운';
+
+  @override
+  String get customHolidays => '사용자 지정 휴일';
+
+  @override
+  String get dateLabel => '날짜';
+
+  @override
+  String get dateOverrides => '날짜별 설정';
+
+  @override
+  String get dayType => '날짜 유형';
+
+  @override
+  String get disableAll => '모두 숨기기';
+
+  @override
+  String get displaySection => '플로팅 창';
+
+  @override
+  String get enableAll => '모두 표시';
+
+  @override
+  String get exportPrivacy => '내보내기에는 개인 정보와 급여가 포함됩니다. 안전한 위치를 선택하세요.';
+
+  @override
+  String get finishSetup => '설정 완료';
+
+  @override
+  String get fixedPayday => '매월 지정일';
+
+  @override
+  String get generalSection => '일반';
+
+  @override
+  String get grossMonthly => '세전 월급';
+
+  @override
+  String get hideSalary => '금액 숨기기';
+
+  @override
+  String get holidayEnd => '종료 날짜';
+
+  @override
+  String get holidayKind => '휴일 유형';
+
+  @override
+  String get holidayStart => '시작 날짜';
+
+  @override
+  String get invalidCountdown => '이름과 시각을 확인하세요. 새 목표는 미래여야 합니다.';
+
+  @override
+  String get invalidDraft => '아래 항목을 확인하세요. 기존의 유효한 설정은 유지됩니다.';
+
+  @override
+  String get invalidHoliday => '이름과 유형을 입력하고 날짜 범위를 확인하세요.';
+
+  @override
+  String get invalidLifespan => '1~150년을 소수점 한 자리까지 입력하세요.';
+
+  @override
+  String get invalidLunch => '휴식 시간을 근무 시간 안에 설정하세요.';
+
+  @override
+  String get invalidPaydays => '1~31 사이의 서로 다른 날짜를 입력하세요.';
+
+  @override
+  String get invalidSalary => '0 이상의 유효한 금액을 입력하세요.';
+
+  @override
+  String get invalidValue => '입력값을 확인하세요.';
+
+  @override
+  String get invalidWorkHours => 'HH:mm 형식으로 같은 날의 시작보다 늦은 종료 시각을 입력하세요.';
+
+  @override
+  String get itemName => '이름';
+
+  @override
+  String get lastWorkday => '매월 마지막 근무일';
+
+  @override
+  String get lifeExpectancy => '기대 수명 (년)';
+
+  @override
+  String get lunchBreak => '점심 휴식';
+
+  @override
+  String get lunchEnd => '휴식 종료';
+
+  @override
+  String get lunchStart => '휴식 시작';
+
+  @override
+  String get metricHoliday => '다음 휴일까지';
+
+  @override
+  String get metricLife => '인생 카운트다운';
+
+  @override
+  String get metricMonthSalary => '이번 달 수입';
+
+  @override
+  String get metricPayday => '급여일까지';
+
+  @override
+  String get metricTodaySalary => '오늘 수입';
+
+  @override
+  String get metricWork => '근무 카운트다운';
+
+  @override
+  String get miniMetrics => '미니 창 지표';
+
+  @override
+  String get moveDown => '아래로 이동';
+
+  @override
+  String get moveUp => '위로 이동';
+
+  @override
+  String get netMonthly => '세후 월급 (선택)';
+
+  @override
+  String get netRequired => '세후로 전환하려면 세후 월급을 입력하세요.';
+
+  @override
+  String get nextStep => '계속';
+
+  @override
+  String get nextWorkday => '다음 근무일';
+
+  @override
+  String get noAdjustment => '날짜 유지';
+
+  @override
+  String get onboardingTitle => 'Shiyu 설정';
+
+  @override
+  String get paydayAdjustment => '급여일이 휴일일 때';
+
+  @override
+  String get paydayDate => '급여일';
+
+  @override
+  String get paydayRule => '급여 일정';
+
+  @override
+  String get peekSalary => '금액 잠시 보기';
+
+  @override
+  String get personalSection => '개인 정보';
+
+  @override
+  String get previewLive => '실제 데이터 미리 보기';
+
+  @override
+  String get previousWorkday => '이전 근무일';
+
+  @override
+  String get regionCN => '중국 본토';
+
+  @override
+  String get regionHK => '홍콩';
+
+  @override
+  String get regionJP => '일본';
+
+  @override
+  String get regionKR => '대한민국';
+
+  @override
+  String get regionLabel => '공휴일 지역';
+
+  @override
+  String get regionTW => '대만';
+
+  @override
+  String get regionUS => '미국';
+
+  @override
+  String get removeItem => '삭제';
+
+  @override
+  String get restDayLabel => '휴일';
+
+  @override
+  String get salaryBasis => '급여 기준';
+
+  @override
+  String get salaryPrecision => '소수 자릿수';
+
+  @override
+  String get settingsExport => '설정 내보내기';
+
+  @override
+  String get settingsExported => '설정을 내보냈습니다.';
+
+  @override
+  String get settingsFileInvalid => '파일을 사용할 수 없습니다. 크기, JSON 형식, 버전을 확인하세요.';
+
+  @override
+  String get settingsImport => '설정 가져오기';
+
+  @override
+  String get systemLanguage => '시스템 언어';
+
+  @override
+  String get targetTime => '목표 시각';
+
+  @override
+  String get twiceMonthly => '월 2회';
+
+  @override
+  String get weeklyRestHoliday => '주간 휴일을 휴식에 포함';
+
+  @override
+  String get workdayLabel => '근무일';
+
+  @override
+  String get workEnd => '퇴근 시각';
+
+  @override
+  String get workSection => '근무 및 급여';
+
+  @override
+  String get workStart => '출근 시각';
+
+  @override
+  String get workWeek => '근무 요일';
+
+  @override
   String get holidayData => '공휴일 데이터';
 
   @override

@@ -10,6 +10,270 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get addCountdown => '添加倒计时';
+
+  @override
+  String get addDateOverride => '添加日期覆盖';
+
+  @override
+  String get addHoliday => '添加假期';
+
+  @override
+  String get appLanguage => '应用语言';
+
+  @override
+  String get backStep => '上一步';
+
+  @override
+  String get birthDate => '出生日期（可选）';
+
+  @override
+  String get birthTime => '出生时刻（可选）';
+
+  @override
+  String get businessSettings => '完整设置';
+
+  @override
+  String get calendarSection => '日期与假期';
+
+  @override
+  String get currencyCode => '币种代码';
+
+  @override
+  String get customCountdown => '自定义倒计时';
+
+  @override
+  String get customHolidays => '自定义假期';
+
+  @override
+  String get dateLabel => '日期';
+
+  @override
+  String get dateOverrides => '日期覆盖';
+
+  @override
+  String get dayType => '日期类型';
+
+  @override
+  String get disableAll => '全部关闭';
+
+  @override
+  String get displaySection => '悬浮窗';
+
+  @override
+  String get enableAll => '全部开启';
+
+  @override
+  String get exportPrivacy => '导出包含个人信息和薪资，请选择可信的保存位置。';
+
+  @override
+  String get finishSetup => '完成引导';
+
+  @override
+  String get fixedPayday => '每月固定日';
+
+  @override
+  String get generalSection => '通用';
+
+  @override
+  String get grossMonthly => '税前月薪';
+
+  @override
+  String get hideSalary => '隐藏金额';
+
+  @override
+  String get holidayEnd => '结束日期';
+
+  @override
+  String get holidayKind => '假期类型';
+
+  @override
+  String get holidayStart => '开始日期';
+
+  @override
+  String get invalidCountdown => '检查名称与时间，新倒计时的目标必须在未来。';
+
+  @override
+  String get invalidDraft => '请检查下方字段，上次有效设置仍然保留。';
+
+  @override
+  String get invalidHoliday => '填写名称和类型，结束日期须等于或晚于开始日期。';
+
+  @override
+  String get invalidLifespan => '输入 1–150 年，最多一位小数。';
+
+  @override
+  String get invalidLunch => '午休须在上班与下班时间之间，且开始早于结束。';
+
+  @override
+  String get invalidPaydays => '填入 1–31 之间的日期，两次发薪日不得相同。';
+
+  @override
+  String get invalidSalary => '输入合法的非负金额。';
+
+  @override
+  String get invalidValue => '请检查输入值。';
+
+  @override
+  String get invalidWorkHours => '使用 HH:mm，下班时间须在同一天且晚于上班时间。';
+
+  @override
+  String get itemName => '名称';
+
+  @override
+  String get lastWorkday => '每月最后一个工作日';
+
+  @override
+  String get lifeExpectancy => '预期寿命（年）';
+
+  @override
+  String get lunchBreak => '午休';
+
+  @override
+  String get lunchEnd => '午休结束';
+
+  @override
+  String get lunchStart => '午休开始';
+
+  @override
+  String get metricHoliday => '距离放假';
+
+  @override
+  String get metricLife => '生命倒计时';
+
+  @override
+  String get metricMonthSalary => '本月已赚';
+
+  @override
+  String get metricPayday => '距离发薪';
+
+  @override
+  String get metricTodaySalary => '今日已赚';
+
+  @override
+  String get metricWork => '上下班倒计时';
+
+  @override
+  String get miniMetrics => '迷你窗指标';
+
+  @override
+  String get moveDown => '下移';
+
+  @override
+  String get moveUp => '上移';
+
+  @override
+  String get netMonthly => '税后月薪（可选）';
+
+  @override
+  String get netRequired => '切换到税后口径前请填写税后月薪。';
+
+  @override
+  String get nextStep => '下一步';
+
+  @override
+  String get nextWorkday => '顺延至下一工作日';
+
+  @override
+  String get noAdjustment => '保持原日期';
+
+  @override
+  String get onboardingTitle => '设置时余';
+
+  @override
+  String get paydayAdjustment => '发薪日遇休息日';
+
+  @override
+  String get paydayDate => '发薪日期';
+
+  @override
+  String get paydayRule => '发薪规则';
+
+  @override
+  String get peekSalary => '临时查看金额';
+
+  @override
+  String get personalSection => '个人信息';
+
+  @override
+  String get previewLive => '真实数据预览';
+
+  @override
+  String get previousWorkday => '提前至上一工作日';
+
+  @override
+  String get regionCN => '中国大陆';
+
+  @override
+  String get regionHK => '中国香港';
+
+  @override
+  String get regionJP => '日本';
+
+  @override
+  String get regionKR => '韩国';
+
+  @override
+  String get regionLabel => '节假日地区';
+
+  @override
+  String get regionTW => '中国台湾';
+
+  @override
+  String get regionUS => '美国';
+
+  @override
+  String get removeItem => '删除';
+
+  @override
+  String get restDayLabel => '休息日';
+
+  @override
+  String get salaryBasis => '薪资口径';
+
+  @override
+  String get salaryPrecision => '金额小数位';
+
+  @override
+  String get settingsExport => '导出设置';
+
+  @override
+  String get settingsExported => '已导出设置。';
+
+  @override
+  String get settingsFileInvalid => '无法使用此文件，请检查大小、JSON 格式和版本。';
+
+  @override
+  String get settingsImport => '导入设置';
+
+  @override
+  String get systemLanguage => '跟随系统';
+
+  @override
+  String get targetTime => '目标时刻';
+
+  @override
+  String get twiceMonthly => '每月两次';
+
+  @override
+  String get weeklyRestHoliday => '将每周休息日计入放假';
+
+  @override
+  String get workdayLabel => '工作日';
+
+  @override
+  String get workEnd => '下班时间';
+
+  @override
+  String get workSection => '作息与薪资';
+
+  @override
+  String get workStart => '上班时间';
+
+  @override
+  String get workWeek => '每周工作日';
+
+  @override
   String get holidayData => '节假日数据';
 
   @override
@@ -130,6 +394,270 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get addCountdown => '新增倒數計時';
+
+  @override
+  String get addDateOverride => '新增日期覆寫';
+
+  @override
+  String get addHoliday => '新增假期';
+
+  @override
+  String get appLanguage => '應用程式語言';
+
+  @override
+  String get backStep => '上一步';
+
+  @override
+  String get birthDate => '出生日期（選填）';
+
+  @override
+  String get birthTime => '出生時間（選填）';
+
+  @override
+  String get businessSettings => '完整設定';
+
+  @override
+  String get calendarSection => '日期與假期';
+
+  @override
+  String get currencyCode => '幣別代碼';
+
+  @override
+  String get customCountdown => '自訂倒數計時';
+
+  @override
+  String get customHolidays => '自訂假期';
+
+  @override
+  String get dateLabel => '日期';
+
+  @override
+  String get dateOverrides => '日期覆寫';
+
+  @override
+  String get dayType => '日期類型';
+
+  @override
+  String get disableAll => '全部關閉';
+
+  @override
+  String get displaySection => '浮動視窗';
+
+  @override
+  String get enableAll => '全部開啟';
+
+  @override
+  String get exportPrivacy => '匯出包含個人資料及薪資，請選擇可信任的位置。';
+
+  @override
+  String get finishSetup => '完成設定';
+
+  @override
+  String get fixedPayday => '每月固定日';
+
+  @override
+  String get generalSection => '一般';
+
+  @override
+  String get grossMonthly => '稅前月薪';
+
+  @override
+  String get hideSalary => '隱藏金額';
+
+  @override
+  String get holidayEnd => '結束日期';
+
+  @override
+  String get holidayKind => '假期類型';
+
+  @override
+  String get holidayStart => '開始日期';
+
+  @override
+  String get invalidCountdown => '請檢查名稱與時間。新倒數計時的目標必須在未來。';
+
+  @override
+  String get invalidDraft => '請檢查下方欄位，先前有效的設定仍保留。';
+
+  @override
+  String get invalidHoliday => '填寫名稱和類型，結束日期須等於或晚於開始日期。';
+
+  @override
+  String get invalidLifespan => '輸入 1–150 年，最多一位小數。';
+
+  @override
+  String get invalidLunch => '午休須在上下班時間內，且開始早於結束。';
+
+  @override
+  String get invalidPaydays => '填入 1–31 之間的日期，兩次發薪日不得相同。';
+
+  @override
+  String get invalidSalary => '輸入有效的非負金額。';
+
+  @override
+  String get invalidValue => '請檢查輸入值。';
+
+  @override
+  String get invalidWorkHours => '使用 HH:mm，下班時間須在同一天且晚於上班時間。';
+
+  @override
+  String get itemName => '名稱';
+
+  @override
+  String get lastWorkday => '每月最後一個工作日';
+
+  @override
+  String get lifeExpectancy => '預期壽命（年）';
+
+  @override
+  String get lunchBreak => '午休';
+
+  @override
+  String get lunchEnd => '午休結束';
+
+  @override
+  String get lunchStart => '午休開始';
+
+  @override
+  String get metricHoliday => '距離放假';
+
+  @override
+  String get metricLife => '生命倒數計時';
+
+  @override
+  String get metricMonthSalary => '本月已賺';
+
+  @override
+  String get metricPayday => '距離發薪';
+
+  @override
+  String get metricTodaySalary => '今日已賺';
+
+  @override
+  String get metricWork => '上下班倒數計時';
+
+  @override
+  String get miniMetrics => '迷你視窗指標';
+
+  @override
+  String get moveDown => '下移';
+
+  @override
+  String get moveUp => '上移';
+
+  @override
+  String get netMonthly => '稅後月薪（選填）';
+
+  @override
+  String get netRequired => '切換到稅後前請填寫稅後月薪。';
+
+  @override
+  String get nextStep => '下一步';
+
+  @override
+  String get nextWorkday => '順延至下一工作日';
+
+  @override
+  String get noAdjustment => '維持原日期';
+
+  @override
+  String get onboardingTitle => '設定時餘';
+
+  @override
+  String get paydayAdjustment => '發薪日遇休息日';
+
+  @override
+  String get paydayDate => '發薪日期';
+
+  @override
+  String get paydayRule => '發薪規則';
+
+  @override
+  String get peekSalary => '暫時查看金額';
+
+  @override
+  String get personalSection => '個人資料';
+
+  @override
+  String get previewLive => '實際資料預覽';
+
+  @override
+  String get previousWorkday => '提前至上一工作日';
+
+  @override
+  String get regionCN => '中國大陸';
+
+  @override
+  String get regionHK => '中國香港';
+
+  @override
+  String get regionJP => '日本';
+
+  @override
+  String get regionKR => '韓國';
+
+  @override
+  String get regionLabel => '節假日地區';
+
+  @override
+  String get regionTW => '中國台灣';
+
+  @override
+  String get regionUS => '美國';
+
+  @override
+  String get removeItem => '刪除';
+
+  @override
+  String get restDayLabel => '休息日';
+
+  @override
+  String get salaryBasis => '薪資計算基準';
+
+  @override
+  String get salaryPrecision => '金額小數位';
+
+  @override
+  String get settingsExport => '匯出設定';
+
+  @override
+  String get settingsExported => '已匯出設定。';
+
+  @override
+  String get settingsFileInvalid => '無法使用此檔案，請檢查大小、JSON 格式及版本。';
+
+  @override
+  String get settingsImport => '匯入設定';
+
+  @override
+  String get systemLanguage => '跟隨系統';
+
+  @override
+  String get targetTime => '目標時間';
+
+  @override
+  String get twiceMonthly => '每月兩次';
+
+  @override
+  String get weeklyRestHoliday => '將每週休息日計入放假';
+
+  @override
+  String get workdayLabel => '工作日';
+
+  @override
+  String get workEnd => '下班時間';
+
+  @override
+  String get workSection => '作息與薪資';
+
+  @override
+  String get workStart => '上班時間';
+
+  @override
+  String get workWeek => '每週工作日';
 
   @override
   String get holidayData => '節假日資料';

@@ -41,6 +41,7 @@ Future<RetirementController> runShiyu({
   SettingsStore? storage,
   StickerLayout? desktopLayout,
   bool checkHolidays = true,
+  bool showOnboarding = true,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
@@ -93,7 +94,11 @@ Future<RetirementController> runShiyu({
       overrides: <Override>[
         runtimeControllerProvider.overrideWith((Ref ref) => controller),
       ],
-      child: RuntimeShiyuApp(window: window, desktopLayout: desktopLayout),
+      child: RuntimeShiyuApp(
+        window: window,
+        desktopLayout: desktopLayout,
+        onboarding: showOnboarding && storage == null,
+      ),
     ),
   );
   if (checkHolidays && storage == null) {

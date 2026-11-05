@@ -18,6 +18,7 @@ class DesktopStickerPage extends StatefulWidget {
     required this.controller,
     required this.window,
     this.layout,
+    this.onboarding = false,
     super.key,
   });
 
@@ -29,6 +30,7 @@ class DesktopStickerPage extends StatefulWidget {
 
   /// 可选的测试外观配置。
   final StickerLayout? layout;
+  final bool onboarding;
 
   @override
   State<DesktopStickerPage> createState() => _DesktopStickerPageState();
@@ -95,6 +97,9 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       await WidgetsBinding.instance.endOfFrame;
       await widget.window.applyInitialVisibility();
       if (mounted) await windows.start();
+      if (mounted && widget.onboarding && widget.controller.needsOnboarding) {
+        await _settings();
+      }
     } catch (_) {
       _reportFailure();
     }

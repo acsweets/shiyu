@@ -4,10 +4,17 @@ import '../domain/core_gateway.dart';
 import 'settings_store.dart';
 
 typedef SettingsValues = Map<String, dynamic>;
+typedef SettingsIssue = ({String field, String code});
+const int settingsMaxBytes = 128 * 1024;
 
 /// 读入结果区分可用配置、只读回退与可恢复备份。
 class LoadedSettings {
-  const LoadedSettings(this.values, {this.problem, this.canRestore = false});
+  const LoadedSettings(
+    this.values, {
+    this.problem,
+    this.canRestore = false,
+    this.fresh = false,
+  });
 
   /// 已经通过核心校验的配置。
   final SettingsValues values;
@@ -17,6 +24,7 @@ class LoadedSettings {
 
   /// 是否存在可显式恢复的旧副本。
   final bool canRestore;
+  final bool fresh;
 }
 
 /// 在平台存储与核心之间处理迁移、备份和恢复。
@@ -48,6 +56,7 @@ class SettingsRepository {
 
   /// 已校验的备份，用于显式恢复。
   SettingsValues? _recovery;
+  List<SettingsIssue> issues = const <SettingsIssue>[];
 
   /// 加载合法主文件，遇损坏时允许用备份只读启动。
   Future<LoadedSettings> load() async {
@@ -57,7 +66,7 @@ class SettingsRepository {
     try {
       final String? raw = await primary.read();
       _persisted = raw;
-      if (raw == null) return LoadedSettings(defaults);
+      if (raw == null) return LoadedSettings(defaults, fresh: true);
       final int? version = _version(raw);
       if (version != null && version > 1) {
         return LoadedSettings(defaults, problem: 'future_settings');
@@ -87,6 +96,33 @@ class SettingsRepository {
   /// 校验完整候选配置，备份当前原文后原子替换。
   Future<SettingsValues?> save(SettingsValues proposed) async {
     final SettingsValues? values = await _validated(jsonEncode(proposed));
+    if (values != null) await _write(values);
+    return values;
+  }
+
+  Future<SettingsValues?> importSettings(String raw) async {
+    final int? version = _version(raw);
+    if (utf8.encode(raw).length > settingsMaxBytes || version == null) {
+      issues = <SettingsIssue>[(field: 'settings', code: 'invalid_json')];
+      return null;
+    }
+    final SettingsValues? values = await _validated(raw, version: version);
+    if (values != null) await _write(values);
+    return values;
+  }
+
+  Future<SettingsValues?> changeCountdown(
+    SettingsValues current,
+    SettingsValues change,
+    int nowMillis,
+  ) async {
+    final SettingsValues? values = _accept(
+      await core.changeCountdown(
+        jsonEncode(current),
+        jsonEncode(change),
+        nowMillis,
+      ),
+    );
     if (values != null) await _write(values);
     return values;
   }
@@ -135,9 +171,20 @@ class SettingsRepository {
     final String candidate = version == 0
         ? jsonEncode(<String, dynamic>{..._object(raw), 'schema_version': 1})
         : raw;
-    final SettingsValues reply = _object(await core.validate(candidate));
+    return _accept(await core.validate(candidate));
+  }
+
+  SettingsValues? _accept(String raw) {
+    final SettingsValues reply = _object(raw);
+    final Object? errors = reply['errors'];
+    issues = errors is List<dynamic>
+        ? errors.whereType<SettingsValues>().map(_issue).toList(growable: false)
+        : const <SettingsIssue>[];
     return reply['ok'] == true ? reply['settings'] as SettingsValues : null;
   }
+
+  SettingsIssue _issue(SettingsValues value) =>
+      (field: value['field'] as String, code: value['code'] as String);
 
   int? _version(String raw) {
     try {

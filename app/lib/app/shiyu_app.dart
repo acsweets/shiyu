@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'theme/mobile_paper.dart';
 
 import '../features/retirement/application/retirement_controller.dart';
+import '../features/retirement/application/settings_access.dart';
 import '../features/retirement/presentation/mobile_settings_page.dart';
+import '../features/retirement/presentation/settings/business_settings_page.dart';
 import '../features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import '../features/desktop_stickers/data/sticker_layout.dart';
 import '../platform/desktop/floating_window_controller.dart';
@@ -14,6 +16,8 @@ class ShiyuApp extends StatelessWidget {
     required this.controller,
     this.window,
     this.desktopLayout,
+    this.onboarding = false,
+    this.locale,
     super.key,
   });
 
@@ -25,11 +29,14 @@ class ShiyuApp extends StatelessWidget {
 
   /// 集成测试的独立桌面布局存储。
   final StickerLayout? desktopLayout;
+  final bool onboarding;
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      locale: locale,
       onGenerateTitle: _localizedTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: const <Locale>[
@@ -51,14 +58,42 @@ class ShiyuApp extends StatelessWidget {
               useMaterial3: true,
             ),
       home: window == null
-          ? MobileSettingsPage(controller: controller)
+          ? _MobileStartup(controller: controller, onboarding: onboarding)
           : DesktopStickerPage(
               controller: controller,
               window: window!,
               layout: desktopLayout,
+              onboarding: onboarding,
             ),
     );
   }
+}
+
+class _MobileStartup extends StatefulWidget {
+  const _MobileStartup({required this.controller, required this.onboarding});
+
+  final RetirementController controller;
+  final bool onboarding;
+
+  @override
+  State<_MobileStartup> createState() => _MobileStartupState();
+}
+
+class _MobileStartupState extends State<_MobileStartup> {
+  late bool _showWizard =
+      widget.onboarding && widget.controller.needsOnboarding;
+
+  @override
+  Widget build(BuildContext context) => _showWizard
+      ? BusinessSettingsPage(
+          access: SettingsAccess.local(widget.controller),
+          initial: SettingsView.fromController(widget.controller),
+          desktop: false,
+          onFinished: _finish,
+        )
+      : MobileSettingsPage(controller: widget.controller);
+
+  void _finish() => setState(() => _showWizard = false);
 }
 
 String _localizedTitle(BuildContext context) {

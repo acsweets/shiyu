@@ -60,6 +60,7 @@ class RetirementController extends ChangeNotifier {
 
   /// 当前只读配置有可校验的备份。
   bool canRestoreBackup = false;
+  bool _fresh = false;
 
   /// 已校验的地区数据和更新结果供设置窗显示。
   HolidaySelection? holidayData;
@@ -90,12 +91,23 @@ class RetirementController extends ChangeNotifier {
   String? get retirementDate => settings['retirement_date'] as String?;
   String get timeZone => settings['time_zone'] as String? ?? 'Asia/Shanghai';
   String get holidayRegion => settings['region'] as String? ?? 'CN';
+  List<SettingsIssue> get settingsIssues => _repository.issues;
+  SettingsValues get displaySettings =>
+      settings['display'] as SettingsValues? ?? <String, dynamic>{};
+  String? get preferredLocale => displaySettings['locale'] as String?;
+  bool get needsOnboarding {
+    final bool? completed = displaySettings['onboarding_completed'] as bool?;
+    return !editingBlocked &&
+        (completed == false || (_fresh && completed == null));
+  }
+
   bool get paused => _paused;
 
   /// 读入主配置或只读备份，再执行首次快照。
   Future<void> initialize() async {
     final LoadedSettings loaded = await _repository.load();
     settings = loaded.values;
+    _fresh = loaded.fresh;
     editingBlocked = loaded.problem != null;
     canRestoreBackup = loaded.canRestore;
     problem = loaded.problem;
@@ -226,6 +238,35 @@ class RetirementController extends ChangeNotifier {
   Future<bool> saveSettings(SettingsValues candidate) async {
     if (editingBlocked) return false;
     return _persist(() => _repository.save(candidate));
+  }
+
+  Future<bool> importSettings(String raw) async {
+    if (editingBlocked) return false;
+    return _persist(() => _repository.importSettings(raw));
+  }
+
+  Future<bool> changeCountdown(SettingsValues change) async {
+    if (editingBlocked) return false;
+    return _persist(
+      () => _repository.changeCountdown(
+        settings,
+        change,
+        _now().millisecondsSinceEpoch,
+      ),
+    );
+  }
+
+  /// 临时查看单独计算，原快照和共享设置始终保持原金额遮蔽。
+  Future<SettingsValues?> peekSalary() async {
+    final int revision = _revision;
+    final SettingsValues reply = await _compute(
+      jsonEncode(<String, dynamic>{...settings, 'hide_amount': false}),
+      _now().millisecondsSinceEpoch,
+      _holidayJson,
+    );
+    if (_disposed || revision != _revision || reply['ok'] != true) return null;
+    final SettingsValues snapshot = reply['snapshot'] as SettingsValues;
+    return snapshot['salary'] as SettingsValues?;
   }
 
   /// 只有用户显式恢复时才替换主配置。

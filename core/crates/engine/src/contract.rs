@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+use crate::display::DisplaySettings;
+
 pub const SCHEMA_VERSION: u32 = 1;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -32,6 +34,8 @@ pub struct Settings {
     pub custom_countdowns: Vec<CustomCountdown>,
     /// 长期金额遮蔽偏好。
     pub hide_amount: bool,
+    /// 客户端显示偏好，包含首次引导状态。
+    pub display: DisplaySettings,
 }
 
 impl Default for Settings {
@@ -50,6 +54,7 @@ impl Default for Settings {
             holidays: vec![],
             custom_countdowns: vec![],
             hide_amount: true,
+            display: DisplaySettings::default(),
         }
     }
 }

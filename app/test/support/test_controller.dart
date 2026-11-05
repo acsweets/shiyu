@@ -16,6 +16,13 @@ class MemorySettingsStore implements SettingsStore {
 
 class TestCore implements CoreGateway {
   @override
+  Future<String> changeCountdown(
+    String settings,
+    String change,
+    int nowMillis,
+  ) async => '{"ok":false,"errors":[]}';
+
+  @override
   Future<String> defaults() async =>
       '{"schema_version":1,"time_zone":"Asia/Shanghai","retirement_date":null}';
   @override

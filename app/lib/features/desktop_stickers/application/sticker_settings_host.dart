@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 
 import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/retirement_controller.dart';
+import '../../retirement/application/settings_access.dart';
+import '../../retirement/application/settings_editor.dart';
+import '../../retirement/data/settings_repository.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
@@ -51,33 +54,35 @@ class StickerSettingsHost {
   /// 最近一次移动的起点，用于立即撤销。
   ({String id, int origin, int destination})? _lastMove;
 
-  StickerSettingsState snapshot() => StickerSettingsState(<String, Object?>{
-    'mainGroup': layout.mainGroup,
-    'main': layout.main,
-    'preview': layout.preview,
-    'palette': layout.palette.name,
-    'titleSize': layout.titleSize,
-    'groups': layout.activeGroups.toList()..sort(),
-    'enabled': layout.enabled.toList(),
-    'retirementDate': controller.retirementDate,
-    'timeZone': controller.timeZone,
-    'editingBlocked': controller.editingBlocked,
-    'canRestore': controller.canRestoreBackup,
-    'paused': controller.paused,
-    if (controller.holidays != null)
-      'holidayStatus': HolidayStatus.fromController(controller).data,
-    'windowFailed': windowFailed(),
-    'writeFailed': layout.writeFailed,
-    'windows': <Map<Object?, Object?>>[
-      for (int group = 0; group < StickerLayout.titles.length; group++)
-        StickerGroupView.fromLayout(
-          layout,
-          controller,
-          group,
-          layout.showsGroup(group),
-        ).data,
-    ],
-  });
+  StickerSettingsState snapshot({bool saved = true}) =>
+      StickerSettingsState(<String, Object?>{
+        'mainGroup': layout.mainGroup,
+        'main': layout.main,
+        'preview': layout.preview,
+        'palette': layout.palette.name,
+        'titleSize': layout.titleSize,
+        'groups': layout.activeGroups.toList()..sort(),
+        'enabled': layout.enabled.toList(),
+        'retirementDate': controller.retirementDate,
+        'timeZone': controller.timeZone,
+        'editingBlocked': controller.editingBlocked,
+        'canRestore': controller.canRestoreBackup,
+        'paused': controller.paused,
+        'business': SettingsView.fromController(controller, saved: saved).data,
+        if (controller.holidays != null)
+          'holidayStatus': HolidayStatus.fromController(controller).data,
+        'windowFailed': windowFailed(),
+        'writeFailed': layout.writeFailed,
+        'windows': <Map<Object?, Object?>>[
+          for (int group = 0; group < StickerLayout.titles.length; group++)
+            StickerGroupView.fromLayout(
+              layout,
+              controller,
+              group,
+              layout.showsGroup(group),
+            ).data,
+        ],
+      });
 
   Future<StickerSettingsState> read() async => snapshot();
 
@@ -148,6 +153,8 @@ class StickerSettingsHost {
   ) async {
     String? message;
     bool canUndo = false;
+    bool saved = true;
+    SettingsValues? privateSalary;
     switch (action) {
       case StickerSetting.palette:
         layout.setPalette(StickerPalette.fromId(args['value']));
@@ -189,13 +196,32 @@ class StickerSettingsHost {
       case StickerSetting.holidayImport:
         message = (await controller.importHolidayPack(args['raw'] as String))
             .name;
+      case StickerSetting.businessRead:
+        await controller.refresh();
+      case StickerSetting.businessSave:
+        saved = await controller.saveSettings(
+          SettingsEditor.object(args['value']),
+        );
+      case StickerSetting.businessImport:
+        saved = await controller.importSettings(args['raw'] as String);
+      case StickerSetting.businessCountdown:
+        saved = await controller.changeCountdown(
+          SettingsEditor.object(args['value']),
+        );
+      case StickerSetting.businessPeek:
+        privateSalary = await controller.peekSalary();
       case StickerSetting.openAssets:
         message = await _openAssets();
       case StickerSetting.reloadAssets:
         await layout.reloadCharacter();
         message = '已重新载入猫猫素材';
     }
-    return StickerSettingsReply(snapshot(), message: message, canUndo: canUndo);
+    return StickerSettingsReply(
+      snapshot(saved: saved),
+      message: message,
+      canUndo: canUndo,
+      privateSalary: privateSalary,
+    );
   }
 
   String? _move(String id, int? target) {

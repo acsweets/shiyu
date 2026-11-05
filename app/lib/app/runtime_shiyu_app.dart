@@ -9,6 +9,7 @@ import '../features/desktop_stickers/data/sticker_layout.dart';
 import '../features/retirement/application/retirement_controller.dart';
 import '../platform/desktop/floating_window_controller.dart';
 import 'shiyu_app.dart';
+import 'settings_locale.dart';
 
 /// 根容器持有应用唯一的业务状态，页面按需订阅其快照。
 final ChangeNotifierProvider<RetirementController> runtimeControllerProvider =
@@ -18,10 +19,16 @@ RetirementController _missingRuntime(Ref ref) =>
     throw StateError('Runtime controller must be provided at startup');
 
 class RuntimeShiyuApp extends ConsumerStatefulWidget {
-  const RuntimeShiyuApp({this.window, this.desktopLayout, super.key});
+  const RuntimeShiyuApp({
+    this.window,
+    this.desktopLayout,
+    this.onboarding = true,
+    super.key,
+  });
 
   final FloatingWindowController? window;
   final StickerLayout? desktopLayout;
+  final bool onboarding;
 
   @override
   ConsumerState<RuntimeShiyuApp> createState() => _RuntimeShiyuAppState();
@@ -34,11 +41,14 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
   final bool _mobile = Platform.isAndroid || Platform.isIOS;
   bool _sleeping = false;
   bool _locked = false;
+  String? _locale;
 
   @override
   void initState() {
     super.initState();
     _controller = ref.read(runtimeControllerProvider);
+    _locale = _controller.preferredLocale;
+    _controller.addListener(_applyLocale);
     if (_mobile) {
       WidgetsBinding.instance.addObserver(this);
       didChangeAppLifecycleState(
@@ -48,6 +58,11 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
     } else if (widget.window != null) {
       _runtime.setMethodCallHandler(_onSystemEvent);
     }
+  }
+
+  void _applyLocale() {
+    final String? value = _controller.preferredLocale;
+    if (value != _locale && mounted) setState(() => _locale = value);
   }
 
   @override
@@ -83,10 +98,13 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
     controller: _controller,
     window: widget.window,
     desktopLayout: widget.desktopLayout,
+    onboarding: widget.onboarding,
+    locale: settingsLocale(_locale),
   );
 
   @override
   void dispose() {
+    _controller.removeListener(_applyLocale);
     if (_mobile) {
       WidgetsBinding.instance.removeObserver(this);
     } else if (widget.window != null) {

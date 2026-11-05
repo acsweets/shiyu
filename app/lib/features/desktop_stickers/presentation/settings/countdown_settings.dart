@@ -4,6 +4,8 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../retirement/application/holiday_status.dart';
 import '../../../retirement/data/holiday_repository.dart';
 import '../../../retirement/presentation/holiday_panel.dart';
+import '../../../retirement/presentation/settings/business_settings_page.dart';
+import '../../application/sticker_business_access.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
 import 'settings_controls.dart';
@@ -51,6 +53,14 @@ class _CountdownSettingsState extends State<CountdownSettings> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        if (state.business != null) ...<Widget>[
+          FilledButton.icon(
+            onPressed: _openBusinessSettings,
+            icon: const Icon(Icons.tune_rounded),
+            label: Text(AppLocalizations.of(context).businessSettings),
+          ),
+          const Divider(height: 25),
+        ],
         PaperSettingRow(
           title: '主倒计时',
           detail: '设置入口位于主倒计时所在的浮窗',
@@ -138,6 +148,22 @@ class _CountdownSettingsState extends State<CountdownSettings> {
       ],
     );
   }
+
+  Future<void> _openBusinessSettings() async {
+    await Navigator.of(context)
+        .push<void>(MaterialPageRoute<void>(builder: _businessPage));
+    if (!mounted) return;
+    setState(() {
+      _date = _session.state.retirementDate;
+      _zone.text = _session.state.timeZone;
+    });
+  }
+
+  Widget _businessPage(BuildContext context) => BusinessSettingsPage(
+    access: stickerBusinessAccess(_session),
+    initial: _session.state.business!,
+    desktop: true,
+  );
 
   Widget _mainOption(String id) => PaperOption(
     label: StickerLayout.titles[id]!,

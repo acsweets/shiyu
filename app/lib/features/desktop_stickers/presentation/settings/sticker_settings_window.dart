@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../../../app/settings_locale.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../retirement/application/settings_editor.dart';
+import '../../../retirement/presentation/settings/business_settings_page.dart';
+import '../../application/sticker_business_access.dart';
 import '../../application/sticker_settings_state.dart';
 import 'settings_controls.dart';
 import 'sticker_settings.dart';
@@ -107,6 +111,8 @@ class _SettingsApp extends StatefulWidget {
 class _SettingsAppState extends State<_SettingsApp> with WindowListener {
   /// 整个设置窗共享同一条读写队列。
   late final StickerSettingsSession _session;
+  bool _wizard = false;
+  String? _locale;
 
   @override
   void initState() {
@@ -116,8 +122,24 @@ class _SettingsAppState extends State<_SettingsApp> with WindowListener {
       widget.connection.read,
       widget.connection.dispatch,
     );
+    _wizard = widget.initial.business?.firstRun ?? false;
+    _locale = _readLocale();
+    _session.addListener(_applyLocale);
     windowManager.addListener(this);
   }
+
+  String? _readLocale() =>
+      SettingsEditor.object(
+            _session.state.business?.values['display'],
+          )['locale']
+          as String?;
+
+  void _applyLocale() {
+    final String? next = _readLocale();
+    if (mounted && next != _locale) setState(() => _locale = next);
+  }
+
+  void _finishWizard() => setState(() => _wizard = false);
 
   @override
   void onWindowClose() => unawaited(windowManager.hide());
@@ -134,6 +156,7 @@ class _SettingsAppState extends State<_SettingsApp> with WindowListener {
   @override
   void dispose() {
     windowManager.removeListener(this);
+    _session.removeListener(_applyLocale);
     _session.dispose();
     super.dispose();
   }
@@ -142,8 +165,16 @@ class _SettingsAppState extends State<_SettingsApp> with WindowListener {
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: SettingsPaper.theme,
+    locale: settingsLocale(_locale),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: StickerSettings(session: _session),
+    home: _wizard
+        ? BusinessSettingsPage(
+            access: stickerBusinessAccess(_session),
+            initial: _session.state.business!,
+            desktop: true,
+            onFinished: _finishWizard,
+          )
+        : StickerSettings(session: _session),
   );
 }

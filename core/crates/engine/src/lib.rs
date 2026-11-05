@@ -7,6 +7,7 @@ mod calendar;
 mod contract;
 mod custom_countdown;
 mod diagnostics;
+mod display;
 mod metrics;
 mod salary_amount;
 mod snapshot;

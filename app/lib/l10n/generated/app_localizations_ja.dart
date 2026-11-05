@@ -10,6 +10,270 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get addCountdown => 'カウントダウンを追加';
+
+  @override
+  String get addDateOverride => '日付の扱いを変更';
+
+  @override
+  String get addHoliday => '休暇を追加';
+
+  @override
+  String get appLanguage => '表示言語';
+
+  @override
+  String get backStep => '戻る';
+
+  @override
+  String get birthDate => '生年月日（任意）';
+
+  @override
+  String get birthTime => '出生時刻（任意）';
+
+  @override
+  String get businessSettings => '詳細設定';
+
+  @override
+  String get calendarSection => '日付と休暇';
+
+  @override
+  String get currencyCode => '通貨コード';
+
+  @override
+  String get customCountdown => 'カスタムカウントダウン';
+
+  @override
+  String get customHolidays => 'カスタム休暇';
+
+  @override
+  String get dateLabel => '日付';
+
+  @override
+  String get dateOverrides => '日付の上書き';
+
+  @override
+  String get dayType => '日付の種類';
+
+  @override
+  String get disableAll => 'すべて非表示';
+
+  @override
+  String get displaySection => 'フローティングウィンドウ';
+
+  @override
+  String get enableAll => 'すべて表示';
+
+  @override
+  String get exportPrivacy => 'エクスポートには個人情報と給与が含まれます。安全な保存先を選んでください。';
+
+  @override
+  String get finishSetup => '設定を完了';
+
+  @override
+  String get fixedPayday => '毎月の指定日';
+
+  @override
+  String get generalSection => '一般';
+
+  @override
+  String get grossMonthly => '月給（税引前）';
+
+  @override
+  String get hideSalary => '金額を隠す';
+
+  @override
+  String get holidayEnd => '終了日';
+
+  @override
+  String get holidayKind => '休暇の種類';
+
+  @override
+  String get holidayStart => '開始日';
+
+  @override
+  String get invalidCountdown => '名前と時刻を確認してください。新しい目標は未来の日時を指定します。';
+
+  @override
+  String get invalidDraft => '入力欄を確認してください。前回の有効な設定は保持されています。';
+
+  @override
+  String get invalidHoliday => '名前、種類、正しい日付範囲を指定してください。';
+
+  @override
+  String get invalidLifespan => '1～150 年を小数第1位まで入力してください。';
+
+  @override
+  String get invalidLunch => '休憩時間は勤務時間内に設定してください。';
+
+  @override
+  String get invalidPaydays => '1～31 の異なる日を指定してください。';
+
+  @override
+  String get invalidSalary => '0 以上の有効な金額を入力してください。';
+
+  @override
+  String get invalidValue => '入力値を確認してください。';
+
+  @override
+  String get invalidWorkHours => 'HH:mm 形式で、同日の開始より後の終了時刻を指定してください。';
+
+  @override
+  String get itemName => '名前';
+
+  @override
+  String get lastWorkday => '月の最終勤務日';
+
+  @override
+  String get lifeExpectancy => '想定寿命（年）';
+
+  @override
+  String get lunchBreak => '昼休み';
+
+  @override
+  String get lunchEnd => '休憩終了';
+
+  @override
+  String get lunchStart => '休憩開始';
+
+  @override
+  String get metricHoliday => '次の休暇まで';
+
+  @override
+  String get metricLife => '人生カウントダウン';
+
+  @override
+  String get metricMonthSalary => '今月の収入';
+
+  @override
+  String get metricPayday => '給料日まで';
+
+  @override
+  String get metricTodaySalary => '今日の収入';
+
+  @override
+  String get metricWork => '勤務カウントダウン';
+
+  @override
+  String get miniMetrics => 'ミニウィンドウの項目';
+
+  @override
+  String get moveDown => '下へ移動';
+
+  @override
+  String get moveUp => '上へ移動';
+
+  @override
+  String get netMonthly => '手取り月給（任意）';
+
+  @override
+  String get netRequired => '手取りを選ぶ前に手取り月給を入力してください。';
+
+  @override
+  String get nextStep => '次へ';
+
+  @override
+  String get nextWorkday => '翌勤務日';
+
+  @override
+  String get noAdjustment => '日付を維持';
+
+  @override
+  String get onboardingTitle => 'Shiyu を設定';
+
+  @override
+  String get paydayAdjustment => '給料日が休日の場合';
+
+  @override
+  String get paydayDate => '給料日';
+
+  @override
+  String get paydayRule => '給料日の設定';
+
+  @override
+  String get peekSalary => '金額を一時表示';
+
+  @override
+  String get personalSection => '個人情報';
+
+  @override
+  String get previewLive => '実データのプレビュー';
+
+  @override
+  String get previousWorkday => '前の勤務日';
+
+  @override
+  String get regionCN => '中国本土';
+
+  @override
+  String get regionHK => '香港';
+
+  @override
+  String get regionJP => '日本';
+
+  @override
+  String get regionKR => '韓国';
+
+  @override
+  String get regionLabel => '祝日の地域';
+
+  @override
+  String get regionTW => '台湾';
+
+  @override
+  String get regionUS => '米国';
+
+  @override
+  String get removeItem => '削除';
+
+  @override
+  String get restDayLabel => '休日';
+
+  @override
+  String get salaryBasis => '給与の表示基準';
+
+  @override
+  String get salaryPrecision => '小数点以下の桁数';
+
+  @override
+  String get settingsExport => '設定を書き出す';
+
+  @override
+  String get settingsExported => '設定を書き出しました。';
+
+  @override
+  String get settingsFileInvalid => 'ファイルを使用できません。サイズ、JSON 形式、バージョンを確認してください。';
+
+  @override
+  String get settingsImport => '設定を読み込む';
+
+  @override
+  String get systemLanguage => 'システム言語';
+
+  @override
+  String get targetTime => '目標時刻';
+
+  @override
+  String get twiceMonthly => '月に2回';
+
+  @override
+  String get weeklyRestHoliday => '毎週の休日も休暇に含める';
+
+  @override
+  String get workdayLabel => '勤務日';
+
+  @override
+  String get workEnd => '終業時刻';
+
+  @override
+  String get workSection => '勤務と給与';
+
+  @override
+  String get workStart => '始業時刻';
+
+  @override
+  String get workWeek => '勤務曜日';
+
+  @override
   String get holidayData => '祝日データ';
 
   @override

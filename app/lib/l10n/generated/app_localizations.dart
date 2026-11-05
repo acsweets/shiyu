@@ -109,6 +109,534 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @addCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加倒计时'**
+  String get addCountdown;
+
+  /// No description provided for @addDateOverride.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加日期覆盖'**
+  String get addDateOverride;
+
+  /// No description provided for @addHoliday.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加假期'**
+  String get addHoliday;
+
+  /// No description provided for @appLanguage.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用语言'**
+  String get appLanguage;
+
+  /// No description provided for @backStep.
+  ///
+  /// In zh, this message translates to:
+  /// **'上一步'**
+  String get backStep;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生日期（可选）'**
+  String get birthDate;
+
+  /// No description provided for @birthTime.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生时刻（可选）'**
+  String get birthTime;
+
+  /// No description provided for @businessSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'完整设置'**
+  String get businessSettings;
+
+  /// No description provided for @calendarSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'日期与假期'**
+  String get calendarSection;
+
+  /// No description provided for @currencyCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'币种代码'**
+  String get currencyCode;
+
+  /// No description provided for @customCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义倒计时'**
+  String get customCountdown;
+
+  /// No description provided for @customHolidays.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义假期'**
+  String get customHolidays;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'日期'**
+  String get dateLabel;
+
+  /// No description provided for @dateOverrides.
+  ///
+  /// In zh, this message translates to:
+  /// **'日期覆盖'**
+  String get dateOverrides;
+
+  /// No description provided for @dayType.
+  ///
+  /// In zh, this message translates to:
+  /// **'日期类型'**
+  String get dayType;
+
+  /// No description provided for @disableAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部关闭'**
+  String get disableAll;
+
+  /// No description provided for @displaySection.
+  ///
+  /// In zh, this message translates to:
+  /// **'悬浮窗'**
+  String get displaySection;
+
+  /// No description provided for @enableAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部开启'**
+  String get enableAll;
+
+  /// No description provided for @exportPrivacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出包含个人信息和薪资，请选择可信的保存位置。'**
+  String get exportPrivacy;
+
+  /// No description provided for @finishSetup.
+  ///
+  /// In zh, this message translates to:
+  /// **'完成引导'**
+  String get finishSetup;
+
+  /// No description provided for @fixedPayday.
+  ///
+  /// In zh, this message translates to:
+  /// **'每月固定日'**
+  String get fixedPayday;
+
+  /// No description provided for @generalSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'通用'**
+  String get generalSection;
+
+  /// No description provided for @grossMonthly.
+  ///
+  /// In zh, this message translates to:
+  /// **'税前月薪'**
+  String get grossMonthly;
+
+  /// No description provided for @hideSalary.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏金额'**
+  String get hideSalary;
+
+  /// No description provided for @holidayEnd.
+  ///
+  /// In zh, this message translates to:
+  /// **'结束日期'**
+  String get holidayEnd;
+
+  /// No description provided for @holidayKind.
+  ///
+  /// In zh, this message translates to:
+  /// **'假期类型'**
+  String get holidayKind;
+
+  /// No description provided for @holidayStart.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始日期'**
+  String get holidayStart;
+
+  /// No description provided for @invalidCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查名称与时间，新倒计时的目标必须在未来。'**
+  String get invalidCountdown;
+
+  /// No description provided for @invalidDraft.
+  ///
+  /// In zh, this message translates to:
+  /// **'请检查下方字段，上次有效设置仍然保留。'**
+  String get invalidDraft;
+
+  /// No description provided for @invalidHoliday.
+  ///
+  /// In zh, this message translates to:
+  /// **'填写名称和类型，结束日期须等于或晚于开始日期。'**
+  String get invalidHoliday;
+
+  /// No description provided for @invalidLifespan.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入 1–150 年，最多一位小数。'**
+  String get invalidLifespan;
+
+  /// No description provided for @invalidLunch.
+  ///
+  /// In zh, this message translates to:
+  /// **'午休须在上班与下班时间之间，且开始早于结束。'**
+  String get invalidLunch;
+
+  /// No description provided for @invalidPaydays.
+  ///
+  /// In zh, this message translates to:
+  /// **'填入 1–31 之间的日期，两次发薪日不得相同。'**
+  String get invalidPaydays;
+
+  /// No description provided for @invalidSalary.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入合法的非负金额。'**
+  String get invalidSalary;
+
+  /// No description provided for @invalidValue.
+  ///
+  /// In zh, this message translates to:
+  /// **'请检查输入值。'**
+  String get invalidValue;
+
+  /// No description provided for @invalidWorkHours.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用 HH:mm，下班时间须在同一天且晚于上班时间。'**
+  String get invalidWorkHours;
+
+  /// No description provided for @itemName.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get itemName;
+
+  /// No description provided for @lastWorkday.
+  ///
+  /// In zh, this message translates to:
+  /// **'每月最后一个工作日'**
+  String get lastWorkday;
+
+  /// No description provided for @lifeExpectancy.
+  ///
+  /// In zh, this message translates to:
+  /// **'预期寿命（年）'**
+  String get lifeExpectancy;
+
+  /// No description provided for @lunchBreak.
+  ///
+  /// In zh, this message translates to:
+  /// **'午休'**
+  String get lunchBreak;
+
+  /// No description provided for @lunchEnd.
+  ///
+  /// In zh, this message translates to:
+  /// **'午休结束'**
+  String get lunchEnd;
+
+  /// No description provided for @lunchStart.
+  ///
+  /// In zh, this message translates to:
+  /// **'午休开始'**
+  String get lunchStart;
+
+  /// No description provided for @metricHoliday.
+  ///
+  /// In zh, this message translates to:
+  /// **'距离放假'**
+  String get metricHoliday;
+
+  /// No description provided for @metricLife.
+  ///
+  /// In zh, this message translates to:
+  /// **'生命倒计时'**
+  String get metricLife;
+
+  /// No description provided for @metricMonthSalary.
+  ///
+  /// In zh, this message translates to:
+  /// **'本月已赚'**
+  String get metricMonthSalary;
+
+  /// No description provided for @metricPayday.
+  ///
+  /// In zh, this message translates to:
+  /// **'距离发薪'**
+  String get metricPayday;
+
+  /// No description provided for @metricTodaySalary.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日已赚'**
+  String get metricTodaySalary;
+
+  /// No description provided for @metricWork.
+  ///
+  /// In zh, this message translates to:
+  /// **'上下班倒计时'**
+  String get metricWork;
+
+  /// No description provided for @miniMetrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'迷你窗指标'**
+  String get miniMetrics;
+
+  /// No description provided for @moveDown.
+  ///
+  /// In zh, this message translates to:
+  /// **'下移'**
+  String get moveDown;
+
+  /// No description provided for @moveUp.
+  ///
+  /// In zh, this message translates to:
+  /// **'上移'**
+  String get moveUp;
+
+  /// No description provided for @netMonthly.
+  ///
+  /// In zh, this message translates to:
+  /// **'税后月薪（可选）'**
+  String get netMonthly;
+
+  /// No description provided for @netRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换到税后口径前请填写税后月薪。'**
+  String get netRequired;
+
+  /// No description provided for @nextStep.
+  ///
+  /// In zh, this message translates to:
+  /// **'下一步'**
+  String get nextStep;
+
+  /// No description provided for @nextWorkday.
+  ///
+  /// In zh, this message translates to:
+  /// **'顺延至下一工作日'**
+  String get nextWorkday;
+
+  /// No description provided for @noAdjustment.
+  ///
+  /// In zh, this message translates to:
+  /// **'保持原日期'**
+  String get noAdjustment;
+
+  /// No description provided for @onboardingTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置时余'**
+  String get onboardingTitle;
+
+  /// No description provided for @paydayAdjustment.
+  ///
+  /// In zh, this message translates to:
+  /// **'发薪日遇休息日'**
+  String get paydayAdjustment;
+
+  /// No description provided for @paydayDate.
+  ///
+  /// In zh, this message translates to:
+  /// **'发薪日期'**
+  String get paydayDate;
+
+  /// No description provided for @paydayRule.
+  ///
+  /// In zh, this message translates to:
+  /// **'发薪规则'**
+  String get paydayRule;
+
+  /// No description provided for @peekSalary.
+  ///
+  /// In zh, this message translates to:
+  /// **'临时查看金额'**
+  String get peekSalary;
+
+  /// No description provided for @personalSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'个人信息'**
+  String get personalSection;
+
+  /// No description provided for @previewLive.
+  ///
+  /// In zh, this message translates to:
+  /// **'真实数据预览'**
+  String get previewLive;
+
+  /// No description provided for @previousWorkday.
+  ///
+  /// In zh, this message translates to:
+  /// **'提前至上一工作日'**
+  String get previousWorkday;
+
+  /// No description provided for @regionCN.
+  ///
+  /// In zh, this message translates to:
+  /// **'中国大陆'**
+  String get regionCN;
+
+  /// No description provided for @regionHK.
+  ///
+  /// In zh, this message translates to:
+  /// **'中国香港'**
+  String get regionHK;
+
+  /// No description provided for @regionJP.
+  ///
+  /// In zh, this message translates to:
+  /// **'日本'**
+  String get regionJP;
+
+  /// No description provided for @regionKR.
+  ///
+  /// In zh, this message translates to:
+  /// **'韩国'**
+  String get regionKR;
+
+  /// No description provided for @regionLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'节假日地区'**
+  String get regionLabel;
+
+  /// No description provided for @regionTW.
+  ///
+  /// In zh, this message translates to:
+  /// **'中国台湾'**
+  String get regionTW;
+
+  /// No description provided for @regionUS.
+  ///
+  /// In zh, this message translates to:
+  /// **'美国'**
+  String get regionUS;
+
+  /// No description provided for @removeItem.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get removeItem;
+
+  /// No description provided for @restDayLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'休息日'**
+  String get restDayLabel;
+
+  /// No description provided for @salaryBasis.
+  ///
+  /// In zh, this message translates to:
+  /// **'薪资口径'**
+  String get salaryBasis;
+
+  /// No description provided for @salaryPrecision.
+  ///
+  /// In zh, this message translates to:
+  /// **'金额小数位'**
+  String get salaryPrecision;
+
+  /// No description provided for @settingsExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出设置'**
+  String get settingsExport;
+
+  /// No description provided for @settingsExported.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导出设置。'**
+  String get settingsExported;
+
+  /// No description provided for @settingsFileInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法使用此文件，请检查大小、JSON 格式和版本。'**
+  String get settingsFileInvalid;
+
+  /// No description provided for @settingsImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入设置'**
+  String get settingsImport;
+
+  /// No description provided for @systemLanguage.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get systemLanguage;
+
+  /// No description provided for @targetTime.
+  ///
+  /// In zh, this message translates to:
+  /// **'目标时刻'**
+  String get targetTime;
+
+  /// No description provided for @twiceMonthly.
+  ///
+  /// In zh, this message translates to:
+  /// **'每月两次'**
+  String get twiceMonthly;
+
+  /// No description provided for @weeklyRestHoliday.
+  ///
+  /// In zh, this message translates to:
+  /// **'将每周休息日计入放假'**
+  String get weeklyRestHoliday;
+
+  /// No description provided for @workdayLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作日'**
+  String get workdayLabel;
+
+  /// No description provided for @workEnd.
+  ///
+  /// In zh, this message translates to:
+  /// **'下班时间'**
+  String get workEnd;
+
+  /// No description provided for @workSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'作息与薪资'**
+  String get workSection;
+
+  /// No description provided for @workStart.
+  ///
+  /// In zh, this message translates to:
+  /// **'上班时间'**
+  String get workStart;
+
+  /// No description provided for @workWeek.
+  ///
+  /// In zh, this message translates to:
+  /// **'每周工作日'**
+  String get workWeek;
+
   /// No description provided for @holidayData.
   ///
   /// In zh, this message translates to:
