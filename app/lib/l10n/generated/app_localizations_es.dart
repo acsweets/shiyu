@@ -69,13 +69,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mobileSettings => 'Ajustes';
 
   @override
-  String get mobileAppearance => 'Apariencia';
+  String get mobileAppearance => 'Apariencia del widget';
 
   @override
   String get mobileWidget => 'Widget de pantalla de inicio';
-
-  @override
-  String get mobileShowCard => 'Mostrar tarjeta flotante';
 
   @override
   String get mobileShowTitle => 'Mostrar título';
@@ -101,17 +98,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get mobileAppearanceError =>
       'No se pudo guardar la apariencia. Inténtalo de nuevo.';
-
-  @override
-  String mobileCountdown(String days, String clock) {
-    return '$days d $clock';
-  }
-
-  @override
-  String get mobileCardHidden => 'Tarjeta flotante oculta';
-
-  @override
-  String get mobileResetPosition => 'Restablecer posición de la tarjeta';
 
   @override
   String get mobileNotSet => 'Sin configurar';

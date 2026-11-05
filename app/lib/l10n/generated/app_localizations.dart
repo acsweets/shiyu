@@ -220,7 +220,7 @@ abstract class AppLocalizations {
   /// No description provided for @mobileAppearance.
   ///
   /// In zh, this message translates to:
-  /// **'外观'**
+  /// **'小组件外观'**
   String get mobileAppearance;
 
   /// No description provided for @mobileWidget.
@@ -228,12 +228,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'主屏幕小组件'**
   String get mobileWidget;
-
-  /// No description provided for @mobileShowCard.
-  ///
-  /// In zh, this message translates to:
-  /// **'显示浮窗'**
-  String get mobileShowCard;
 
   /// No description provided for @mobileShowTitle.
   ///
@@ -282,24 +276,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'外观未能保存，请重试。'**
   String get mobileAppearanceError;
-
-  /// No description provided for @mobileCountdown.
-  ///
-  /// In zh, this message translates to:
-  /// **'{days} 天 {clock}'**
-  String mobileCountdown(String days, String clock);
-
-  /// No description provided for @mobileCardHidden.
-  ///
-  /// In zh, this message translates to:
-  /// **'浮窗已隐藏'**
-  String get mobileCardHidden;
-
-  /// No description provided for @mobileResetPosition.
-  ///
-  /// In zh, this message translates to:
-  /// **'重置浮窗位置'**
-  String get mobileResetPosition;
 
   /// No description provided for @mobileNotSet.
   ///

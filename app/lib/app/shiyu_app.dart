@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'theme/mobile_paper.dart';
 
 import '../features/retirement/application/retirement_controller.dart';
-import '../features/retirement/presentation/retirement_page.dart';
+import '../features/retirement/presentation/mobile_settings_page.dart';
 import '../features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import '../features/desktop_stickers/data/sticker_layout.dart';
 import '../platform/desktop/floating_window_controller.dart';
@@ -51,7 +51,7 @@ class ShiyuApp extends StatelessWidget {
               useMaterial3: true,
             ),
       home: window == null
-          ? RetirementPage(controller: controller)
+          ? MobileSettingsPage(controller: controller)
           : DesktopStickerPage(
               controller: controller,
               window: window!,

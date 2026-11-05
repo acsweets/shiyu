@@ -18,9 +18,8 @@
   "calendarFallback": "祝日データは未接続のため、設定された毎週の勤務日を使用します。",
   "currentSlice": "現在は退職カウントダウンに対応しています。他の指標は今後追加予定です。",
   "mobileSettings": "設定",
-  "mobileAppearance": "外観",
+  "mobileAppearance": "ウィジェットの外観",
   "mobileWidget": "ホーム画面のウィジェット",
-  "mobileShowCard": "フローティングカードを表示",
   "mobileShowTitle": "タイトルを表示",
   "mobileTitleSize": "タイトルの文字サイズ",
   "mobileMacaron": "マカロン",
@@ -29,8 +28,5 @@
   "mobileSave": "設定を保存",
   "mobileSaved": "設定を保存しました",
   "mobileAppearanceError": "外観を保存できませんでした。もう一度お試しください。",
-  "mobileCountdown": "{days} 日 {clock}",
-  "mobileCardHidden": "フローティングカードは非表示です",
-  "mobileResetPosition": "カードの位置をリセット",
   "mobileNotSet": "未設定"
 }

@@ -69,13 +69,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mobileSettings => 'Settings';
 
   @override
-  String get mobileAppearance => 'Appearance';
+  String get mobileAppearance => 'Widget appearance';
 
   @override
   String get mobileWidget => 'Home screen widget';
-
-  @override
-  String get mobileShowCard => 'Show floating card';
 
   @override
   String get mobileShowTitle => 'Show title';
@@ -100,17 +97,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mobileAppearanceError => 'Couldn’t save appearance. Try again.';
-
-  @override
-  String mobileCountdown(String days, String clock) {
-    return '${days}d $clock';
-  }
-
-  @override
-  String get mobileCardHidden => 'Floating card hidden';
-
-  @override
-  String get mobileResetPosition => 'Reset card position';
 
   @override
   String get mobileNotSet => 'Not set';

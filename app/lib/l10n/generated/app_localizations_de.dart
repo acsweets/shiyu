@@ -69,13 +69,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mobileSettings => 'Einstellungen';
 
   @override
-  String get mobileAppearance => 'Darstellung';
+  String get mobileAppearance => 'Widget-Darstellung';
 
   @override
   String get mobileWidget => 'Startbildschirm-Widget';
-
-  @override
-  String get mobileShowCard => 'Schwebende Karte anzeigen';
 
   @override
   String get mobileShowTitle => 'Titel anzeigen';
@@ -101,17 +98,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get mobileAppearanceError =>
       'Darstellung konnte nicht gespeichert werden. Erneut versuchen.';
-
-  @override
-  String mobileCountdown(String days, String clock) {
-    return '$days T $clock';
-  }
-
-  @override
-  String get mobileCardHidden => 'Schwebende Karte ausgeblendet';
-
-  @override
-  String get mobileResetPosition => 'Kartenposition zurücksetzen';
 
   @override
   String get mobileNotSet => 'Nicht festgelegt';

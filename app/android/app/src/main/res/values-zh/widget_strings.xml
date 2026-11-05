@@ -1,9 +1,8 @@
 <resources>
     <string name="widget_title">时余 · 退休倒计时</string>
-    <string name="widget_days">还剩 %1$s 天</string>
+    <string name="widget_heading">退休倒计时</string>
+    <string name="widget_duration">%1$s 天 %2$s</string>
     <string name="widget_retired">已退休</string>
-    <string name="widget_setup">打开时余设置退休日期</string>
-    <string name="widget_error">请打开时余检查设置</string>
-    <string name="widget_updated">更新于 %1$s</string>
-    <string name="widget_refresh">刷新</string>
+    <string name="widget_setup">设置退休日期</string>
+    <string name="widget_error">检查设置</string>
 </resources>

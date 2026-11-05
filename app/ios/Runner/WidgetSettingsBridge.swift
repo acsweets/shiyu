@@ -19,6 +19,15 @@ final class WidgetSettingsBridge: NSObject, FlutterPlugin {
                 }
                 try SharedWidgetStore.write(json)
                 result(nil)
+            case "readAppearance": result(try SharedWidgetStore.readAppearance())
+            case "writeAppearance":
+                guard let json = call.arguments as? String else {
+                    result(FlutterError(code: "invalid_arguments", message: nil, details: nil))
+                    return
+                }
+                try SharedWidgetStore.writeAppearance(json)
+                WidgetCenter.shared.reloadTimelines(ofKind: "ShiyuRetirement")
+                result(nil)
             case "refresh":
                 WidgetCenter.shared.reloadTimelines(ofKind: "ShiyuRetirement")
                 result(nil)

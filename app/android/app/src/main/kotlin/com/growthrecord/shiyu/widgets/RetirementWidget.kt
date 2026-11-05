@@ -6,64 +6,81 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import com.growthrecord.shiyu.MainActivity
 import com.growthrecord.shiyu.R
 import com.growthrecord.shiyu.core.computeSnapshot
 import com.growthrecord.shiyu.core.defaultSettings
 import org.json.JSONObject
-import java.text.DateFormat
 import java.text.NumberFormat
-import java.util.Date
+import java.util.Locale
 
-// 组件直接调用 UniFFI，不创建 Flutter 引擎；仅实现本节点退休倒计时切片。
+// 组件直接调用 UniFFI，无需运行 Flutter 或保留应用前台进程。
 class RetirementWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        for (id in ids) manager.updateAppWidget(id, render(context))
+        if (ids.isNotEmpty()) manager.updateAppWidget(ids, render(context))
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action in listOf(REFRESH, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_BOOT_COMPLETED)) {
-            refresh(context)
+        when (intent.action) {
+            Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_BOOT_COMPLETED ->
+                refresh(context)
         }
     }
 
     companion object {
-        // 仅由本应用创建的 PendingIntent 或系统广播触发，不开放外部控制。
-        const val REFRESH = "com.growthrecord.shiyu.REFRESH_WIDGET"
-
         fun refresh(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, RetirementWidget::class.java))
-            for (id in ids) manager.updateAppWidget(id, render(context))
+            if (ids.isNotEmpty()) manager.updateAppWidget(ids, render(context))
         }
 
         private fun render(context: Context): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.retirement_widget)
-            val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val open = PendingIntent.getActivity(
+                context,
+                0,
+                Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
             views.setOnClickPendingIntent(R.id.widget_root, open)
-            val reload = PendingIntent.getBroadcast(context, 1, Intent(context, RetirementWidget::class.java).setAction(REFRESH), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            views.setOnClickPendingIntent(R.id.widget_refresh, reload)
+            val appearance = WidgetAppearance.read(context)
+            views.setInt(R.id.widget_card, "setBackgroundResource", appearance.palette.background)
+            views.setViewVisibility(R.id.widget_heading, if (appearance.titleVisible) View.VISIBLE else View.GONE)
+            views.setTextViewTextSize(R.id.widget_heading, TypedValue.COMPLEX_UNIT_SP, appearance.titleSize)
+            views.setTextColor(R.id.widget_heading, appearance.palette.ink)
+            views.setTextColor(R.id.widget_value, appearance.palette.ink)
+            views.setTextViewText(R.id.widget_heading, context.getString(R.string.widget_heading))
+            views.setTextViewText(R.id.widget_value, countdown(context))
+            return views
+        }
+
+        private fun countdown(context: Context): String {
             try {
-                val json = WidgetSettings.read(context) ?: defaultSettings()
-                val reply = JSONObject(computeSnapshot(json, "{}", System.currentTimeMillis()))
+                val settings = WidgetSettings.read(context) ?: defaultSettings()
+                val reply = JSONObject(computeSnapshot(settings, "{}", System.currentTimeMillis()))
                 check(reply.getBoolean("ok"))
-                val snapshot = reply.getJSONObject("snapshot")
-                val retirement = snapshot.getJSONObject("retirement")
-                val value = when (retirement.getString("status")) {
-                    "active" -> context.getString(R.string.widget_days, NumberFormat.getIntegerInstance().format(retirement.getLong("remaining_days")))
+                val retirement = reply.getJSONObject("snapshot").getJSONObject("retirement")
+                return when (retirement.getString("status")) {
+                    "active" -> formatDuration(context, retirement.getLong("remaining_seconds"))
                     "retired" -> context.getString(R.string.widget_retired)
                     else -> context.getString(R.string.widget_setup)
                 }
-                views.setTextViewText(R.id.widget_value, value)
-                views.setTextViewText(R.id.widget_zone, snapshot.getString("time_zone"))
-                views.setTextViewText(R.id.widget_updated, context.getString(R.string.widget_updated, DateFormat.getTimeInstance(DateFormat.SHORT).format(Date())))
             } catch (_: Throwable) {
-                views.setTextViewText(R.id.widget_value, context.getString(R.string.widget_error))
-                views.setTextViewText(R.id.widget_updated, "")
+                return context.getString(R.string.widget_error)
             }
-            return views
+        }
+
+        // 只格式化 Rust 已计算的非负秒数。组件按系统调度更新这份快照。
+        private fun formatDuration(context: Context, seconds: Long): String {
+            val locale = context.resources.configuration.locales[0]
+            val days = NumberFormat.getIntegerInstance(locale).format(seconds / 86_400)
+            val clock = String.format(Locale.ROOT, "%02d:%02d:%02d",
+                seconds / 3_600 % 24, seconds / 60 % 60, seconds % 60)
+            return context.getString(R.string.widget_duration, days, clock)
         }
     }
 }

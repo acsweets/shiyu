@@ -7,7 +7,7 @@ import '../data/mobile_appearance.dart';
 
 typedef MobileAppearanceChanged = void Function(MobileAppearance appearance);
 
-/// 配色、标题和位置可独立修改，不会写入共享倒计时数据。
+/// 配色和标题可独立修改，不会写入共享倒计时数据。
 class MobileAppearancePanel extends StatefulWidget {
   const MobileAppearancePanel({
     required this.appearance,
@@ -15,7 +15,7 @@ class MobileAppearancePanel extends StatefulWidget {
     super.key,
   });
 
-  /// 首页持有的已选外观。
+  /// 小组件的已选外观。
   final MobileAppearance appearance;
 
   /// 选项实时应用，滑块在完成拖动时保存。
@@ -37,12 +37,6 @@ class _MobileAppearancePanelState extends State<MobileAppearancePanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(strings.mobileShowCard),
-          value: appearance.cardVisible,
-          onChanged: _setCardVisible,
-        ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(strings.mobileShowTitle),
@@ -77,21 +71,9 @@ class _MobileAppearancePanelState extends State<MobileAppearancePanel> {
               onPressed: () => _setPalette(palette),
             ),
           ),
-        if (appearance.position != MobileAppearance.defaultPosition)
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: TextButton.icon(
-              onPressed: _resetPosition,
-              icon: const Icon(Icons.center_focus_strong_outlined, size: 18),
-              label: Text(strings.mobileResetPosition),
-            ),
-          ),
       ],
     );
   }
-
-  void _setCardVisible(bool value) =>
-      widget.onChanged(widget.appearance.copyWith(cardVisible: value));
 
   void _setTitleVisible(bool value) =>
       widget.onChanged(widget.appearance.copyWith(titleVisible: value));
@@ -105,10 +87,6 @@ class _MobileAppearancePanelState extends State<MobileAppearancePanel> {
 
   void _setPalette(StickerPalette palette) =>
       widget.onChanged(widget.appearance.copyWith(palette: palette));
-
-  void _resetPosition() => widget.onChanged(
-    widget.appearance.copyWith(position: MobileAppearance.defaultPosition),
-  );
 
   String _paletteLabel(AppLocalizations strings, StickerPalette palette) =>
       switch (palette) {

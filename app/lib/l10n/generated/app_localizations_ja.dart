@@ -64,13 +64,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mobileSettings => '設定';
 
   @override
-  String get mobileAppearance => '外観';
+  String get mobileAppearance => 'ウィジェットの外観';
 
   @override
   String get mobileWidget => 'ホーム画面のウィジェット';
-
-  @override
-  String get mobileShowCard => 'フローティングカードを表示';
 
   @override
   String get mobileShowTitle => 'タイトルを表示';
@@ -95,17 +92,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mobileAppearanceError => '外観を保存できませんでした。もう一度お試しください。';
-
-  @override
-  String mobileCountdown(String days, String clock) {
-    return '$days 日 $clock';
-  }
-
-  @override
-  String get mobileCardHidden => 'フローティングカードは非表示です';
-
-  @override
-  String get mobileResetPosition => 'カードの位置をリセット';
 
   @override
   String get mobileNotSet => '未設定';

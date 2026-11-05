@@ -8,6 +8,16 @@ class WidgetBridge {
   static const MethodChannel _channel = MethodChannel('shiyu/widgets');
 
   bool get supported => Platform.isAndroid || Platform.isIOS;
+  bool get offersPin => Platform.isAndroid;
+
+  /// 原生小组件独立读取的外观配置。
+  Future<String?> readAppearance() =>
+      _channel.invokeMethod<String>('readAppearance');
+
+  /// 原子写入外观并请求刷新已添加的小组件。
+  Future<void> writeAppearance(String json) =>
+      _channel.invokeMethod<void>('writeAppearance', json);
+
   Future<String?> readSettings() =>
       _channel.invokeMethod<String>('readSettings');
   Future<void> writeSettings(String json) =>
@@ -17,7 +27,7 @@ class WidgetBridge {
   }
 
   Future<bool> pin() async {
-    if (!Platform.isAndroid) return false;
+    if (!offersPin) return false;
     return await _channel.invokeMethod<bool>('pin') ?? false;
   }
 }

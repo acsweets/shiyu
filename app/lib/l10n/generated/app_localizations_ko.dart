@@ -64,13 +64,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mobileSettings => '설정';
 
   @override
-  String get mobileAppearance => '모양';
+  String get mobileAppearance => '위젯 모양';
 
   @override
   String get mobileWidget => '홈 화면 위젯';
-
-  @override
-  String get mobileShowCard => '플로팅 카드 표시';
 
   @override
   String get mobileShowTitle => '제목 표시';
@@ -95,17 +92,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mobileAppearanceError => '모양을 저장하지 못했습니다. 다시 시도해 주세요.';
-
-  @override
-  String mobileCountdown(String days, String clock) {
-    return '$days일 $clock';
-  }
-
-  @override
-  String get mobileCardHidden => '플로팅 카드 숨김';
-
-  @override
-  String get mobileResetPosition => '카드 위치 초기화';
 
   @override
   String get mobileNotSet => '설정되지 않음';

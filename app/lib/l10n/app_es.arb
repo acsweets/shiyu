@@ -18,9 +18,8 @@
   "calendarFallback": "Los datos de festivos aún no están conectados; se usan los días laborables semanales configurados.",
   "currentSlice": "La cuenta atrás para la jubilación está disponible. Los demás indicadores llegarán en etapas posteriores.",
   "mobileSettings": "Ajustes",
-  "mobileAppearance": "Apariencia",
+  "mobileAppearance": "Apariencia del widget",
   "mobileWidget": "Widget de pantalla de inicio",
-  "mobileShowCard": "Mostrar tarjeta flotante",
   "mobileShowTitle": "Mostrar título",
   "mobileTitleSize": "Tamaño del título",
   "mobileMacaron": "Macaron",
@@ -29,8 +28,5 @@
   "mobileSave": "Guardar ajustes",
   "mobileSaved": "Ajustes guardados",
   "mobileAppearanceError": "No se pudo guardar la apariencia. Inténtalo de nuevo.",
-  "mobileCountdown": "{days} d {clock}",
-  "mobileCardHidden": "Tarjeta flotante oculta",
-  "mobileResetPosition": "Restablecer posición de la tarjeta",
   "mobileNotSet": "Sin configurar"
 }

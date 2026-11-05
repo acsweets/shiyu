@@ -1,115 +1,85 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/painting.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../platform/widgets/widget_bridge.dart';
 import '../../desktop_stickers/data/sticker_palette.dart';
 import 'settings_store.dart';
 
-/// 手机端外观和位置独立于 Rust 与小组件使用的设置。
+/// 原生主屏幕小组件和手机设置页共用的外观。
 class MobileAppearance {
   const MobileAppearance({
     this.palette = StickerPalette.macaron,
-    this.cardVisible = true,
     this.titleVisible = true,
     this.titleSize = 16,
-    this.position = defaultPosition,
   });
 
-  static const Alignment defaultPosition = Alignment(0, -0.26);
   static const double minTitleSize = 10;
   static const double maxTitleSize = 24;
 
-  /// 整块浮窗的底色。
+  /// 小组件整张卡片的配色。
   final StickerPalette palette;
 
-  /// 首页是否显示浮窗。
-  final bool cardVisible;
-
-  /// 是否在倒计时上方显示标题。
+  /// 是否在小组件中显示倒计时标题。
   final bool titleVisible;
 
-  /// 标题的字号，不影响倒计时数字。
+  /// 标题字号，倒计时使用固定的数字样式。
   final double titleSize;
-
-  /// 在可拖动范围内的相对位置，旋转屏幕时仍可见。
-  final Alignment position;
 
   MobileAppearance copyWith({
     StickerPalette? palette,
-    bool? cardVisible,
     bool? titleVisible,
     double? titleSize,
-    Alignment? position,
   }) => MobileAppearance(
     palette: palette ?? this.palette,
-    cardVisible: cardVisible ?? this.cardVisible,
     titleVisible: titleVisible ?? this.titleVisible,
     titleSize: titleSize ?? this.titleSize,
-    position: position ?? this.position,
   );
 
   static MobileAppearance fromJson(Map<String, dynamic> json) {
+    final Object? size = json['titleSize'];
     return MobileAppearance(
       palette: StickerPalette.fromId(json['palette']),
-      cardVisible: json['cardVisible'] != false,
       titleVisible: json['titleVisible'] != false,
-      titleSize: _readNumber(json['titleSize'], 16, minTitleSize, maxTitleSize),
-      position: Alignment(
-        _readNumber(json['x'], defaultPosition.x, -1, 1),
-        _readNumber(json['y'], defaultPosition.y, -1, 1),
-      ),
+      titleSize: size is num && size.isFinite
+          ? size.clamp(minTitleSize, maxTitleSize).toDouble()
+          : 16,
     );
   }
 
   Map<String, Object> toJson() => <String, Object>{
     'palette': palette.name,
-    'cardVisible': cardVisible,
     'titleVisible': titleVisible,
     'titleSize': titleSize,
-    'x': position.x,
-    'y': position.y,
   };
-
-  static double _readNumber(
-    Object? value,
-    double fallback,
-    double min,
-    double max,
-  ) {
-    return value is num && value.isFinite
-        ? value.clamp(min, max).toDouble()
-        : fallback;
-  }
 }
 
-/// 外观只写到本应用私有目录，沿用现有的原子文件替换。
+/// 小组件外观通过原生共享存储读写，并兼容上一版应用内偏好。
 class MobileAppearanceStore {
-  const MobileAppearanceStore();
+  const MobileAppearanceStore(this.bridge);
+
+  /// 按平台读写私有共享文件并请求系统刷新。
+  final WidgetBridge bridge;
 
   Future<MobileAppearance> read() async {
-    try {
-      final LocalSettingsStore store = await _store();
-      final String? content = await store.read();
-      if (content != null) {
-        return MobileAppearance.fromJson(
-          jsonDecode(content) as Map<String, dynamic>,
-        );
-      }
-    } catch (_) {
-      // 外观文件缺失或损坏时使用默认值，不影响倒计时设置。
-    }
-    return const MobileAppearance();
-  }
-
-  Future<void> write(MobileAppearance value) async {
-    final LocalSettingsStore store = await _store();
-    await store.write(jsonEncode(value.toJson()));
-  }
-
-  Future<LocalSettingsStore> _store() async {
+    if (!bridge.supported) return const MobileAppearance();
+    final String? shared = await bridge.readAppearance();
+    if (shared != null) return _decode(shared);
     final Directory directory = await getApplicationSupportDirectory();
-    return LocalSettingsStore(Directory('${directory.path}/shiyu/mobile'));
+    final LocalSettingsStore legacy = LocalSettingsStore(
+      Directory('${directory.path}/shiyu/mobile'),
+    );
+    final String? previous = await legacy.read();
+    if (previous == null) return const MobileAppearance();
+    final MobileAppearance migrated = _decode(previous);
+    await write(migrated);
+    return migrated;
   }
+
+  Future<void> write(MobileAppearance value) =>
+      bridge.writeAppearance(jsonEncode(value.toJson()));
+
+  MobileAppearance _decode(String raw) =>
+      MobileAppearance.fromJson(jsonDecode(raw) as Map<String, dynamic>);
 }

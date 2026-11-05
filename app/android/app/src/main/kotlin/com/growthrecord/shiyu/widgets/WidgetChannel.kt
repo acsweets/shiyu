@@ -24,6 +24,13 @@ object WidgetChannel {
                         WidgetSettings.write(context, checked.getJSONObject("settings").toString())
                         result.success(null)
                     }
+                    "readAppearance" -> result.success(WidgetSettings.readAppearance(context))
+                    "writeAppearance" -> {
+                        val json = JSONObject(call.arguments as String)
+                        WidgetSettings.writeAppearance(context, json.toString())
+                        RetirementWidget.refresh(context)
+                        result.success(null)
+                    }
                     "refresh" -> { RetirementWidget.refresh(context); result.success(null) }
                     "pin" -> {
                         val manager = AppWidgetManager.getInstance(context)

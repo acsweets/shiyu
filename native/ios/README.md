@@ -24,7 +24,7 @@ flutter run -d macos
 2. Runner 和 ShiyuWidgets 选择同一开发者 Team。两者的 App Groups entitlement 均为 `group.com.growthrecord.shiyu`。真机需要开发者账号注册并为两者启用同一 App Group。若更改 bundle/group，须同时修改两个 entitlement 和 `SharedWidgetStore.group`，不能只改 Runner。
 3. 选择 Runner scheme 和模拟器/设备构建运行；依赖会自动构建、嵌入 ShiyuWidgets.appex。模拟器不需要分发证书；若环境缺 Team，先验证模拟器构建并检查 App Group 容器实际可访问。
 4. 在 App 内选择合成测试退休日期（如 2050-01-01）、保存 Asia/Shanghai。共享容器不可用会提示错误，不会回退到扩展看不到的私有目录。
-5. 返回手机主屏幕，长按→添加小组件→时余，选择小/中尺寸。iOS 不允许 App 自动把 widget 固定到桌面，App 中按钮显示操作说明。
+5. 返回手机主屏幕，长按→添加小组件→时余，选择小/中尺寸。iOS 不允许 App 自动把 widget 固定到桌面，时余的设置页提供手动添加说明。
 
 ```bash
 cd app
@@ -43,4 +43,4 @@ flutter run -d <iOS模拟器ID>
 - [ ] 点击 widget 打开应用；主屏幕背景与文字不裁切，深/浅色、字体大小和 iPhone/iPad 布局复核。
 - [ ] 记录 macOS/iOS 版本、CPU、Xcode、模拟器/真机型号、命令结果与截图，回填 [02 验收记录](../../docs/验收记录/02/README.md)。
 
-本节点小工具只实现退休剩余天数，不包含薪资和其余三类倒计时。完整移动功能仍归节点 11/12。不要将本节点静态配置检查或用户上次 Mac 验证视为新 Widget 已实测通过。
+本节点小组件显示橘猫贴纸与退休倒计时，外观从 App Group 读取。其余三类倒计时和薪资小组件留在节点 12。完整移动功能仍归节点 11/12。不要将本节点静态配置检查或用户上次 Mac 验证视为新 Widget 已实测通过。

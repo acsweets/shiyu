@@ -18,9 +18,8 @@
   "calendarFallback": "Les jours fériés ne sont pas encore connectés ; les jours travaillés hebdomadaires configurés sont utilisés.",
   "currentSlice": "Le compte à rebours avant la retraite est disponible. Les autres indicateurs seront ajoutés ultérieurement.",
   "mobileSettings": "Réglages",
-  "mobileAppearance": "Apparence",
+  "mobileAppearance": "Apparence du widget",
   "mobileWidget": "Widget d’écran d’accueil",
-  "mobileShowCard": "Afficher la carte flottante",
   "mobileShowTitle": "Afficher le titre",
   "mobileTitleSize": "Taille du titre",
   "mobileMacaron": "Macaron",
@@ -29,8 +28,5 @@
   "mobileSave": "Enregistrer les réglages",
   "mobileSaved": "Réglages enregistrés",
   "mobileAppearanceError": "Impossible d’enregistrer l’apparence. Réessayez.",
-  "mobileCountdown": "{days} j {clock}",
-  "mobileCardHidden": "Carte flottante masquée",
-  "mobileResetPosition": "Réinitialiser la position de la carte",
   "mobileNotSet": "Non défini"
 }

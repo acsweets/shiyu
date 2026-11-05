@@ -18,9 +18,8 @@
   "calendarFallback": "Holiday data is not connected yet; the configured weekly workdays are used.",
   "currentSlice": "Retirement countdown is available. Other built-in metrics are planned for later nodes.",
   "mobileSettings": "Settings",
-  "mobileAppearance": "Appearance",
+  "mobileAppearance": "Widget appearance",
   "mobileWidget": "Home screen widget",
-  "mobileShowCard": "Show floating card",
   "mobileShowTitle": "Show title",
   "mobileTitleSize": "Title text size",
   "mobileMacaron": "Macaron",
@@ -29,8 +28,5 @@
   "mobileSave": "Save settings",
   "mobileSaved": "Settings saved",
   "mobileAppearanceError": "Couldn’t save appearance. Try again.",
-  "mobileCountdown": "{days}d {clock}",
-  "mobileCardHidden": "Floating card hidden",
-  "mobileResetPosition": "Reset card position",
   "mobileNotSet": "Not set"
 }
