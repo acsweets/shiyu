@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_cat_pose.dart';
+import '../data/sticker_character.dart';
 import '../data/sticker_layout.dart';
 
 /// 跨窗口只传输可见文本与外观信息，子窗无需加载 Rust。
@@ -18,23 +19,29 @@ class StickerGroupView {
     RetirementController controller,
     int group,
     bool visible,
-  ) => StickerGroupView(<String, Object?>{
-    'values': <String, String>{
-      for (final String id in layout.members(group))
-        id: _value(id, layout.preview, controller),
-    },
-    'titles': layout.showsTitle(group),
-    'preview': layout.preview,
-    'visible': visible,
-    'background': layout.palette.backgroundFor(group).toARGB32(),
-    'foreground': layout.palette.foreground.toARGB32(),
-    'catAsset': StickerCatPose.values[group].asset,
-    'character': layout.characterOf(group)?.path,
-    'assetRevision': layout.assetRevision,
-    'initialBounds': StickerLayout.encodeBounds(
-      layout.boundsOf(group) ?? layout.initialBounds(group),
-    ),
-  });
+  ) {
+    final StickerCatPose pose = StickerCatPose.values[group];
+    final StickerCharacter? character = layout.characterOf(group);
+    return StickerGroupView(<String, Object?>{
+      'values': <String, String>{
+        for (final String id in layout.members(group))
+          id: _value(id, layout.preview, controller),
+      },
+      'titles': layout.showsTitle(group),
+      'preview': layout.preview,
+      'visible': visible,
+      'background': layout.palette.backgroundFor(group).toARGB32(),
+      'foreground': layout.palette.foreground.toARGB32(),
+      'catAsset': pose.asset,
+      'catBottomInset': pose.bottomInset,
+      'character': character?.file.path,
+      'characterBottomInset': character?.bottomInset,
+      'assetRevision': layout.assetRevision,
+      'initialBounds': StickerLayout.encodeBounds(
+        layout.boundsOf(group) ?? layout.initialBounds(group),
+      ),
+    });
+  }
 
   Map<String, String> get values =>
       (data['values'] as Map<Object?, Object?>).cast<String, String>();
@@ -44,6 +51,8 @@ class StickerGroupView {
   Color get background => Color(data['background'] as int);
   Color get foreground => Color(data['foreground'] as int);
   String get catAsset => data['catAsset'] as String;
+  double get catBottomInset => data['catBottomInset'] as double;
+  double? get characterBottomInset => data['characterBottomInset'] as double?;
   int get assetRevision => data['assetRevision'] as int;
   File? get character {
     final String? path = data['character'] as String?;

@@ -18,20 +18,35 @@ class StickerGroupSurface extends StatelessWidget {
   /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
 
-  Widget _builtInCat() =>
-      Image.asset(view.catAsset, fit: BoxFit.contain, cacheWidth: 384);
+  /// 让角色轮廓压住卡片上沿两个逻辑像素。
+  Widget _anchorCat(double size, double bottomInset, Widget image) =>
+      Transform.translate(
+        offset: Offset(0, size * bottomInset + 2),
+        child: image,
+      );
 
-  Widget _fallback(BuildContext context, Object error, StackTrace? stack) =>
-      _builtInCat();
+  Widget _builtInCat(double size) => _anchorCat(
+    size,
+    view.catBottomInset,
+    Image.asset(view.catAsset, fit: BoxFit.contain, cacheWidth: 384),
+  );
 
-  Widget _cat() {
+  Widget _cat(double size) {
     final File? character = view.character;
-    if (character == null) return _builtInCat();
+    if (character == null) return _builtInCat(size);
     return Image.file(
       character,
       key: ValueKey<int>(view.assetRevision),
       fit: BoxFit.contain,
-      errorBuilder: _fallback,
+      alignment: Alignment.bottomCenter,
+      frameBuilder: (
+        BuildContext context,
+        Widget child,
+        int? frame,
+        bool synchronous,
+      ) => _anchorCat(size, view.characterBottomInset!, child),
+      errorBuilder: (BuildContext context, Object error, StackTrace? stack) =>
+          _builtInCat(size),
     );
   }
 
@@ -56,16 +71,24 @@ class StickerGroupSurface extends StatelessWidget {
     final double catHeight = (constraints.maxHeight - 64)
         .clamp(0, 96)
         .toDouble();
-    return Column(
+    return Stack(
       children: <Widget>[
-        SizedBox(
+        Positioned.fill(top: catHeight, child: _paper()),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
           height: catHeight,
           child: Stack(
+            clipBehavior: Clip.none,
             fit: StackFit.expand,
             children: <Widget>[
               Align(
                 alignment: Alignment.bottomCenter,
-                child: SizedBox.square(dimension: catHeight, child: _cat()),
+                child: SizedBox.square(
+                  dimension: catHeight,
+                  child: _cat(catHeight),
+                ),
               ),
               if (onSettings != null)
                 Positioned(
@@ -86,7 +109,6 @@ class StickerGroupSurface extends StatelessWidget {
             ],
           ),
         ),
-        Expanded(child: _paper()),
       ],
     );
   }

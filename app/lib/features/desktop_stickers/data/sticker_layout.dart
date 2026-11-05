@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'sticker_cat_pose.dart';
+import 'sticker_character.dart';
 import 'sticker_palette.dart';
 
 /// 保存窗口分组与外观，不改变 Rust 业务设置。
@@ -58,10 +59,11 @@ class StickerLayout extends ChangeNotifier {
   final Set<int> _hiddenGroups = <int>{};
 
   /// 编号图片只覆盖同一窗口槽位。
-  final Map<StickerCatPose, File> _characters = <StickerCatPose, File>{};
+  final Map<StickerCatPose, StickerCharacter> _characters =
+      <StickerCatPose, StickerCharacter>{};
 
   /// 保留旧版主窗口角色图的替换方式。
-  File? _mainCharacter;
+  StickerCharacter? _mainCharacter;
 
   /// 磁盘状态加载完成后启用编辑。
   bool ready = false;
@@ -85,7 +87,7 @@ class StickerLayout extends ChangeNotifier {
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
   Rect? boundsOf(int group) => _bounds[group];
 
-  File? characterOf(int group) =>
+  StickerCharacter? characterOf(int group) =>
       _characters[StickerCatPose.values[group]] ??
       (group == mainGroup ? _mainCharacter : null);
 
@@ -339,14 +341,16 @@ class StickerLayout extends ChangeNotifier {
   Future<void> reloadCharacter() async {
     final Directory? folder = directory;
     if (folder == null) return;
-    final Map<StickerCatPose, File> characters = <StickerCatPose, File>{};
+    final Map<StickerCatPose, StickerCharacter> characters =
+        <StickerCatPose, StickerCharacter>{};
     for (final StickerCatPose pose in StickerCatPose.values) {
-      final File? file = await _readCharacter(folder, pose.overrideFileName);
-      if (file != null) characters[pose] = file;
+      final StickerCharacter? character = await StickerCharacter.read(
+        File('${folder.path}/${pose.overrideFileName}'),
+      );
+      if (character != null) characters[pose] = character;
     }
-    final File? main = await _readCharacter(
-      folder,
-      StickerCatPose.sitting.fileName,
+    final StickerCharacter? main = await StickerCharacter.read(
+      File('${folder.path}/${StickerCatPose.sitting.fileName}'),
     );
     _characters
       ..clear()
@@ -354,19 +358,6 @@ class StickerLayout extends ChangeNotifier {
     _mainCharacter = main;
     assetRevision++;
     if (!_disposed) notifyListeners();
-  }
-
-  Future<File?> _readCharacter(Directory folder, String name) async {
-    final File file = File('${folder.path}/$name');
-    try {
-      if (!await file.exists() || await file.length() > 8 * 1024 * 1024) {
-        return null;
-      }
-      await FileImage(file).evict();
-      return file;
-    } on FileSystemException {
-      return null;
-    }
   }
 
   /// 关闭前等待最后一次位置保存。

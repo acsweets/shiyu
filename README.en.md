@@ -1,6 +1,6 @@
 # Shiyu · 时余
 
-> Group desktop countdowns in a single floating window or split them across windows. Each window has a cat in a different pose above its card. Grouped countdowns share one cat. Move and resize each window independently, and use settings to hide the window or its titles. Open settings from the main window icon, or from the tray or menu bar when the main window is hidden. Turn off the sample preview to see the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
+> Group desktop countdowns in a single floating window or split them across windows. Each cat rests against the top edge of its window in a different pose. Grouped countdowns share one cat. Move and resize each window independently, and use settings to hide the window or its titles. Open settings from the main window icon, or from the tray or menu bar when the main window is hidden. Turn off the sample preview to see the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
 
 [简体中文](README.md) | [English](README.en.md)
 

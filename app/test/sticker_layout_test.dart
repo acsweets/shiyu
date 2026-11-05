@@ -59,14 +59,18 @@ Future<void> _persistence() async {
   final File source = File(StickerCatPose.sitting.asset);
   final File legacy = await source.copy('${directory.path}/character.png');
   await restored.reloadCharacter();
-  expect(restored.characterOf(group)?.path, legacy.path);
+  expect(restored.characterOf(group)?.file.path, legacy.path);
+  expect(
+    restored.characterOf(group)?.bottomInset,
+    closeTo(StickerCatPose.sitting.bottomInset, 0.01),
+  );
   final int splitGroup = restored.groupOf('work');
   expect(restored.characterOf(splitGroup), isNull);
   final String name = StickerCatPose.values[splitGroup].overrideFileName;
   final File custom = await source.copy('${directory.path}/$name');
   await restored.reloadCharacter();
-  expect(restored.characterOf(splitGroup)?.path, custom.path);
-  expect(restored.characterOf(group)?.path, legacy.path);
+  expect(restored.characterOf(splitGroup)?.file.path, custom.path);
+  expect(restored.characterOf(group)?.file.path, legacy.path);
   await restored.flush();
   layout.dispose();
   restored.dispose();
@@ -103,12 +107,7 @@ Future<void> _groupView(WidgetTester tester) async {
     _windowBackground(tester),
     StickerPalette.macaron.backgroundFor(layout.mainGroup),
   );
-  expect(
-    tester.getBottomLeft(find.byType(Image)).dy,
-    lessThanOrEqualTo(
-      tester.getTopLeft(find.byKey(const ValueKey<String>('sticker-work'))).dy,
-    ),
-  );
+  _expectCatOnCard(tester, StickerCatPose.sitting, 'work');
   layout.setTitleVisible(layout.mainGroup, false);
   await tester.pumpAndSettle();
   expect(find.text('距离放假'), findsNothing);
@@ -160,14 +159,7 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text(StickerLayout.examples['payday']!), findsOneWidget);
   expect(find.byType(Image), findsOneWidget);
   expect(_catAsset(tester), StickerCatPose.waving.asset);
-  expect(
-    tester.getBottomLeft(find.byType(Image)).dy,
-    lessThanOrEqualTo(
-      tester
-          .getTopLeft(find.byKey(const ValueKey<String>('sticker-payday')))
-          .dy,
-    ),
-  );
+  _expectCatOnCard(tester, StickerCatPose.waving, 'payday');
   expect(find.byType(IconButton), findsNothing);
   expect(
     _windowBackground(tester),
@@ -179,6 +171,23 @@ Future<void> _groupView(WidgetTester tester) async {
   layout.dispose();
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
+}
+
+void _expectCatOnCard(WidgetTester tester, StickerCatPose pose, String id) {
+  final Finder cat = find.byType(Image);
+  final Rect catRect = tester.getRect(cat);
+  final double visibleBottom =
+      catRect.bottom - catRect.height * pose.bottomInset;
+  final double cardTop = tester
+      .getTopLeft(
+        find.byKey(const ValueKey<String>('sticker-window-background')),
+      )
+      .dy;
+  final double timerTop = tester
+      .getTopLeft(find.byKey(ValueKey<String>('sticker-$id')))
+      .dy;
+  expect(visibleBottom, closeTo(cardTop + 2, 0.01));
+  expect(visibleBottom, lessThan(timerTop));
 }
 
 String _catAsset(WidgetTester tester) {
