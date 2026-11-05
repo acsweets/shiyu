@@ -564,12 +564,40 @@ public func computeSnapshot(settingsJson: String, holidayJson: String, nowMillis
 })
 }
 /**
+ * 原生宿主按固定起点和步长生成有界时间线。
+ */
+public func computeTimeline(settingsJson: String, holidayJson: String, startMillis: Int64, stepSeconds: Int64, count: Int64) -> String  {
+    return try!  FfiConverterString.lift(try! rustCall() {
+        uniffiCallStatus in
+    uniffi_shiyu_ffi_fn_func_compute_timeline(
+        FfiConverterString.lower(settingsJson),
+        FfiConverterString.lower(holidayJson),
+        FfiConverterInt64.lower(startMillis),
+        FfiConverterInt64.lower(stepSeconds),
+        FfiConverterInt64.lower(count),uniffiCallStatus
+    )
+})
+}
+/**
  * 生成初始配置，首次运行不设置任何虚构目标。
  */
 public func defaultSettings() -> String  {
     return try!  FfiConverterString.lift(try! rustCall() {
         uniffiCallStatus in
     uniffi_shiyu_ffi_fn_func_default_settings(uniffiCallStatus
+    )
+})
+}
+/**
+ * 校验并返回内存中的自定义倒计时配置变更。
+ */
+public func updateCustomCountdown(settingsJson: String, changeJson: String, nowMillis: Int64) -> String  {
+    return try!  FfiConverterString.lift(try! rustCall() {
+        uniffiCallStatus in
+    uniffi_shiyu_ffi_fn_func_update_custom_countdown(
+        FfiConverterString.lower(settingsJson),
+        FfiConverterString.lower(changeJson),
+        FfiConverterInt64.lower(nowMillis),uniffiCallStatus
     )
 })
 }
@@ -606,7 +634,13 @@ private let initializationResult: InitializationResult = {
     if (uniffi_shiyu_ffi_checksum_func_compute_snapshot() != 39006) {
         return InitializationResult.apiChecksumMismatch
     }
+    if (uniffi_shiyu_ffi_checksum_func_compute_timeline() != 22356) {
+        return InitializationResult.apiChecksumMismatch
+    }
     if (uniffi_shiyu_ffi_checksum_func_default_settings() != 23853) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_shiyu_ffi_checksum_func_update_custom_countdown() != 64229) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_shiyu_ffi_checksum_func_validate_settings() != 13879) {

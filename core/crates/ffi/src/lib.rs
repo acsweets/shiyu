@@ -25,3 +25,31 @@ pub fn validate_settings(settings_json: String) -> String {
 pub fn compute_snapshot(settings_json: String, holiday_json: String, now_millis: i64) -> String {
     shiyu_core::compute_snapshot(&settings_json, &holiday_json, now_millis)
 }
+
+/// 原生宿主按固定起点和步长生成有界时间线。
+#[uniffi::export]
+pub fn compute_timeline(
+    settings_json: String,
+    holiday_json: String,
+    start_millis: i64,
+    step_seconds: i64,
+    count: i64,
+) -> String {
+    shiyu_core::compute_timeline(
+        &settings_json,
+        &holiday_json,
+        start_millis,
+        step_seconds,
+        count,
+    )
+}
+
+/// 校验并返回内存中的自定义倒计时配置变更。
+#[uniffi::export]
+pub fn update_custom_countdown(
+    settings_json: String,
+    change_json: String,
+    now_millis: i64,
+) -> String {
+    shiyu_core::update_custom_countdown(&settings_json, &change_json, now_millis)
+}

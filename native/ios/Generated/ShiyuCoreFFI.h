@@ -253,10 +253,20 @@ RustBuffer uniffi_shiyu_ffi_fn_func_bridge_probe(uint32_t challenge, RustCallSta
 RustBuffer uniffi_shiyu_ffi_fn_func_compute_snapshot(RustBuffer settings_json, RustBuffer holiday_json, int64_t now_millis, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_COMPUTE_TIMELINE
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_COMPUTE_TIMELINE
+RustBuffer uniffi_shiyu_ffi_fn_func_compute_timeline(RustBuffer settings_json, RustBuffer holiday_json, int64_t start_millis, int64_t step_seconds, int64_t count, RustCallStatus *_Nonnull out_status
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_DEFAULT_SETTINGS
 #define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_DEFAULT_SETTINGS
 RustBuffer uniffi_shiyu_ffi_fn_func_default_settings(RustCallStatus *_Nonnull out_status
 
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_UPDATE_CUSTOM_COUNTDOWN
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_UPDATE_CUSTOM_COUNTDOWN
+RustBuffer uniffi_shiyu_ffi_fn_func_update_custom_countdown(RustBuffer settings_json, RustBuffer change_json, int64_t now_millis, RustCallStatus *_Nonnull out_status
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_FN_FUNC_VALIDATE_SETTINGS
@@ -536,9 +546,21 @@ uint16_t uniffi_shiyu_ffi_checksum_func_compute_snapshot(void
 
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_COMPUTE_TIMELINE
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_COMPUTE_TIMELINE
+uint16_t uniffi_shiyu_ffi_checksum_func_compute_timeline(void
+
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_DEFAULT_SETTINGS
 #define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_DEFAULT_SETTINGS
 uint16_t uniffi_shiyu_ffi_checksum_func_default_settings(void
+
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_UPDATE_CUSTOM_COUNTDOWN
+#define UNIFFI_FFIDEF_UNIFFI_SHIYU_FFI_CHECKSUM_FUNC_UPDATE_CUSTOM_COUNTDOWN
+uint16_t uniffi_shiyu_ffi_checksum_func_update_custom_countdown(void
 
 );
 #endif

@@ -18,7 +18,7 @@ pub struct Settings {
     pub birth: Option<Birth>,
     /// 工作周与每天作息。
     pub schedule: Schedule,
-    /// 薪资以十进制字符串保存，当前尚未计算薪资。
+    /// 薪资以十进制字符串保存，未填写时无薪资结果。
     pub salary: Option<Salary>,
     /// 发薪规则。
     pub payday: Option<Payday>,
@@ -100,12 +100,30 @@ pub struct Salary {
     /// 税后月薪，可选。
     pub net_monthly: Option<String>,
     /// 币种代码。
-    pub currency: String,
+    #[serde(default)]
+    pub currency: Option<String>,
     /// 金额显示小数位。
+    #[serde(default = "default_salary_precision")]
     pub precision: u8,
     /// 税前或税后显示口径；默认税前。
     #[serde(default)]
     pub basis: SalaryBasis,
+}
+
+fn default_salary_precision() -> u8 {
+    2
+}
+
+/// 冻结范围内的地区默认币种。
+pub(crate) fn region_currency(region: &str) -> &'static str {
+    match region {
+        "US" => "USD",
+        "JP" => "JPY",
+        "KR" => "KRW",
+        "HK" => "HKD",
+        "TW" => "TWD",
+        _ => "CNY",
+    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -165,6 +183,16 @@ pub struct CustomCountdown {
     pub name: String,
     /// 设置时区内的本地目标日期时间。
     pub target: String,
+    /// 兼容旧配置，默认参与桌面显示列表。
+    #[serde(default = "default_countdown_enabled")]
+    pub enabled: bool,
+    /// 省略时按原数组位置排序，相同排序键保持原先顺序。
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub order: Option<u32>,
+}
+
+fn default_countdown_enabled() -> bool {
+    true
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]

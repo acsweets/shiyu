@@ -12,7 +12,7 @@ A local-first time and earnings tool for Windows, macOS, iOS, and Android. `work
 
 ## Current features
 
-The project is at node 03. The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust now exposes five time metrics. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
+The project is at node 04. The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust now exposes all six built-in metrics and custom countdowns. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
 
 | Feature | Current behavior |
 | --- | --- |
@@ -22,7 +22,8 @@ The project is at node 03. The retirement countdown is available in desktop floa
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android home screen widget | The cat sits above the card, with the title above a single-line retirement countdown. Tap the widget to open settings. It calls Rust via UniFFI independently of Flutter |
 | iOS home screen widget | Small and medium WidgetKit layouts show the cat retirement countdown. The extension reads App Group settings and calls Rust independently. Requires verification on a Mac |
-| Time calculation core | Rust snapshots cover lifespan, work shifts, paydays, breaks, and retirement. The new metrics are available through the contract and tests. Product UI and configuration follow in later nodes |
+| Calculation core | Rust snapshots cover lifespan, work shifts, earnings, paydays, breaks, retirement, and custom countdowns. Supports fixed-clock snapshots, batched timelines, and in-memory countdown updates |
+| Earnings and privacy | Gross or net monthly pay accrues across scheduled workdays and actual working time. Amounts are truncated as decimal strings, and hidden snapshots expose only the mask |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
 | Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
@@ -32,7 +33,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 ## Still pending
 
-- Daily and monthly earnings calculations, complete settings, and UI integration for lifespan, work status, paydays, and breaks.
+- Complete settings and UI integration for earnings, lifespan, work status, paydays, and breaks.
 - Custom desktop countdowns; full three-mode window/metric ordering, edge snapping, click-through, multiple displays, full-screen behavior, skins and resource packs.
 - Bundled six-region holiday data and updates; import/export, migration/backup/recovery and onboarding.
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
@@ -55,12 +56,13 @@ flutter run -d emulator-5554
 
 On Mac, use `flutter run -d macos`. The [Apple guide](native/ios/README.md) covers widget builds, signing and adding the widget. On mobile, open Shiyu and choose your retirement date. On Android, add the widget from Settings or your launcher. On iOS, add it from the home screen widget gallery. See the [mobile home screen widget and settings design](docs/界面设计/08-手机浮窗与设置.md).
 
-From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native integration checks for nodes 02–03:
+From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native integration checks for nodes 02–04.
 
 ```powershell
 cd app
 flutter test integration_test/retirement_test.dart -d windows
 flutter test integration_test/retirement_test.dart -d emulator-5554
+flutter test integration_test/salary_timeline_test.dart -d emulator-5554
 ```
 
 Tests use synthetic dates and restore existing mobile settings; desktop tests use temporary storage. Run platform builds sequentially in this Flutter project. Localization formatting runs explicitly in the check script to avoid an observed nested Windows formatter hang. A separate short-path `GRADLE_USER_HOME` can isolate local proxy/path issues without changing global settings. CI checks Windows/Android; consult Actions for actual remote results.

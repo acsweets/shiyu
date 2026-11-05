@@ -678,7 +678,11 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_shiyu_ffi_checksum_func_compute_snapshot(
     ): Int
+    external fun uniffi_shiyu_ffi_checksum_func_compute_timeline(
+    ): Int
     external fun uniffi_shiyu_ffi_checksum_func_default_settings(
+    ): Int
+    external fun uniffi_shiyu_ffi_checksum_func_update_custom_countdown(
     ): Int
     external fun uniffi_shiyu_ffi_checksum_func_validate_settings(
     ): Int
@@ -701,7 +705,11 @@ internal object UniffiLib {
     ): RustBuffer.ByValue
     external fun uniffi_shiyu_ffi_fn_func_compute_snapshot(`settingsJson`: RustBuffer.ByValue,`holidayJson`: RustBuffer.ByValue,`nowMillis`: Long,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
+    external fun uniffi_shiyu_ffi_fn_func_compute_timeline(`settingsJson`: RustBuffer.ByValue,`holidayJson`: RustBuffer.ByValue,`startMillis`: Long,`stepSeconds`: Long,`count`: Long,uniffi_out_err: UniffiRustCallStatus,
+    ): RustBuffer.ByValue
     external fun uniffi_shiyu_ffi_fn_func_default_settings(uniffi_out_err: UniffiRustCallStatus,
+    ): RustBuffer.ByValue
+    external fun uniffi_shiyu_ffi_fn_func_update_custom_countdown(`settingsJson`: RustBuffer.ByValue,`changeJson`: RustBuffer.ByValue,`nowMillis`: Long,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
     external fun uniffi_shiyu_ffi_fn_func_validate_settings(`settingsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
@@ -830,7 +838,13 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_shiyu_ffi_checksum_func_compute_snapshot() and 0xFFFF) != 39006) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_shiyu_ffi_checksum_func_compute_timeline() and 0xFFFF) != 22356) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_shiyu_ffi_checksum_func_default_settings() and 0xFFFF) != 23853) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_shiyu_ffi_checksum_func_update_custom_countdown() and 0xFFFF) != 64229) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_shiyu_ffi_checksum_func_validate_settings() and 0xFFFF) != 13879) {
@@ -1062,6 +1076,24 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
 
 
         /**
+         * 原生宿主按固定起点和步长生成有界时间线。
+         */ fun `computeTimeline`(`settingsJson`: kotlin.String, `holidayJson`: kotlin.String, `startMillis`: kotlin.Long, `stepSeconds`: kotlin.Long, `count`: kotlin.Long): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_shiyu_ffi_fn_func_compute_timeline(
+
+
+        FfiConverterString.lower(`settingsJson`),
+        FfiConverterString.lower(`holidayJson`),
+        FfiConverterLong.lower(`startMillis`),
+        FfiConverterLong.lower(`stepSeconds`),
+        FfiConverterLong.lower(`count`),_status)
+}
+    )
+    }
+
+
+        /**
          * 生成初始配置，首次运行不设置任何虚构目标。
          */ fun `defaultSettings`(): kotlin.String {
             return FfiConverterString.lift(
@@ -1069,6 +1101,22 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
     UniffiLib.uniffi_shiyu_ffi_fn_func_default_settings(
 
         _status)
+}
+    )
+    }
+
+
+        /**
+         * 校验并返回内存中的自定义倒计时配置变更。
+         */ fun `updateCustomCountdown`(`settingsJson`: kotlin.String, `changeJson`: kotlin.String, `nowMillis`: kotlin.Long): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_shiyu_ffi_fn_func_update_custom_countdown(
+
+
+        FfiConverterString.lower(`settingsJson`),
+        FfiConverterString.lower(`changeJson`),
+        FfiConverterLong.lower(`nowMillis`),_status)
 }
     )
     }

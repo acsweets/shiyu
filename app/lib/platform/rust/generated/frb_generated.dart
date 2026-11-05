@@ -68,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1428082995;
+  int get rustContentHash => -1770968109;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -88,7 +88,21 @@ abstract class RustLibApi extends BaseApi {
     required PlatformInt64 nowMillis,
   });
 
+  Future<String> crateApiSnapshotComputeTimeline({
+    required String settingsJson,
+    required String holidayJson,
+    required PlatformInt64 startMillis,
+    required PlatformInt64 stepSeconds,
+    required PlatformInt64 count,
+  });
+
   Future<String> crateApiSnapshotDefaultSettings();
+
+  Future<String> crateApiSnapshotUpdateCustomCountdown({
+    required String settingsJson,
+    required String changeJson,
+    required PlatformInt64 nowMillis,
+  });
 
   Future<String> crateApiSnapshotValidateSettings({
     required String settingsJson,
@@ -169,6 +183,53 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String> crateApiSnapshotComputeTimeline({
+    required String settingsJson,
+    required String holidayJson,
+    required PlatformInt64 startMillis,
+    required PlatformInt64 stepSeconds,
+    required PlatformInt64 count,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(settingsJson, serializer);
+          sse_encode_String(holidayJson, serializer);
+          sse_encode_i_64(startMillis, serializer);
+          sse_encode_i_64(stepSeconds, serializer);
+          sse_encode_i_64(count, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSnapshotComputeTimelineConstMeta,
+        argValues: [settingsJson, holidayJson, startMillis, stepSeconds, count],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSnapshotComputeTimelineConstMeta =>
+      const TaskConstMeta(
+        debugName: "compute_timeline",
+        argNames: [
+          "settingsJson",
+          "holidayJson",
+          "startMillis",
+          "stepSeconds",
+          "count",
+        ],
+      );
+
+  @override
   Future<String> crateApiSnapshotDefaultSettings() {
     return handler.executeNormal(
       NormalTask(
@@ -177,7 +238,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 3,
+            funcId: 4,
             port: port_,
           );
         },
@@ -196,6 +257,43 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "default_settings", argNames: []);
 
   @override
+  Future<String> crateApiSnapshotUpdateCustomCountdown({
+    required String settingsJson,
+    required String changeJson,
+    required PlatformInt64 nowMillis,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(settingsJson, serializer);
+          sse_encode_String(changeJson, serializer);
+          sse_encode_i_64(nowMillis, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 5,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSnapshotUpdateCustomCountdownConstMeta,
+        argValues: [settingsJson, changeJson, nowMillis],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSnapshotUpdateCustomCountdownConstMeta =>
+      const TaskConstMeta(
+        debugName: "update_custom_countdown",
+        argNames: ["settingsJson", "changeJson", "nowMillis"],
+      );
+
+  @override
   Future<String> crateApiSnapshotValidateSettings({
     required String settingsJson,
   }) {
@@ -207,7 +305,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 6,
             port: port_,
           );
         },

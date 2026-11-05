@@ -27,3 +27,29 @@ Future<String> computeSnapshot({
   holidayJson: holidayJson,
   nowMillis: nowMillis,
 );
+
+/// 批量计算固定起点、步长和数量的快照。
+Future<String> computeTimeline({
+  required String settingsJson,
+  required String holidayJson,
+  required PlatformInt64 startMillis,
+  required PlatformInt64 stepSeconds,
+  required PlatformInt64 count,
+}) => RustLib.instance.api.crateApiSnapshotComputeTimeline(
+  settingsJson: settingsJson,
+  holidayJson: holidayJson,
+  startMillis: startMillis,
+  stepSeconds: stepSeconds,
+  count: count,
+);
+
+/// 校验创建、编辑或删除自定义倒计时，返回新的设置 JSON。
+Future<String> updateCustomCountdown({
+  required String settingsJson,
+  required String changeJson,
+  required PlatformInt64 nowMillis,
+}) => RustLib.instance.api.crateApiSnapshotUpdateCustomCountdown(
+  settingsJson: settingsJson,
+  changeJson: changeJson,
+  nowMillis: nowMillis,
+);

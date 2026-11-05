@@ -1,24 +1,30 @@
 mod clock;
+mod custom;
 mod holiday;
 mod life;
 mod payday;
+mod salary;
+mod schedule;
 mod work;
 
 use crate::{calendar::Calendar, contract::Settings};
-use jiff::civil::{Date, Time};
+use jiff::civil::Date;
+use schedule::WorkSchedule;
 use serde::Serialize;
 
 pub(crate) use clock::Clock;
 use clock::{CalendarRemaining, Countdown};
 
 #[derive(Serialize)]
-pub(crate) struct Metrics {
+pub(crate) struct Metrics<'a> {
     life: Countdown,
     work: work::Work,
     retirement: Countdown,
     payday: payday::PaydayMetric,
     holiday: holiday::HolidayMetric,
     calendar_remaining: CalendarBreakdown,
+    salary: salary::SalaryMetric<'a>,
+    custom_countdowns: Vec<custom::CustomMetric<'a>>,
 }
 
 #[derive(Serialize)]
@@ -28,18 +34,25 @@ struct CalendarBreakdown {
 }
 
 /// 装配所有已实现时间指标，输出最近一个结构性状态变化时刻。
-pub(crate) fn compute(
-    settings: &Settings,
+pub(crate) fn compute<'a>(
+    settings: &'a Settings,
     calendar: &Calendar,
     clock: &Clock,
     next_midnight: i64,
-) -> (Metrics, i64) {
+) -> (Metrics<'a>, i64) {
     let life = life::compute(clock, settings.birth.as_ref());
-    let work = work::compute(clock, calendar, &settings.schedule);
+    let schedule = WorkSchedule::new(&settings.schedule);
+    let work = work::compute(clock, calendar, &schedule);
     let retirement = retirement(clock, settings.retirement_date.as_deref());
     let payday = payday::compute(clock, calendar, settings.payday.as_ref());
-    let end: Time = settings.schedule.end.parse().expect("下班时间已校验");
-    let holiday = holiday::compute(clock, calendar, settings.weekly_rest_as_holiday, end);
+    let holiday = holiday::compute(
+        clock,
+        calendar,
+        settings.weekly_rest_as_holiday,
+        schedule.end,
+    );
+    let salary = salary::compute(clock, calendar, &schedule, settings);
+    let custom_countdowns = custom::compute(clock, &settings.custom_countdowns);
     let next_change = [
         life.target_millis,
         work.next_boundary,
@@ -48,6 +61,11 @@ pub(crate) fn compute(
         holiday.countdown.target_millis,
     ]
     .into_iter()
+    .chain(
+        custom_countdowns
+            .iter()
+            .map(|item| item.countdown.target_millis),
+    )
     .flatten()
     .filter(|target| *target > clock.millis())
     .fold(next_midnight, i64::min);
@@ -63,6 +81,8 @@ pub(crate) fn compute(
             payday,
             holiday,
             calendar_remaining,
+            salary,
+            custom_countdowns,
         },
         next_change,
     )

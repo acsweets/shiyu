@@ -1,6 +1,5 @@
-use super::{Clock, Countdown};
+use super::{Clock, Countdown, schedule::WorkSchedule};
 use crate::calendar::Calendar;
-use crate::contract::Schedule;
 use jiff::civil::Time;
 use serde::Serialize;
 
@@ -14,10 +13,10 @@ pub(super) struct Work {
     pub(super) next_boundary: Option<i64>,
 }
 
-pub(super) fn compute(clock: &Clock, calendar: &Calendar, schedule: &Schedule) -> Work {
+pub(super) fn compute(clock: &Clock, calendar: &Calendar, schedule: &WorkSchedule) -> Work {
     let date = clock.date();
     let now = clock.millis();
-    let start: Time = schedule.start.parse().expect("上班时间已校验");
+    let start = schedule.start;
     if !calendar.is_workday(date) {
         return make(
             clock,
@@ -27,11 +26,8 @@ pub(super) fn compute(clock: &Clock, calendar: &Calendar, schedule: &Schedule) -
             None,
         );
     }
-    let end: Time = schedule.end.parse().expect("下班时间已校验");
-    let (start_today, end_today) = (
-        clock.resolve(date.to_datetime(start)),
-        clock.resolve(date.to_datetime(end)),
-    );
+    let bounds = schedule.bounds(clock, date);
+    let (start_today, end_today) = (bounds.start, bounds.end);
     if start_today.is_some_and(|target| now < target) {
         return make(clock, "before_work", "work_start", start_today, None);
     }
@@ -44,13 +40,7 @@ pub(super) fn compute(clock: &Clock, calendar: &Calendar, schedule: &Schedule) -
             None,
         );
     }
-    let lunch = schedule.lunch.as_ref().and_then(|[from, to]| {
-        let from: Time = from.parse().expect("午休起点已校验");
-        let to: Time = to.parse().expect("午休终点已校验");
-        let from = clock.resolve(date.to_datetime(from))?;
-        let to = clock.resolve(date.to_datetime(to))?;
-        (from < to).then_some((from, to))
-    });
+    let lunch = bounds.lunch;
     if let Some((from, to)) = lunch
         && from <= now
         && now < to

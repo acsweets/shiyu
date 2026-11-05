@@ -1,0 +1,118 @@
+[
+  {
+    "name": "月薪 22000 与 22 个应出勤日",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"22000"}},
+    "cases": [
+      {"now":"2026-01-05T00:59:59Z","expect":{"today_earned":"0.00","month_earned":"2000.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"375.00","month_earned":"2375.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-05T04:30:00Z","expect":{"today_earned":"375.00","month_earned":"2375.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-05T05:00:00Z","expect":{"today_earned":"375.00","month_earned":"2375.00","status":"earning","scheduled_workdays":22}},
+      {"now":"2026-01-05T10:00:00Z","expect":{"today_earned":"1000.00","month_earned":"3000.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-10T04:00:00Z","expect":{"today_earned":"0.00","month_earned":"7000.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-31T15:59:59Z","expect":{"today_earned":"0.00","month_earned":"22000.00","status":"paused","scheduled_workdays":22}},
+      {"now":"2026-01-31T16:00:00Z","expect":{"today_earned":"0.00","month_earned":"0.00","status":"paused","scheduled_workdays":20}}
+    ]
+  },
+  {
+    "name": "2 位小数截断",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"1000.00000","precision":2}},
+    "cases": [
+      {"now":"2026-02-02T01:00:01Z","expect":{"today_earned":"0.00","month_earned":"0.00","status":"earning","scheduled_workdays":20}}
+    ]
+  },
+  {
+    "name": "3 位小数截断",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"1000.00000","precision":3}},
+    "cases": [
+      {"now":"2026-02-02T01:00:01Z","expect":{"today_earned":"0.001","month_earned":"0.001","status":"earning","scheduled_workdays":20}}
+    ]
+  },
+  {
+    "name": "4 位小数截断",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"1000.00000","precision":4}},
+    "cases": [
+      {"now":"2026-02-02T01:00:01Z","expect":{"today_earned":"0.0017","month_earned":"0.0017","status":"earning","scheduled_workdays":20}}
+    ]
+  },
+  {
+    "name": "税后口径与地区默认币种",
+    "settings": {"region":"JP","hide_amount":false,"salary":{"gross_monthly":"22000","net_monthly":"18000","basis":"net"}},
+    "cases": [
+      {"now":"2026-01-30T10:00:00Z","expect":{"today_earned":"818.18","month_earned":"18000.00","status":"paused","scheduled_workdays":22,"currency":"JPY","precision":2,"basis":"net"}}
+    ]
+  },
+  {
+    "name": "个人、地区与自定义假期影响分母",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"22000"},"date_overrides":{"2026-01-03":false},"holidays":[{"name":"合成假期","start":"2026-01-02","end":"2026-01-02","kind":"test"}]},
+    "holiday_data": {"schema_version":1,"region":"CN","years":[2026],"date_overrides":{"2026-01-01":false,"2026-01-03":true}},
+    "cases": [
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"412.50","month_earned":"412.50","status":"paused","scheduled_workdays":20}}
+    ]
+  },
+  {
+    "name": "地区补班参与计薪",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"22000"}},
+    "holiday_data": {"schema_version":1,"region":"CN","years":[2026],"date_overrides":{"2026-01-01":false,"2026-01-03":true}},
+    "cases": [
+      {"now":"2026-01-03T04:00:00Z","expect":{"today_earned":"375.00","month_earned":"1375.00","status":"paused","scheduled_workdays":22}}
+    ]
+  },
+  {
+    "name": "空工作周",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"22000"},"schedule":{"workdays":[]}},
+    "cases": [
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"0.00","month_earned":"0.00","status":"no_workdays","scheduled_workdays":0}}
+    ]
+  },
+  {
+    "name": "午休覆盖整个作息，兼容旧设置",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"22000"},"schedule":{"lunch":["09:00","18:00"]}},
+    "cases": [
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"0.00","month_earned":"0.00","status":"no_workdays","scheduled_workdays":0}}
+    ]
+  },
+  {
+    "name": "夏令时跳时，当日完整日薪不变",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"5000","precision":2},"time_zone":"America/New_York","schedule":{"workdays":[7],"start":"01:00","end":"04:00","lunch":null}},
+    "cases": [
+      {"now":"2026-03-08T07:00:00Z","expect":{"today_earned":"500.00","month_earned":"1500.00","status":"earning","scheduled_workdays":5}},
+      {"now":"2026-03-08T08:00:00Z","expect":{"today_earned":"1000.00","month_earned":"2000.00","status":"paused","scheduled_workdays":5}}
+    ]
+  },
+  {
+    "name": "夏令时重复小时按实际经过时间",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"5000","precision":2},"time_zone":"America/New_York","schedule":{"workdays":[7],"start":"00:00","end":"04:00","lunch":null}},
+    "cases": [
+      {"now":"2026-11-01T06:00:00Z","expect":{"today_earned":"400.00","month_earned":"400.00","status":"earning","scheduled_workdays":5}},
+      {"now":"2026-11-01T09:00:00Z","expect":{"today_earned":"1000.00","month_earned":"1000.00","status":"paused","scheduled_workdays":5}}
+    ]
+  },
+  {
+    "name": "超长小数不进位至下一分",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"0.01999999999999999999999999999","precision":2}},
+    "cases": [
+      {"now":"2026-01-31T04:00:00Z","expect":{"today_earned":"0.00","month_earned":"0.01","status":"paused","scheduled_workdays":22}}
+    ]
+  },
+  {
+    "name": "兼容科学计数法月薪",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"2.2e4","precision":2}},
+    "cases": [
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"375.00","month_earned":"2375.00","status":"paused","scheduled_workdays":22}}
+    ]
+  },
+  {
+    "name": "Decimal 最大整数按四位精度输出",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"79228162514264337593543950335","precision":4}},
+    "cases": [
+      {"now":"2026-01-31T04:00:00Z","expect":{"today_earned":"0.0000","month_earned":"79228162514264337593543950335.0000","status":"paused","scheduled_workdays":22}}
+    ]
+  },
+  {
+    "name": "同一时刻改用新月薪及作息",
+    "settings": {"hide_amount":false,"salary":{"gross_monthly":"44000","precision":2},"schedule":{"lunch":null}},
+    "cases": [
+      {"now":"2026-01-05T04:00:00Z","expect":{"today_earned":"666.66","month_earned":"4666.66","status":"earning","scheduled_workdays":22}}
+    ]
+  }
+]

@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
+import com.growthrecord.shiyu.BuildConfig
+import com.growthrecord.shiyu.core.computeTimeline
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import com.growthrecord.shiyu.core.validateSettings
@@ -42,6 +44,13 @@ object WidgetChannel {
                         val now = (call.arguments as Number).toLong()
                         result.success(computeSnapshot(WidgetSettings.read(context) ?: defaultSettings(), "{}", now))
                     }
+                    "verifyCoreTimeline" -> {
+                        if (BuildConfig.DEBUG) {
+                            result.success(verifyTimeline(call.arguments as Map<*, *>))
+                        } else {
+                            result.notImplemented()
+                        }
+                    }
                     else -> result.notImplemented()
                 }
             } catch (error: Throwable) {
@@ -49,4 +58,14 @@ object WidgetChannel {
             }
         }
     }
+
+    // 集成测试使用合成输入，避免把薪资样例写入设备共享设置。
+    private fun verifyTimeline(args: Map<*, *>): String = computeTimeline(
+        settingsJson = args["settingsJson"] as String,
+        holidayJson = args["holidayJson"] as String,
+        startMillis = (args["startMillis"] as Number).toLong(),
+        stepSeconds = (args["stepSeconds"] as Number).toLong(),
+        count = (args["count"] as Number).toLong(),
+    )
+
 }

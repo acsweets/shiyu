@@ -1,10 +1,15 @@
-use crate::contract::{FieldError, PaydayRule, SCHEMA_VERSION, SalaryBasis, Settings};
+use crate::contract::{
+    CustomCountdown, FieldError, PaydayRule, SCHEMA_VERSION, SalaryBasis, Settings, region_currency,
+};
+use crate::salary_amount::parse_monthly_amount;
 use jiff::{
     civil::{Date, DateTime, Time},
     tz::TimeZone,
 };
 use rust_decimal::Decimal;
 use std::{collections::BTreeSet, str::FromStr};
+
+pub(crate) const MAX_SETTINGS_BYTES: usize = 131_072;
 
 pub fn error(field: &str, code: &str) -> FieldError {
     FieldError {
@@ -15,10 +20,10 @@ pub fn error(field: &str, code: &str) -> FieldError {
 
 /// 校验字段而不泄漏个人原始值；拒绝未来 schema 和未知字段。
 pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
-    if json.len() > 131_072 {
+    if json.len() > MAX_SETTINGS_BYTES {
         return Err(vec![error("settings", "too_large")]);
     }
-    let settings: Settings =
+    let mut settings: Settings =
         serde_json::from_str(json).map_err(|_| vec![error("settings", "invalid_json")])?;
     let mut errors = vec![];
     if settings.schema_version != SCHEMA_VERSION {
@@ -84,16 +89,19 @@ pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
             _ => errors.push(error("birth.life_expectancy_years", "invalid_lifespan")),
         }
     }
-    if let Some(salary) = &settings.salary {
+    if let Some(salary) = &mut settings.salary {
         for value in std::iter::once(&salary.gross_monthly).chain(salary.net_monthly.iter()) {
-            if Decimal::from_str(value).map_or(true, |d| d < Decimal::ZERO) {
+            if parse_monthly_amount(value).is_none() {
                 errors.push(error("salary", "invalid_amount"));
             }
         }
         if !(2..=4).contains(&salary.precision) {
             errors.push(error("salary.precision", "invalid_precision"));
         }
-        if salary.currency.len() != 3 || !salary.currency.bytes().all(|c| c.is_ascii_uppercase()) {
+        let currency = salary
+            .currency
+            .get_or_insert_with(|| region_currency(&settings.region).into());
+        if currency.len() != 3 || !currency.bytes().all(|c| c.is_ascii_uppercase()) {
             errors.push(error("salary.currency", "invalid_currency"));
         }
         if matches!(salary.basis, SalaryBasis::Net) && salary.net_monthly.is_none() {
@@ -128,11 +136,7 @@ pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
     }
     let mut ids = BTreeSet::new();
     for item in &settings.custom_countdowns {
-        if item.id.is_empty()
-            || !ids.insert(&item.id)
-            || item.name.trim().is_empty()
-            || DateTime::from_str(&item.target).is_err()
-        {
+        if !valid_countdown(item) || !ids.insert(&item.id) {
             errors.push(error("custom_countdowns", "invalid_countdown"));
         }
     }
@@ -141,4 +145,8 @@ pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
     } else {
         Err(errors)
     }
+}
+
+pub(crate) fn valid_countdown(item: &CustomCountdown) -> bool {
+    !item.id.is_empty() && !item.name.trim().is_empty() && DateTime::from_str(&item.target).is_ok()
 }

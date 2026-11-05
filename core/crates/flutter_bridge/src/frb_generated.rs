@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1428082995;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1770968109;
 
 // Section: executor
 
@@ -119,6 +119,49 @@ fn wire__crate__api__snapshot__compute_snapshot_impl(
         },
     )
 }
+fn wire__crate__api__snapshot__compute_timeline_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "compute_timeline",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_settings_json = <String>::sse_decode(&mut deserializer);
+            let api_holiday_json = <String>::sse_decode(&mut deserializer);
+            let api_start_millis = <i64>::sse_decode(&mut deserializer);
+            let api_step_seconds = <i64>::sse_decode(&mut deserializer);
+            let api_count = <i64>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::snapshot::compute_timeline(
+                        api_settings_json,
+                        api_holiday_json,
+                        api_start_millis,
+                        api_step_seconds,
+                        api_count,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__snapshot__default_settings_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -145,6 +188,46 @@ fn wire__crate__api__snapshot__default_settings_impl(
             move |context| {
                 transform_result_sse::<_, ()>((move || {
                     let output_ok = Result::<_, ()>::Ok(crate::api::snapshot::default_settings())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__snapshot__update_custom_countdown_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "update_custom_countdown",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_settings_json = <String>::sse_decode(&mut deserializer);
+            let api_change_json = <String>::sse_decode(&mut deserializer);
+            let api_now_millis = <i64>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::snapshot::update_custom_countdown(
+                            api_settings_json,
+                            api_change_json,
+                            api_now_millis,
+                        ))?;
                     Ok(output_ok)
                 })())
             }
@@ -260,8 +343,15 @@ fn pde_ffi_dispatcher_primary_impl(
     match func_id {
         1 => wire__crate__api__diagnostics__bridge_probe_impl(port, ptr, rust_vec_len, data_len),
         2 => wire__crate__api__snapshot__compute_snapshot_impl(port, ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__snapshot__default_settings_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__snapshot__validate_settings_impl(port, ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__snapshot__compute_timeline_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__snapshot__default_settings_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__snapshot__update_custom_countdown_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        6 => wire__crate__api__snapshot__validate_settings_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

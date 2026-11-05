@@ -102,7 +102,7 @@ Future<void> _verifyTimeMetrics() async {
   expect(reply['ok'], isTrue);
   final Map<String, dynamic> snapshot =
       reply['snapshot'] as Map<String, dynamic>;
-  expect(snapshot['unavailable_metrics'], <String>['salary']);
+  expect(snapshot['unavailable_metrics'], isEmpty);
   expect(snapshot['work'], containsPair('status', 'lunch_break'));
   expect(snapshot['life'], containsPair('status', 'active'));
   expect(snapshot['payday'], containsPair('target_date', '2026-11-16'));
