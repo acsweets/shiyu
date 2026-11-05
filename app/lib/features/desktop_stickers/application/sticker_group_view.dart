@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 
 import '../../retirement/application/retirement_controller.dart';
+import '../../retirement/presentation/metrics/snapshot_metrics.dart';
 import '../data/sticker_cat_pose.dart';
 import '../data/sticker_character.dart';
 import '../data/sticker_layout.dart';
+import '../data/sticker_mode.dart';
+import 'sticker_metric_selection.dart';
 
 /// 跨窗口只传输可见文本与外观信息，子窗无需加载 Rust。
 class StickerGroupView {
@@ -22,11 +25,31 @@ class StickerGroupView {
   ) {
     final StickerCatPose pose = StickerCatPose.values[group];
     final StickerCharacter? character = layout.characterOf(group);
+    final SnapshotMetrics metrics = SnapshotMetrics(
+      controller.snapshot,
+      SnapshotMetrics.localizations(controller.preferredLocale),
+    );
+    final List<String> ids = StickerMetricSelection(
+      layout,
+      controller,
+    ).group(group);
     return StickerGroupView(<String, Object?>{
-      'values': <String, String>{
-        for (final String id in layout.members(group))
-          id: _value(id, layout.preview, controller),
+      'metrics': <String, MetricFields>{
+        for (final String id in ids)
+          id: layout.preview
+              ? <Object?, Object?>{
+                  'title': StickerLayout.titles[id],
+                  'value': StickerLayout.examples[id],
+                }
+              : metrics.read(id, coreFailed: controller.problem == 'core'),
       },
+      'mode': layout.mode.name,
+      'emptyLabel': metrics.strings.noVisibleMetrics,
+      'fallback':
+          !layout.preview &&
+              controller.snapshot?.calendarStatus == 'weekly_fallback'
+          ? metrics.strings.holidayFallback
+          : null,
       'titles': layout.showsTitle(group),
       'titleSize': layout.titleSize,
       'preview': layout.preview,
@@ -39,19 +62,27 @@ class StickerGroupView {
       'characterBottomInset': character?.bottomInset,
       'assetRevision': layout.assetRevision,
       'initialBounds': StickerLayout.encodeBounds(
-        layout.boundsOf(group) ?? layout.initialBounds(group),
+        layout.boundsOf(group) ??
+            (layout.preview
+                ? layout.initialBounds(group)
+                : layout.modeBounds(group, ids.length)),
       ),
     });
   }
 
-  Map<String, String> get values {
-    final Map<Object?, Object?> values =
-        data['values'] as Map<Object?, Object?>;
-    return <String, String>{
-      for (final String id in StickerLayout.titles.keys)
-        if (values[id] case final String text) id: text,
-    };
-  }
+  Map<String, MetricFields> get metrics =>
+      (data['metrics'] as Map<Object?, Object?>).cast<String, MetricFields>();
+
+  Map<String, String> get values => <String, String>{
+    for (final MapEntry<String, MetricFields> item in metrics.entries)
+      item.key: item.value['value'] as String,
+  };
+
+  String label(String id) =>
+      metrics[id]?['title'] as String? ?? StickerLayout.titles[id] ?? id;
+  String get emptyLabel => data['emptyLabel'] as String;
+  String? get fallback => data['fallback'] as String?;
+  StickerMode get mode => StickerMode.read(data['mode']);
 
   bool get showsTitle => data['titles'] as bool;
   double get titleSize => (data['titleSize'] as int).toDouble();
@@ -69,20 +100,4 @@ class StickerGroupView {
   }
 
   Rect get initialBounds => StickerLayout.decodeBounds(data['initialBounds'])!;
-
-  static String _value(
-    String id,
-    bool preview,
-    RetirementController controller,
-  ) {
-    if (preview) return StickerLayout.examples[id]!;
-    if (id != 'retirement') return '待接入';
-    final String? status = controller.snapshot?.status;
-    if (status == 'retired') return '已退休';
-    if (status != 'active') return '请设置退休日期';
-    final Duration time = Duration(seconds: controller.snapshot!.seconds);
-    return '${time.inDays}天 ${_two(time.inHours % 24)}小时 ${_two(time.inMinutes % 60)}分 ${_two(time.inSeconds % 60)}秒';
-  }
-
-  static String _two(int value) => value.toString().padLeft(2, '0');
 }

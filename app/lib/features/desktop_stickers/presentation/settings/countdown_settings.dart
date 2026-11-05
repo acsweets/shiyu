@@ -8,6 +8,7 @@ import '../../../retirement/presentation/settings/business_settings_page.dart';
 import '../../application/sticker_business_access.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
+import '../../data/sticker_mode.dart';
 import 'settings_controls.dart';
 
 class CountdownSettings extends StatefulWidget {
@@ -73,6 +74,8 @@ class _CountdownSettingsState extends State<CountdownSettings> {
         const Divider(height: 24),
         const Text('启用倒计时', style: TextStyle(fontWeight: FontWeight.w700)),
         ...StickerLayout.titles.keys.map(_toggle),
+        const Divider(height: 25),
+        _modeSettings(context),
         const Divider(height: 25),
         PaperSettingRow(
           title: '暂停刷新',
@@ -148,6 +151,37 @@ class _CountdownSettingsState extends State<CountdownSettings> {
       ],
     );
   }
+
+  Widget _modeSettings(BuildContext context) {
+    final AppLocalizations strings = AppLocalizations.of(context);
+    final StickerMode selected = _session.state.mode;
+    return PaperSettingRow(
+      title: strings.floatingMode,
+      control: PaperMenu(
+        label: _modeLabel(strings, selected),
+        tooltip: strings.floatingMode,
+        items: <Widget>[
+          for (final StickerMode mode in StickerMode.values)
+            PaperOption(
+              label: _modeLabel(strings, mode),
+              selected: selected == mode,
+              autofocus: selected == mode,
+              onSelect: () => _session.change(
+                StickerSetting.mode,
+                <String, Object?>{'value': mode.name},
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _modeLabel(AppLocalizations strings, StickerMode mode) =>
+      switch (mode) {
+        StickerMode.mini => strings.modeMini,
+        StickerMode.standard => strings.modeStandard,
+        StickerMode.expanded => strings.modeExpanded,
+      };
 
   Future<void> _openBusinessSettings() async {
     await Navigator.of(context)

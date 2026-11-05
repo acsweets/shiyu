@@ -1,6 +1,6 @@
 # Shiyu · 时余
 
-> Group desktop countdowns in a single floating window or split them across windows. Each cat rests against the top edge of its window in a different pose. Grouped countdowns share one cat. Move and resize each window independently, and use settings to hide the window or its titles. Open settings from the main window icon, or from the tray or menu bar when the main window is hidden. Turn off the sample preview to see the real Rust retirement countdown. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
+> Group desktop countdowns in a floating window or split them across windows. A cat in a different pose rests against the top edge of each window. Move and resize windows independently, and hide titles in settings. Open settings from the main window or the tray or menu bar. Turn off the sample preview to see live metrics. See [desktop window groups](docs/界面设计/06-桌面浮窗分组.md).
 
 [简体中文](README.md) | [English](README.en.md)
 
@@ -18,6 +18,7 @@ The retirement countdown is available in desktop floating windows and mobile hom
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
 | Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, per-window visibility and title controls, and an adjustable title font size. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
+| Desktop modes | Mini, Standard, and Expanded share the live Rust snapshot. Double-click to switch between Mini and Standard, or choose Expanded in settings. Reorder or hide metrics and add custom countdowns. Expanded shows available progress and dates while respecting amount visibility |
 | Mobile settings | The app opens directly to settings for the retirement date, time zone, and home screen widget appearance. Choose from three palettes, show or hide the title, and adjust its size |
 | Onboarding and full settings | New installs guide you through personal information, work and pay, and a live preview. Configure paydays, date overrides, holidays, and one of eight languages. Settings autosave and can be imported or exported as local JSON. Desktop settings include custom countdowns and mini-window metric preferences |
 | Local settings | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving. Legacy settings can migrate, and users can restore the last valid backup after archiving the damaged file |
@@ -36,7 +37,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 ## Still pending
 
-- Integrate earnings, lifespan, work, paydays, breaks, and custom countdowns into the three desktop modes and the mobile home screen.
+- Integrate the six built-in metrics and earnings into the mobile home screen.
 - Desktop edge snapping, click-through, multiple displays, full-screen behavior, skins, and resource packs.
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 

@@ -114,9 +114,8 @@ class DisplaySettingsForm extends StatelessWidget {
           .toSet() ??
       defaultMetricOrder.take(5).toSet();
 
-  void _enableAll() => editor.changeGroup('display', 'enabled_metrics', _order);
-  void _disableAll() =>
-      editor.changeGroup('display', 'enabled_metrics', <String>[]);
+  void _enableAll() => _change('enabled_metrics', _order);
+  void _disableAll() => _change('enabled_metrics', <String>[]);
 
   void _toggle(String id, bool enabled) {
     final Set<String> items = _enabled;
@@ -125,17 +124,20 @@ class DisplaySettingsForm extends StatelessWidget {
     } else {
       items.remove(id);
     }
-    editor.changeGroup(
-      'display',
-      'enabled_metrics',
-      _order.where(items.contains).toList(),
-    );
+    _change('enabled_metrics', _order.where(items.contains).toList());
   }
 
   void _move(int index, int direction) {
     final List<String> order = _order;
     final String item = order.removeAt(index);
     order.insert(index + direction, item);
-    editor.changeGroup('display', 'metric_order', order);
+    _change('metric_order', order);
   }
+
+  void _change(String field, List<String> values) =>
+      editor.change('display', <String, dynamic>{
+        ...editor.group('display'),
+        field: values,
+        'metrics_customized': true,
+      });
 }

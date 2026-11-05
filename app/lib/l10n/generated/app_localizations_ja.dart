@@ -10,6 +10,42 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get floatingMode => 'ウィンドウモード';
+
+  @override
+  String get modeMini => 'ミニ';
+
+  @override
+  String get modeStandard => '標準';
+
+  @override
+  String get modeExpanded => '拡張';
+
+  @override
+  String get countdownExpired => '終了';
+
+  @override
+  String get holidayOngoing => '休暇中';
+
+  @override
+  String get paydayToday => '今日は給料日';
+
+  @override
+  String get metricUnavailable => '利用できません';
+
+  @override
+  String get noVisibleMetrics => '項目はすべて非表示です';
+
+  @override
+  String get untilWorkStart => '始業まで';
+
+  @override
+  String get untilWorkEnd => '終業まで';
+
+  @override
+  String get untilLunchEnd => '休憩終了まで';
+
+  @override
   String get addCountdown => 'カウントダウンを追加';
 
   @override

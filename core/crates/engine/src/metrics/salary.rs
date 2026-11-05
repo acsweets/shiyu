@@ -18,6 +18,10 @@ pub(super) struct SalaryMetric<'a> {
     scheduled_workdays: u32,
     today_earned: Option<String>,
     month_earned: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    today_progress: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    month_progress: Option<f64>,
 }
 
 pub(super) fn compute<'a>(
@@ -36,6 +40,8 @@ pub(super) fn compute<'a>(
             scheduled_workdays: 0,
             today_earned: None,
             month_earned: None,
+            today_progress: None,
+            month_progress: None,
         };
     };
     let accrual = accrue(clock, calendar, schedule);
@@ -44,6 +50,10 @@ pub(super) fn compute<'a>(
     } else {
         amounts(salary, &accrual)
     };
+    let today_progress =
+        (accrual.duration > 0).then(|| accrual.elapsed as f64 / accrual.duration as f64);
+    let month_progress = (!settings.hide_amount && accrual.days > 0)
+        .then(|| (accrual.completed as f64 + today_progress.unwrap_or(0.0)) / accrual.days as f64);
     SalaryMetric {
         status: match (accrual.days, accrual.working) {
             (0, _) => "no_workdays",
@@ -57,6 +67,8 @@ pub(super) fn compute<'a>(
         scheduled_workdays: accrual.days,
         today_earned: Some(today_earned),
         month_earned: Some(month_earned),
+        today_progress: today_progress.filter(|_| !settings.hide_amount),
+        month_progress,
     }
 }
 

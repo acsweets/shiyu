@@ -5,8 +5,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../retirement/presentation/metrics/snapshot_metrics.dart';
 import '../application/sticker_group_view.dart';
 import '../data/sticker_layout.dart';
+import '../data/sticker_mode.dart';
 import 'sticker_window_drag.dart';
 
 /// 每个系统窗口使用相同的贴纸排版和缩放入口。
@@ -14,6 +16,7 @@ class StickerGroupSurface extends StatelessWidget {
   const StickerGroupSurface({
     required this.view,
     this.onSettings,
+    this.onToggleMode,
     this.interactive = true,
     super.key,
   });
@@ -23,6 +26,7 @@ class StickerGroupSurface extends StatelessWidget {
 
   /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
+  final VoidCallback? onToggleMode;
 
   /// 设置页预览只绘制内容，禁用系统窗口拖动和缩放。
   final bool interactive;
@@ -38,7 +42,8 @@ class StickerGroupSurface extends StatelessWidget {
       view.showsTitle ? math.max(18, view.titleSize * 1.25) : 0;
 
   double get _minimumRowHeight =>
-      math.max(56, _titleHeight + _timeHeight + 2 * _cellPadding);
+      math.max(56, _titleHeight + _timeHeight + 2 * _cellPadding) +
+      (view.mode.showsDetails ? 36 : 0);
 
   /// 让角色轮廓压住卡片上沿两个逻辑像素。
   Widget _anchorCat(double size, double bottomInset, Widget image) =>
@@ -98,7 +103,14 @@ class StickerGroupSurface extends StatelessWidget {
             .toDouble();
     return Stack(
       children: <Widget>[
-        Positioned.fill(top: catHeight, child: _paper()),
+        Positioned.fill(
+          top: catHeight,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onDoubleTap: interactive ? onToggleMode : null,
+            child: _paper(),
+          ),
+        ),
         Positioned(
           top: 0,
           left: 0,
@@ -150,13 +162,34 @@ class StickerGroupSurface extends StatelessWidget {
       ),
       borderRadius: BorderRadius.circular(18),
     ),
-    child: LayoutBuilder(builder: _grid),
+    child: Column(
+      children: <Widget>[
+        Expanded(child: LayoutBuilder(builder: _grid)),
+        if (view.mode.showsDetails && view.fallback != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+            child: Text(
+              view.fallback!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: view.foreground, fontSize: 11),
+            ),
+          ),
+      ],
+    ),
   );
 
   Widget _grid(BuildContext context, BoxConstraints constraints) {
-    final List<String> ids = view.values.keys.toList();
-    if (ids.isEmpty) return const SizedBox.shrink();
-    final int columns = (constraints.maxWidth ~/ 230).clamp(1, ids.length);
+    final Map<String, MetricFields> metrics = view.metrics;
+    final List<String> ids = metrics.keys.toList();
+    if (ids.isEmpty) {
+      return Center(
+        child: Text(view.emptyLabel, style: TextStyle(color: view.foreground)),
+      );
+    }
+    final int columns = !view.preview && view.mode == StickerMode.mini
+        ? 1
+        : (constraints.maxWidth ~/ 230).clamp(1, ids.length);
     final int rows = (ids.length + columns - 1) ~/ columns;
     final double rowHeight = math.max(
       _minimumRowHeight,
@@ -176,12 +209,13 @@ class StickerGroupSurface extends StatelessWidget {
           crossAxisSpacing: 8,
           mainAxisSpacing: _gridSpacing,
         ),
-        itemBuilder: (BuildContext context, int index) => _card(ids[index]),
+        itemBuilder: (BuildContext context, int index) =>
+            _card(ids[index], metrics[ids[index]]!),
       ),
     );
   }
 
-  Widget _card(String id) => Padding(
+  Widget _card(String id, MetricFields metric) => Padding(
     key: ValueKey<String>('sticker-$id'),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: _cellPadding),
     child: Column(
@@ -193,7 +227,7 @@ class StickerGroupSurface extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                StickerLayout.titles[id]!,
+                metric['title'] as String,
                 maxLines: 1,
                 softWrap: false,
                 style: TextStyle(
@@ -210,8 +244,8 @@ class StickerGroupSurface extends StatelessWidget {
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              view.values[id]!,
-              semanticsLabel: view.preview ? '示例倒计时 ${view.values[id]!}' : null,
+              metric['value'] as String,
+              semanticsLabel: view.preview ? '示例倒计时 ${metric['value']}' : null,
               maxLines: 1,
               softWrap: false,
               style: TextStyle(
@@ -223,6 +257,24 @@ class StickerGroupSurface extends StatelessWidget {
             ),
           ),
         ),
+        if (view.mode.showsDetails) ...<Widget>[
+          if (metric['progress'] case final double progress)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: LinearProgressIndicator(
+                value: progress,
+                color: view.foreground,
+                minHeight: 3,
+              ),
+            ),
+          if (metric['detail'] case final String detail)
+            Text(
+              detail,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: view.foreground, fontSize: 11),
+            ),
+        ],
       ],
     ),
   );

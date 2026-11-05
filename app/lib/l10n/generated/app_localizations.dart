@@ -109,6 +109,78 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @floatingMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'窗口形态'**
+  String get floatingMode;
+
+  /// No description provided for @modeMini.
+  ///
+  /// In zh, this message translates to:
+  /// **'迷你'**
+  String get modeMini;
+
+  /// No description provided for @modeStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准'**
+  String get modeStandard;
+
+  /// No description provided for @modeExpanded.
+  ///
+  /// In zh, this message translates to:
+  /// **'展开'**
+  String get modeExpanded;
+
+  /// No description provided for @countdownExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'已到期'**
+  String get countdownExpired;
+
+  /// No description provided for @holidayOngoing.
+  ///
+  /// In zh, this message translates to:
+  /// **'放假中'**
+  String get holidayOngoing;
+
+  /// No description provided for @paydayToday.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天发薪'**
+  String get paydayToday;
+
+  /// No description provided for @metricUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂不可用'**
+  String get metricUnavailable;
+
+  /// No description provided for @noVisibleMetrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'所有指标已隐藏'**
+  String get noVisibleMetrics;
+
+  /// No description provided for @untilWorkStart.
+  ///
+  /// In zh, this message translates to:
+  /// **'距离上班'**
+  String get untilWorkStart;
+
+  /// No description provided for @untilWorkEnd.
+  ///
+  /// In zh, this message translates to:
+  /// **'距离下班'**
+  String get untilWorkEnd;
+
+  /// No description provided for @untilLunchEnd.
+  ///
+  /// In zh, this message translates to:
+  /// **'距离午休结束'**
+  String get untilLunchEnd;
+
   /// No description provided for @addCountdown.
   ///
   /// In zh, this message translates to:

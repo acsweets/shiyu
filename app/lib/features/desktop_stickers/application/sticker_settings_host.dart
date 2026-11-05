@@ -10,12 +10,15 @@ import '../../retirement/application/settings_access.dart';
 import '../../retirement/application/settings_editor.dart';
 import '../../retirement/data/settings_repository.dart';
 import '../data/sticker_layout.dart';
+import '../data/sticker_mode.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
+import 'sticker_metric_selection.dart';
 import 'sticker_settings_state.dart';
 
 typedef StickerWindowResize = void Function(int group, int step);
 typedef StickerWindowFailure = bool Function();
+typedef StickerModeChange = void Function(StickerMode mode);
 
 /// 主引擎承接设置读写，并维护一个可重复使用的独立原生窗。
 class StickerSettingsHost {
@@ -25,6 +28,7 @@ class StickerSettingsHost {
     required this.resetBounds,
     required this.resize,
     required this.windowFailed,
+    required this.changeMode,
   });
 
   /// 主引擎的外观配置。
@@ -41,6 +45,11 @@ class StickerSettingsHost {
 
   /// 获取实时窗口异常状态。
   final StickerWindowFailure windowFailed;
+  final StickerModeChange changeMode;
+
+  void toggleMode() => changeMode(
+    layout.mode == StickerMode.mini ? StickerMode.standard : StickerMode.mini,
+  );
 
   /// 设置窗关闭时隐藏，保留导航状态供再次打开。
   WindowController? _window;
@@ -54,35 +63,38 @@ class StickerSettingsHost {
   /// 最近一次移动的起点，用于立即撤销。
   ({String id, int origin, int destination})? _lastMove;
 
-  StickerSettingsState snapshot({bool saved = true}) =>
-      StickerSettingsState(<String, Object?>{
-        'mainGroup': layout.mainGroup,
-        'main': layout.main,
-        'preview': layout.preview,
-        'palette': layout.palette.name,
-        'titleSize': layout.titleSize,
-        'groups': layout.activeGroups.toList()..sort(),
-        'enabled': layout.enabled.toList(),
-        'retirementDate': controller.retirementDate,
-        'timeZone': controller.timeZone,
-        'editingBlocked': controller.editingBlocked,
-        'canRestore': controller.canRestoreBackup,
-        'paused': controller.paused,
-        'business': SettingsView.fromController(controller, saved: saved).data,
-        if (controller.holidays != null)
-          'holidayStatus': HolidayStatus.fromController(controller).data,
-        'windowFailed': windowFailed(),
-        'writeFailed': layout.writeFailed,
-        'windows': <Map<Object?, Object?>>[
-          for (int group = 0; group < StickerLayout.titles.length; group++)
-            StickerGroupView.fromLayout(
-              layout,
-              controller,
-              group,
-              layout.showsGroup(group),
-            ).data,
-        ],
-      });
+  StickerSettingsState snapshot({bool saved = true}) => StickerSettingsState(
+    <String, Object?>{
+      'mainGroup': layout.mainGroup,
+      'main': layout.main,
+      'preview': layout.preview,
+      'palette': layout.palette.name,
+      'titleSize': layout.titleSize,
+      'groups': StickerMetricSelection(layout, controller).activeGroups.toList()
+        ..sort(),
+      'mode': layout.mode.name,
+      'enabled': layout.enabled.toList(),
+      'retirementDate': controller.retirementDate,
+      'timeZone': controller.timeZone,
+      'editingBlocked': controller.editingBlocked,
+      'canRestore': controller.canRestoreBackup,
+      'paused': controller.paused,
+      'business': SettingsView.fromController(controller, saved: saved).data,
+      if (controller.holidays != null)
+        'holidayStatus': HolidayStatus.fromController(controller).data,
+      'windowFailed': windowFailed(),
+      'writeFailed': layout.writeFailed,
+      'windows': <Map<Object?, Object?>>[
+        for (int group = 0; group < StickerLayout.titles.length; group++)
+          StickerGroupView.fromLayout(
+            layout,
+            controller,
+            group,
+            layout.showsGroup(group),
+          ).data,
+      ],
+    },
+  );
 
   Future<StickerSettingsState> read() async => snapshot();
 
@@ -191,6 +203,8 @@ class StickerSettingsHost {
         message = restored ? '已恢复备份，原配置已另存' : '备份恢复失败';
       case StickerSetting.pause:
         controller.setPaused(args['value'] as bool);
+      case StickerSetting.mode:
+        changeMode(StickerMode.read(args['value']));
       case StickerSetting.holidayCheck:
         message = (await controller.checkHolidayUpdates()).name;
       case StickerSetting.holidayImport:
@@ -225,12 +239,20 @@ class StickerSettingsHost {
   }
 
   String? _move(String id, int? target) {
+    final List<String> ids = StickerMetricSelection(layout, controller).ids;
+    if (!ids.contains(id)) return null;
     final int origin = layout.groupOf(id);
-    layout.assign(id, target);
+    final String title = StickerGroupView.fromLayout(
+      layout,
+      controller,
+      origin,
+      true,
+    ).label(id);
+    layout.assign(id, target, visibleIds: ids);
     final int destination = layout.groupOf(id);
     if (destination == origin) return null;
     _lastMove = (id: id, origin: origin, destination: destination);
-    return '「${StickerLayout.titles[id]}」已移到窗口 ${destination + 1}';
+    return '「$title」已移到窗口 ${destination + 1}';
   }
 
   String? _undoMove() {

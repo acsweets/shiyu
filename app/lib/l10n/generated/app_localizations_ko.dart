@@ -10,6 +10,42 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get floatingMode => '창 모드';
+
+  @override
+  String get modeMini => '미니';
+
+  @override
+  String get modeStandard => '표준';
+
+  @override
+  String get modeExpanded => '확장';
+
+  @override
+  String get countdownExpired => '종료됨';
+
+  @override
+  String get holidayOngoing => '휴일 중';
+
+  @override
+  String get paydayToday => '오늘은 급여일';
+
+  @override
+  String get metricUnavailable => '사용할 수 없음';
+
+  @override
+  String get noVisibleMetrics => '모든 지표가 숨겨져 있습니다';
+
+  @override
+  String get untilWorkStart => '출근까지';
+
+  @override
+  String get untilWorkEnd => '퇴근까지';
+
+  @override
+  String get untilLunchEnd => '휴식 종료까지';
+
+  @override
   String get addCountdown => '카운트다운 추가';
 
   @override

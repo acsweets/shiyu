@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:path_provider/path_provider.dart';
 
 import 'app/runtime_shiyu_app.dart';
+import 'features/desktop_stickers/application/sticker_metric_selection.dart';
 import 'features/desktop_stickers/data/sticker_layout.dart';
 import 'features/desktop_stickers/presentation/settings/sticker_settings_window.dart';
 import 'features/desktop_stickers/presentation/sticker_child.dart';
@@ -82,8 +83,9 @@ Future<RetirementController> runShiyu({
     if (!desktopLayout.ready) await desktopLayout.load();
     final StickerLayout layout = desktopLayout;
     window = FloatingWindowController(
-      (bool visible) =>
-          controller.setVisible(visible && layout.hasVisibleGroups),
+      (bool visible) => controller.setVisible(
+        visible && StickerMetricSelection(layout, controller).hasVisibleMetrics,
+      ),
     );
     await window.initialize(
       showMain: desktopLayout.showsGroup(desktopLayout.mainGroup),

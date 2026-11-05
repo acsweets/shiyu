@@ -8,6 +8,8 @@ pub(super) struct Work {
     #[serde(flatten)]
     pub(super) countdown: Countdown,
     target_kind: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    progress: Option<f64>,
     /// 工作中以“下班”为目标，状态可在此前进入午休。
     #[serde(skip)]
     pub(super) next_boundary: Option<i64>,
@@ -45,15 +47,24 @@ pub(super) fn compute(clock: &Clock, calendar: &Calendar, schedule: &WorkSchedul
         && from <= now
         && now < to
     {
-        return make(clock, "lunch_break", "lunch_end", Some(to), None);
+        let mut work = make(clock, "lunch_break", "lunch_end", Some(to), None);
+        work.progress = shift_progress(clock, start_today, end_today);
+        return work;
     }
-    make(
+    let mut work = make(
         clock,
         "working",
         "work_end",
         end_today,
         lunch.map(|(from, _)| from).filter(|from| *from > now),
-    )
+    );
+    work.progress = shift_progress(clock, start_today, end_today);
+    work
+}
+
+fn shift_progress(clock: &Clock, start: Option<i64>, end: Option<i64>) -> Option<f64> {
+    let (start, end) = (start?, end?);
+    (end > start).then(|| ((clock.millis() - start) as f64 / (end - start) as f64).clamp(0.0, 1.0))
 }
 
 fn next_start(clock: &Clock, calendar: &Calendar, start: Time) -> Option<i64> {
@@ -78,6 +89,7 @@ fn make(
     Work {
         countdown: clock.countdown(status, target),
         target_kind: target.map(|_| kind),
+        progress: None,
         next_boundary: next_boundary.or(target),
     }
 }

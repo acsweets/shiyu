@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/settings_access.dart';
 import '../../retirement/data/settings_repository.dart';
-import '../data/sticker_layout.dart';
+import '../data/sticker_mode.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
 
@@ -24,6 +24,7 @@ enum StickerSetting {
   retirement,
   restoreBackup,
   pause,
+  mode,
   holidayCheck,
   holidayImport,
   businessRead,
@@ -61,6 +62,7 @@ class StickerSettingsState {
   bool get editingBlocked => data['editingBlocked'] as bool;
   bool get canRestore => data['canRestore'] == true;
   bool get paused => data['paused'] == true;
+  StickerMode get mode => StickerMode.read(data['mode']);
   HolidayStatus? get holidayStatus {
     final Object? raw = data['holidayStatus'];
     return raw is Map<Object?, Object?> ? HolidayStatus(raw) : null;
@@ -80,9 +82,10 @@ class StickerSettingsState {
   String groupLabel(int group) =>
       group == mainGroup ? '主窗口 · 窗口 ${group + 1}' : '窗口 ${group + 1}';
 
-  String members(int group) => window(group).values.keys.map(_title).join('、');
-
-  static String _title(String id) => StickerLayout.titles[id]!;
+  String members(int group) {
+    final StickerGroupView view = window(group);
+    return view.values.keys.map(view.label).join('、');
+  }
 }
 
 /// 单次设置操作返回的新快照和可选反馈。

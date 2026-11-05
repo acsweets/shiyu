@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'sticker_cat_pose.dart';
 import 'sticker_character.dart';
+import 'sticker_mode.dart';
 import 'sticker_palette.dart';
 
 /// 保存窗口分组与外观，不改变 Rust 业务设置。
@@ -41,6 +42,7 @@ class StickerLayout extends ChangeNotifier {
 
   /// 当前是否展示示例。
   bool preview = true;
+  StickerMode mode = StickerMode.mini;
 
   /// 所有窗口共用的当前色系。
   StickerPalette _palette = StickerPalette.macaron;
@@ -91,7 +93,7 @@ class StickerLayout extends ChangeNotifier {
   int get mainGroup => groupOf(main);
   StickerPalette get palette => _palette;
   int get titleSize => _titleSize;
-  int groupOf(String id) => _groups[id]!;
+  int groupOf(String id) => _groups[id] ?? _groups[main]!;
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
   Rect? boundsOf(int group) => _bounds[group];
@@ -105,8 +107,6 @@ class StickerLayout extends ChangeNotifier {
       .toList();
 
   Set<int> get activeGroups => enabled.map(groupOf).toSet();
-
-  bool get hasVisibleGroups => activeGroups.any(showsGroup);
 
   static Map<String, int> _separateGroups() => <String, int>{
     for (int index = 0; index < titles.length; index++)
@@ -136,6 +136,10 @@ class StickerLayout extends ChangeNotifier {
       final File file = File('${directory!.path}/layout.json');
       if (await file.exists() && await file.length() < 32768) {
         _restore(jsonDecode(await file.readAsString()) as Map<String, dynamic>);
+      } else if (main == 'work' && enabled.length == titles.length) {
+        // 首次安装合并默认指标，仍可在窗口管理中拆开。
+        preview = false;
+        _groups.updateAll(_mainSlot);
       }
       await reloadCharacter();
     } catch (_) {
@@ -146,9 +150,12 @@ class StickerLayout extends ChangeNotifier {
     }
   }
 
+  static int _mainSlot(String id, int group) => 0;
+
   void _restore(Map<String, dynamic> data) {
     final Object? version = data['version'];
-    if (version != 1 && version != 2) return;
+    if (version != 1 && version != 2 && version != 3) return;
+    mode = StickerMode.read(data['mode']);
     _palette = StickerPalette.fromId(data['palette']);
     final Object? titleSize = data['titleSize'];
     if (titleSize is int) {
@@ -168,9 +175,12 @@ class StickerLayout extends ChangeNotifier {
     }
     final Object? groups = data['groups'];
     if (groups is Map<String, dynamic>) {
-      for (final String id in titles.keys) {
+      for (final String id in groups.keys) {
         final Object? group = groups[id];
-        if (group is int && group >= 0 && group < titles.length) {
+        if (id.length <= 150 &&
+            group is int &&
+            group >= 0 &&
+            group < titles.length) {
           _groups[id] = group;
         }
       }
@@ -230,25 +240,29 @@ class StickerLayout extends ChangeNotifier {
   ];
 
   /// 空槽位会继承拆出前窗口附近的起始位置。
-  void assign(String id, int? target) {
+  void assign(String id, int? target, {Iterable<String>? visibleIds}) {
     final int current = groupOf(id);
     if (target == null) {
-      if (_groups.values.where((int group) => group == current).length == 1) {
+      final Iterable<String> entries = visibleIds ?? enabled;
+      if (entries.where((String item) => groupOf(item) == current).length <=
+          1) {
         return;
       }
+      final Set<int> occupied = entries.map(groupOf).toSet();
       final int preferred = titles.keys.toList().indexOf(id);
-      target = _groups.containsValue(preferred)
-          ? List<int>.generate(
-              titles.length,
-              _groupIndex,
-            ).firstWhere((int group) => !_groups.containsValue(group))
+      target = preferred < 0 || occupied.contains(preferred)
+          ? List<int>.generate(titles.length, _groupIndex).firstWhere(
+              (int group) => !occupied.contains(group),
+              orElse: () => -1,
+            )
           : preferred;
+      if (target < 0) return;
       final Rect source = boundsOf(current) ?? initialBounds(current);
       _bounds[target] ??=
           (source.topLeft + const Offset(32, 32)) & const Size(280, 172);
       _hiddenGroups.remove(target);
     }
-    if (target == current) return;
+    if (target == current || target < 0 || target >= titles.length) return;
     _groups[id] = target;
     _changed();
   }
@@ -293,6 +307,21 @@ class StickerLayout extends ChangeNotifier {
     _changed();
   }
 
+  void setMode(StickerMode value) {
+    if (value == mode) return;
+    mode = value;
+    _changed();
+  }
+
+  Rect modeBounds(int group, int count) {
+    final Rect base = boundsOf(group) ?? initialBounds(group);
+    final double width = mode == StickerMode.mini ? 280 : 520;
+    final int columns = mode == StickerMode.mini ? 1 : 2;
+    final int rows = ((count + columns - 1) ~/ columns).clamp(1, 5);
+    final double row = mode.showsDetails ? 108 : 64;
+    return base.topLeft & Size(width, 102 + rows * row);
+  }
+
   /// 保存配色并让主窗口和子窗口读取新颜色。
   void setPalette(StickerPalette value) {
     if (_palette == value) return;
@@ -332,7 +361,8 @@ class StickerLayout extends ChangeNotifier {
     final Directory? folder = directory;
     if (!ready || folder == null) return;
     final String json = jsonEncode(<String, dynamic>{
-      'version': 2,
+      'version': 3,
+      'mode': mode.name,
       'preview': preview,
       'palette': _palette.name,
       'titleSize': _titleSize,

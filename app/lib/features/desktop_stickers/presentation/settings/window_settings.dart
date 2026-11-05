@@ -93,7 +93,7 @@ class WindowSettings extends StatelessWidget {
       );
 
   Widget _timer(BuildContext context, String id, int group) {
-    final String title = StickerLayout.titles[id]!;
+    final String title = session.state.window(group).label(id);
     final List<int> targets = session.state.groups
         .where((int target) => target != group)
         .toList();
@@ -105,7 +105,8 @@ class WindowSettings extends StatelessWidget {
           autofocus: target == targets.first,
           onSelect: () => _move(context, id, target),
         ),
-      if (session.state.window(group).values.length > 1)
+      if (session.state.window(group).values.length > 1 &&
+          session.state.groups.length < StickerLayout.titles.length)
         PaperOption(
           label: '新的独立窗口',
           autofocus: targets.isEmpty,

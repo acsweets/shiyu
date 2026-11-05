@@ -10,6 +10,42 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get floatingMode => '窗口形态';
+
+  @override
+  String get modeMini => '迷你';
+
+  @override
+  String get modeStandard => '标准';
+
+  @override
+  String get modeExpanded => '展开';
+
+  @override
+  String get countdownExpired => '已到期';
+
+  @override
+  String get holidayOngoing => '放假中';
+
+  @override
+  String get paydayToday => '今天发薪';
+
+  @override
+  String get metricUnavailable => '暂不可用';
+
+  @override
+  String get noVisibleMetrics => '所有指标已隐藏';
+
+  @override
+  String get untilWorkStart => '距离上班';
+
+  @override
+  String get untilWorkEnd => '距离下班';
+
+  @override
+  String get untilLunchEnd => '距离午休结束';
+
+  @override
   String get addCountdown => '添加倒计时';
 
   @override
@@ -394,6 +430,42 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get floatingMode => '視窗模式';
+
+  @override
+  String get modeMini => '迷你';
+
+  @override
+  String get modeStandard => '標準';
+
+  @override
+  String get modeExpanded => '展開';
+
+  @override
+  String get countdownExpired => '已到期';
+
+  @override
+  String get holidayOngoing => '放假中';
+
+  @override
+  String get paydayToday => '今天發薪';
+
+  @override
+  String get metricUnavailable => '暫無法使用';
+
+  @override
+  String get noVisibleMetrics => '所有指標已隱藏';
+
+  @override
+  String get untilWorkStart => '距離上班';
+
+  @override
+  String get untilWorkEnd => '距離下班';
+
+  @override
+  String get untilLunchEnd => '距離午休結束';
 
   @override
   String get addCountdown => '新增倒數計時';

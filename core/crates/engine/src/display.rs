@@ -9,6 +9,7 @@ pub struct DisplaySettings {
     pub onboarding_completed: Option<bool>,
     pub metric_order: Vec<String>,
     pub enabled_metrics: Vec<String>,
+    pub metrics_customized: bool,
 }
 
 const METRICS: [&str; 7] = [
@@ -28,6 +29,7 @@ impl Default for DisplaySettings {
             onboarding_completed: None,
             metric_order: METRICS.map(String::from).to_vec(),
             enabled_metrics: METRICS[..5].iter().map(|id| (*id).into()).collect(),
+            metrics_customized: false,
         }
     }
 }

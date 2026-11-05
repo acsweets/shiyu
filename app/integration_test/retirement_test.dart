@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shiyu/main.dart' as application;
 import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
+import 'package:shiyu/features/desktop_stickers/data/sticker_mode.dart';
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 import 'package:shiyu/features/retirement/data/settings_store.dart';
 import 'package:shiyu/platform/rust/generated/api/snapshot.dart' as rust;
@@ -129,4 +130,13 @@ Future<void> _verifyMainWindowVisibility(
   await tester.pumpAndSettle();
   expect(layout.showsGroup(layout.mainGroup), isTrue);
   expect(await windowManager.isVisible(), isTrue);
+  final Finder countdown = find.byKey(
+    const ValueKey<String>('sticker-retirement'),
+  );
+  await tester.tap(countdown);
+  await tester.pump(const Duration(milliseconds: 65));
+  await tester.tap(countdown);
+  await tester.pumpAndSettle();
+  expect(layout.mode, StickerMode.standard);
+  expect((await windowManager.getSize()).width, greaterThanOrEqualTo(519));
 }

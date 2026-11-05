@@ -166,6 +166,7 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
   }
 
   void _hide() => unawaited(_request('hide'));
+  void _toggleMode() => unawaited(_request('toggle_mode'));
 
   @override
   void onWindowClose() => _hide();
@@ -178,5 +179,6 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
   }
 
   @override
-  Widget build(BuildContext context) => StickerGroupSurface(view: _view);
+  Widget build(BuildContext context) =>
+      StickerGroupSurface(view: _view, onToggleMode: _toggleMode);
 }

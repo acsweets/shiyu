@@ -10,6 +10,42 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get floatingMode => 'Window mode';
+
+  @override
+  String get modeMini => 'Mini';
+
+  @override
+  String get modeStandard => 'Standard';
+
+  @override
+  String get modeExpanded => 'Expanded';
+
+  @override
+  String get countdownExpired => 'Ended';
+
+  @override
+  String get holidayOngoing => 'On break';
+
+  @override
+  String get paydayToday => 'Payday today';
+
+  @override
+  String get metricUnavailable => 'Unavailable';
+
+  @override
+  String get noVisibleMetrics => 'All metrics are hidden';
+
+  @override
+  String get untilWorkStart => 'Time until work starts';
+
+  @override
+  String get untilWorkEnd => 'Time until work ends';
+
+  @override
+  String get untilLunchEnd => 'Time until the break ends';
+
+  @override
   String get addCountdown => 'Add countdown';
 
   @override

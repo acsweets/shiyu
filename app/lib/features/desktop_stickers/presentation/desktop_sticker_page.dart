@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:window_manager/window_manager.dart';
 
 import '../../../platform/desktop/floating_window_controller.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../application/sticker_group_view.dart';
+import '../application/sticker_metric_selection.dart';
 import '../application/sticker_settings_host.dart';
 import '../application/sticker_settings_state.dart';
 import '../application/sticker_windows.dart';
 import '../data/sticker_layout.dart';
+import '../data/sticker_mode.dart';
 import 'countdown_sticker.dart';
 import 'settings/sticker_settings.dart';
 
@@ -55,9 +58,11 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
 
   /// 正在恢复窗口尺寸。
   bool _applyingBounds = false;
+  bool _boundsPending = false;
 
   /// 多窗口启动异常时仍保留主窗及设置入口。
   bool _failed = false;
+  Set<int> _activeSlots = <int>{};
 
   @override
   void initState() {
@@ -69,6 +74,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       resetBounds: _resetBounds,
       resize: _resizeWindow,
       windowFailed: _windowFailed,
+      changeMode: _changeMode,
     );
     _layout.addListener(_layoutChanged);
     widget.controller.addListener(_rebuild);
@@ -112,11 +118,20 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   bool _windowFailed() => _failed;
 
   void _rebuild() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    final Set<int> slots = _selection.activeGroups;
+    if (!setEquals(slots, _activeSlots)) {
+      _activeSlots = slots;
+      _windows?.sync();
+    }
+    _syncTickerVisibility();
+    setState(() {});
   }
 
+  StickerMetricSelection get _selection =>
+      StickerMetricSelection(_layout, widget.controller);
+
   void _layoutChanged() {
-    _syncTickerVisibility();
     _rebuild();
     _windows?.sync();
     unawaited(_syncMainVisibility());
@@ -125,7 +140,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
 
   void _syncTickerVisibility() {
     widget.controller.setVisible(
-      widget.window.visible && _layout.hasVisibleGroups,
+      widget.window.visible && _selection.hasVisibleMetrics,
     );
   }
 
@@ -136,15 +151,18 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   }
 
   Future<void> _applyMainBounds() async {
-    if (!widget.window.initialized || _applyingBounds) return;
+    if (!widget.window.initialized) return;
+    _boundsPending = true;
+    if (_applyingBounds) return;
     _applyingBounds = true;
     _boundsTimer?.cancel();
-    final int group = _layout.mainGroup;
     try {
-      await windowManager.setBounds(
-        _layout.boundsOf(group) ?? _layout.initialBounds(group),
-      );
-      _appliedGroup = group;
+      while (_boundsPending && mounted) {
+        _boundsPending = false;
+        final int group = _layout.mainGroup;
+        await windowManager.setBounds(_view(group).initialBounds);
+        _appliedGroup = group;
+      }
     } finally {
       _applyingBounds = false;
     }
@@ -215,8 +233,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   );
 
   void _resizeWindow(int group, int step) {
-    final Rect current =
-        _layout.boundsOf(group) ?? _layout.initialBounds(group);
+    final Rect current = _view(group).initialBounds;
     final Rect bounds = StickerLayout.decodeBounds(<double>[
       current.left,
       current.top,
@@ -229,6 +246,20 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     } else {
       _windows?.applyBounds(group, bounds);
     }
+  }
+
+  void _changeMode(StickerMode mode) {
+    if (mode == _layout.mode) return;
+    _layout.setMode(mode);
+    for (final int group in _selection.activeGroups) {
+      final Rect bounds = _layout.modeBounds(
+        group,
+        _selection.group(group).length,
+      );
+      _layout.saveBounds(group, bounds);
+      if (group != _layout.mainGroup) _windows?.applyBounds(group, bounds);
+    }
+    unawaited(_applyMainBounds());
   }
 
   void _resetBounds() {
@@ -259,14 +290,13 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     super.dispose();
   }
 
+  StickerGroupView _view(int group) =>
+      StickerGroupView.fromLayout(_layout, widget.controller, group, true);
+
   @override
   Widget build(BuildContext context) => StickerGroupSurface(
-    view: StickerGroupView.fromLayout(
-      _layout,
-      widget.controller,
-      _layout.mainGroup,
-      true,
-    ),
+    view: _view(_layout.mainGroup),
     onSettings: _openSettings,
+    onToggleMode: _settingsHost.toggleMode,
   );
 }

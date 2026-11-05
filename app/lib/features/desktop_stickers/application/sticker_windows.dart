@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
 import 'sticker_group_view.dart';
+import 'sticker_metric_selection.dart';
 import 'sticker_settings_host.dart';
 
 /// 主引擎拥有分组与 Rust 快照，每个外围槽位对应一个系统窗口。
@@ -88,17 +89,20 @@ class StickerWindows {
     if (!_closed) reportFailure();
   }
 
-  Set<int> get _wanted => layout.activeGroups..remove(layout.mainGroup);
+  Set<int> get _wanted =>
+      StickerMetricSelection(layout, controller).activeGroups
+        ..remove(layout.mainGroup);
 
   Future<void> _reconcile(void _) async {
     if (_closed) return;
+    final Set<int> wanted = _wanted;
     for (final int group in _children.keys.toList()) {
-      if (_wanted.contains(group)) continue;
+      if (wanted.contains(group)) continue;
       _tokens.remove(group);
       final WindowController child = _children.remove(group)!;
       await _hide(child);
     }
-    for (final int group in _wanted) {
+    for (final int group in wanted) {
       if (_closed || _children.containsKey(group)) {
         continue;
       }
@@ -179,6 +183,9 @@ class StickerWindows {
         ).data;
       case 'hide':
         layout.setGroupVisible(group, false);
+        return true;
+      case 'toggle_mode':
+        settings.toggleMode();
         return true;
       default:
         throw MissingPluginException(call.method);
