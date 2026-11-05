@@ -110,6 +110,17 @@ class HolidayPack {
     'years': payload['years'],
     'date_overrides': payload['date_overrides'],
   });
+
+  String get widgetJson {
+    final String calendar = coreJson;
+    return jsonEncode(<String, Object?>{
+      'schema_version': 1,
+      'version': version,
+      'region': payload['region'],
+      'calendar': calendar,
+      'sha256': sha256.convert(utf8.encode(calendar)).toString(),
+    });
+  }
 }
 
 Map<String, HolidayPack> parseHolidayCatalog(String raw) {

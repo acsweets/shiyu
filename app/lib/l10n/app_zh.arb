@@ -115,6 +115,7 @@
   "initializationNotice": "工程已就绪，时间与薪资功能正在构建中。",
   "retirementTitle": "退休倒计时",
   "retired": "已退休",
+  "durationDays": "天",
   "daysRemaining": "天后退休",
   "chooseRetirement": "选择退休日期",
   "configure": "配置",

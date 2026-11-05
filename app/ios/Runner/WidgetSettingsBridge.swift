@@ -17,8 +17,14 @@ final class WidgetSettingsBridge: NSObject, FlutterPlugin {
                     result(FlutterError(code: "invalid_arguments", message: nil, details: nil))
                     return
                 }
-                try SharedWidgetStore.write(json)
+                try SharedWidgetStore.writeSettings(json)
                 result(nil)
+            case "writeCalendar":
+                guard let json = call.arguments as? String else {
+                    result(FlutterError(code: "invalid_arguments", message: nil, details: nil))
+                    return
+                }
+                result(try SharedWidgetStore.writeCalendar(json))
             case "readAppearance": result(try SharedWidgetStore.readAppearance())
             case "writeAppearance":
                 guard let json = call.arguments as? String else {

@@ -115,6 +115,7 @@
   "initializationNotice": "Die App-Grundlage ist bereit. Zeit- und Gehaltsfunktionen sind in Entwicklung.",
   "retirementTitle": "Countdown bis zur Rente",
   "retired": "Im Ruhestand",
+  "durationDays": "Tage",
   "daysRemaining": "Tage verbleibend",
   "chooseRetirement": "Rentendatum wählen",
   "configure": "Einstellungen",

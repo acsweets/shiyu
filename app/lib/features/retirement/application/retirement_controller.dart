@@ -67,6 +67,7 @@ class RetirementController extends ChangeNotifier {
   HolidayUpdate holidayUpdate = HolidayUpdate.idle;
   String _holidayJson = '{}';
   Future<HolidayUpdate>? _holidayTask;
+  Future<void> _widgetQueue = Future<void>.value();
 
   /// 一次性整秒计时器。
   Timer? _timer;
@@ -115,7 +116,7 @@ class RetirementController extends ChangeNotifier {
   }
 
   /// 更新本地假日输入，供导入和地区变化后立即重算。
-  Future<void> reloadHolidays() async {
+  Future<void> reloadHolidays({bool refreshWidgets = false}) async {
     final int revision = _revision;
     HolidaySelection? loaded;
     try {
@@ -127,6 +128,31 @@ class RetirementController extends ChangeNotifier {
     holidayData = loaded;
     _holidayJson = loaded?.pack.coreJson ?? '{}';
     await refresh();
+    if (widgets.supported && !_disposed && revision == _revision) {
+      _widgetQueue = _widgetQueue.then(
+        (void _) => _publishWidgets(revision, refreshWidgets),
+      );
+      await _widgetQueue;
+    }
+  }
+
+  Future<void> _publishWidgets(int revision, bool refreshWidgets) async {
+    if (_disposed || revision != _revision) return;
+    try {
+      final String? calendar = holidayData?.pack.widgetJson;
+      final bool changed =
+          calendar != null && await widgets.writeCalendar(calendar);
+      if (changed || refreshWidgets) await widgets.refresh();
+      if (!_disposed && revision == _revision && problem == 'widget_refresh') {
+        problem = null;
+        notifyListeners();
+      }
+    } catch (_) {
+      if (!_disposed && revision == _revision && problem == null) {
+        problem = 'widget_refresh';
+        notifyListeners();
+      }
+    }
   }
 
   Future<HolidayUpdate> checkHolidayUpdates({bool silent = false}) =>
@@ -290,12 +316,7 @@ class RetirementController extends ChangeNotifier {
       editingBlocked = false;
       canRestoreBackup = false;
       _revision++;
-      await reloadHolidays();
-      try {
-        await widgets.refresh();
-      } catch (_) {
-        problem = 'widget_refresh';
-      }
+      await reloadHolidays(refreshWidgets: true);
       return true;
     } catch (_) {
       problem = 'storage';

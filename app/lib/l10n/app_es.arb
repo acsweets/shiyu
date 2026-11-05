@@ -115,6 +115,7 @@
   "initializationNotice": "La base de la aplicación está lista. Las funciones de tiempo y salario están en desarrollo.",
   "retirementTitle": "Cuenta atrás para la jubilación",
   "retired": "Jubilado/a",
+  "durationDays": "d",
   "daysRemaining": "días restantes",
   "chooseRetirement": "Elegir fecha de jubilación",
   "configure": "Configurar",

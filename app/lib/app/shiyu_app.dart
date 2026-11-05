@@ -4,7 +4,7 @@ import 'theme/mobile_paper.dart';
 
 import '../features/retirement/application/retirement_controller.dart';
 import '../features/retirement/application/settings_access.dart';
-import '../features/retirement/presentation/mobile_settings_page.dart';
+import '../features/retirement/presentation/mobile_dashboard.dart';
 import '../features/retirement/presentation/settings/business_settings_page.dart';
 import '../features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import '../features/desktop_stickers/data/sticker_layout.dart';
@@ -94,7 +94,7 @@ class _MobileStartupState extends State<_MobileStartup> {
           desktop: false,
           onFinished: _finish,
         )
-      : MobileSettingsPage(controller: widget.controller);
+      : MobileDashboard(controller: widget.controller);
 
   void _finish() => setState(() => _showWizard = false);
 }

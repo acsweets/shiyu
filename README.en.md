@@ -21,9 +21,9 @@ The retirement countdown is available in desktop floating windows and mobile hom
 | Desktop modes | Mini, Standard, and Expanded share the live Rust snapshot. Double-click to switch between Mini and Standard, or choose Expanded in settings. Reorder or hide metrics and add custom countdowns. Expanded shows available progress and dates while respecting amount visibility |
 | Desktop system controls | The tray or menu bar controls visibility, click-through, amount masking, refresh, and holiday checks. Settings support edge snapping, per-display placement, full-screen coverage, an earnings shortcut, and launch at login. Login items require macOS 13 or later |
 | Desktop skins and cat assets | Choose Simple Card or Dark Tech, light, dark, or system appearance, 30–100% background opacity, one of three number sizes, and an accent. Replace PNGs locally or import, export, and open `.timerpack` files. [Resource guide](docs/界面设计/04-用户资源制作指南.md) |
-| Mobile settings | The app opens directly to settings for the retirement date, time zone, and home screen widget appearance. Choose from three palettes, show or hide the title, and adjust its size |
+| Mobile dashboard and settings | The dashboard shows work, holidays, payday, lifespan, retirement, and earnings from the live snapshot. Narrow screens and larger text use one column. The top-right button opens settings, retirement setup, widget instructions, and widget appearance |
 | Onboarding and full settings | New installs guide you through personal information, work and pay, and a live preview. Configure paydays, date overrides, holidays, and one of eight languages. Settings autosave and can be imported or exported as local JSON. Desktop settings include custom countdowns and mini-window metric preferences |
-| Local settings | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving. Legacy settings can migrate, and users can restore the last valid backup after archiving the damaged file |
+| Local settings and widget data | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving, with legacy migration and backup recovery. Mobile apps atomically share verified holiday data by region with native widgets. Amounts are masked when widget settings fall back to a backup |
 | Refresh | Active countdowns refresh on whole seconds. Desktop refresh pauses when all floating windows are hidden or when paused in Countdowns settings. It recalculates from the current system time when shown or resumed |
 | Android home screen widget | The cat sits above the card, with the title above a single-line retirement countdown. Tap the widget to open settings. It calls Rust via UniFFI independently of Flutter |
 | iOS home screen widget | Small and medium WidgetKit layouts show the cat retirement countdown. The extension reads App Group settings and calls Rust independently. Requires verification on a Mac |
@@ -39,7 +39,6 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 ## Still pending
 
-- Integrate the six built-in metrics and earnings into the mobile home screen.
 - Multi-display, full-screen, and Apple manual checks are tracked in the [node 09 record](docs/验收记录/09/README.md) and [node 10 record](docs/验收记录/10/README.md).
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 

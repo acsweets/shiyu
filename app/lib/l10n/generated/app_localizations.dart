@@ -799,6 +799,12 @@ abstract class AppLocalizations {
   /// **'已退休'**
   String get retired;
 
+  /// No description provided for @durationDays.
+  ///
+  /// In zh, this message translates to:
+  /// **'天'**
+  String get durationDays;
+
   /// No description provided for @daysRemaining.
   ///
   /// In zh, this message translates to:

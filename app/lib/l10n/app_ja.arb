@@ -115,6 +115,7 @@
   "initializationNotice": "アプリの基盤が整いました。時間と給与の機能は開発中です。",
   "retirementTitle": "退職までのカウントダウン",
   "retired": "退職済み",
+  "durationDays": "日",
   "daysRemaining": "日後に退職",
   "chooseRetirement": "退職日を選択",
   "configure": "設定",

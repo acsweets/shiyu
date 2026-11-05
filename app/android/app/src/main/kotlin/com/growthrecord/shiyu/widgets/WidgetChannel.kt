@@ -9,8 +9,6 @@ import com.growthrecord.shiyu.core.computeTimeline
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import com.growthrecord.shiyu.core.validateSettings
-import com.growthrecord.shiyu.core.computeSnapshot
-import com.growthrecord.shiyu.core.defaultSettings
 import org.json.JSONObject
 
 object WidgetChannel {
@@ -27,6 +25,7 @@ object WidgetChannel {
                         result.success(null)
                     }
                     "readAppearance" -> result.success(WidgetSettings.readAppearance(context))
+                    "writeCalendar" -> result.success(WidgetSettings.writeCalendar(context, call.arguments as String))
                     "writeAppearance" -> {
                         val json = JSONObject(call.arguments as String)
                         WidgetSettings.writeAppearance(context, json.toString())
@@ -42,7 +41,11 @@ object WidgetChannel {
                     }
                     "snapshot" -> {
                         val now = (call.arguments as Number).toLong()
-                        result.success(computeSnapshot(WidgetSettings.read(context) ?: defaultSettings(), "{}", now))
+                        if (BuildConfig.DEBUG) {
+                            result.success(WidgetInputs.read(context).snapshot(now))
+                        } else {
+                            result.notImplemented()
+                        }
                     }
                     "verifyCoreTimeline" -> {
                         if (BuildConfig.DEBUG) {

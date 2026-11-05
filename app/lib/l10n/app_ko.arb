@@ -115,6 +115,7 @@
   "initializationNotice": "앱의 기반이 준비되었습니다. 시간 및 급여 기능을 개발 중입니다.",
   "retirementTitle": "은퇴 카운트다운",
   "retired": "은퇴 완료",
+  "durationDays": "일",
   "daysRemaining": "일 후 은퇴",
   "chooseRetirement": "은퇴 날짜 선택",
   "configure": "설정",

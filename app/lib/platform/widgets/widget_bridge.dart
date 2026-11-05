@@ -22,6 +22,11 @@ class WidgetBridge {
       _channel.invokeMethod<String>('readSettings');
   Future<void> writeSettings(String json) =>
       _channel.invokeMethod<void>('writeSettings', json);
+
+  /// 共享文件按地区区分，原生组件以自身设置中的地区选择数据。
+  Future<bool> writeCalendar(String json) async =>
+      await _channel.invokeMethod<bool>('writeCalendar', json) ?? false;
+
   Future<void> refresh() async {
     if (supported) await _channel.invokeMethod<void>('refresh');
   }

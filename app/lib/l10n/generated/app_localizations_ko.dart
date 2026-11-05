@@ -355,6 +355,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get retired => '은퇴 완료';
 
   @override
+  String get durationDays => '일';
+
+  @override
   String get daysRemaining => '일 후 은퇴';
 
   @override

@@ -8,7 +8,7 @@ import 'support/test_controller.dart';
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 
 void main() {
-  testWidgets('中文环境直接打开手机设置', _verifyChineseStartup);
+  testWidgets('中文首页展示 Rust 指标并从右上角进入设置', _verifyChineseStartup);
   testWidgets('英文小屏和大字号下可以使用手机设置', _verifyEnglishCompactStartup);
   testWidgets('手机设置保存时区并保留原生小组件入口', _verifyMobileSettings);
 }
@@ -23,10 +23,22 @@ Future<void> _verifyChineseStartup(WidgetTester tester) async {
   );
   await tester.pumpAndSettle();
 
-  expect(find.text('设置'), findsOneWidget);
+  expect(
+    find.byKey(const ValueKey<String>('mobile-metric-work')),
+    findsOneWidget,
+  );
+  expect(
+    find.byKey(const ValueKey<String>('mobile-metric-today_salary')),
+    findsOneWidget,
+  );
+  expect(
+    find.byKey(const ValueKey<String>('mobile-metric-month_salary')),
+    findsOneWidget,
+  );
+  expect(find.text('主屏幕小组件'), findsNothing);
+  await tester.tap(find.byTooltip('设置'));
+  await tester.pumpAndSettle();
   expect(find.text('主屏幕小组件'), findsOneWidget);
-  expect(find.byKey(const ValueKey<String>('retirementValue')), findsNothing);
-  expect(find.text('退休倒计时'), findsOneWidget);
   expect(tester.takeException(), isNull);
 }
 
@@ -45,6 +57,13 @@ Future<void> _verifyEnglishCompactStartup(WidgetTester tester) async {
   );
   await tester.pumpAndSettle();
 
+  expect(
+    find.byKey(const ValueKey<String>('mobile-metric-work')),
+    findsOneWidget,
+  );
+  expect(tester.takeException(), isNull);
+  await tester.tap(find.byTooltip('Settings'));
+  await tester.pumpAndSettle();
   expect(find.text('Settings'), findsOneWidget);
   expect(find.text('Choose retirement date'), findsOneWidget);
   await tester.scrollUntilVisible(
@@ -66,6 +85,8 @@ Future<void> _verifyMobileSettings(WidgetTester tester) async {
   final RetirementController controller = await createTestController();
   addTearDown(controller.dispose);
   await tester.pumpWidget(ShiyuApp(controller: controller));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byTooltip('设置'));
   await tester.pumpAndSettle();
 
   await tester.enterText(find.byType(TextField), 'Asia/Tokyo');

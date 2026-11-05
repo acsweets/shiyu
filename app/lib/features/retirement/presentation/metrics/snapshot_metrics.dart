@@ -121,7 +121,7 @@ class SnapshotMetrics {
       duration.inSeconds % 60,
     ].map(_twoDigits).join(':');
     if (duration.inDays == 0) return clock;
-    return '${duration.inDays} ${strings.daysRemaining} · $clock';
+    return '${duration.inDays} ${strings.durationDays} · $clock';
   }
 
   String _twoDigits(int value) => value.toString().padLeft(2, '0');

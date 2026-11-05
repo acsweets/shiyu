@@ -11,8 +11,6 @@ import android.view.View
 import android.widget.RemoteViews
 import com.growthrecord.shiyu.MainActivity
 import com.growthrecord.shiyu.R
-import com.growthrecord.shiyu.core.computeSnapshot
-import com.growthrecord.shiyu.core.defaultSettings
 import org.json.JSONObject
 import java.text.NumberFormat
 import java.util.Locale
@@ -60,8 +58,7 @@ class RetirementWidget : AppWidgetProvider() {
 
         private fun countdown(context: Context): String {
             try {
-                val settings = WidgetSettings.read(context) ?: defaultSettings()
-                val reply = JSONObject(computeSnapshot(settings, "{}", System.currentTimeMillis()))
+                val reply = JSONObject(WidgetInputs.read(context).snapshot(System.currentTimeMillis()))
                 check(reply.getBoolean("ok"))
                 val retirement = reply.getJSONObject("snapshot").getJSONObject("retirement")
                 return when (retirement.getString("status")) {

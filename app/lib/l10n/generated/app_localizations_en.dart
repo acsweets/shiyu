@@ -365,6 +365,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retired => 'Retired';
 
   @override
+  String get durationDays => 'd';
+
+  @override
   String get daysRemaining => 'days remaining';
 
   @override

@@ -355,6 +355,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retired => '已退休';
 
   @override
+  String get durationDays => '天';
+
+  @override
   String get daysRemaining => '天后退休';
 
   @override
@@ -775,6 +778,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get retired => '已退休';
+
+  @override
+  String get durationDays => '天';
 
   @override
   String get daysRemaining => '天後退休';

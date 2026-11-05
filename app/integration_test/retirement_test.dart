@@ -63,19 +63,37 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     await verifyHolidayFlow(temporary);
     await verifyBusinessSettingsFlow(temporary);
     const int now = 1793764800000;
-    // 原生退休小组件在节点 11 再接入共享假日数据。
+    // 以相同设置、日历与墙钟比较两条正式绑定。
     final String dartJson = await rust.computeSnapshot(
       settingsJson: jsonEncode(controller.settings),
-      holidayJson: '{}',
+      holidayJson: controller.holidayData?.pack.coreJson ?? '{}',
       nowMillis: now,
     );
     if (Platform.isAndroid) {
+      expect(controller.holidayData, isNotNull);
+      expect(
+        find.byKey(const ValueKey<String>('mobile-metric-work')),
+        findsOneWidget,
+      );
       const MethodChannel channel = MethodChannel('shiyu/widgets');
       final String? nativeJson = await channel.invokeMethod<String>(
         'snapshot',
         now,
       );
       expect(jsonDecode(nativeJson!), jsonDecode(dartJson));
+      final String calendar = controller.holidayData!.pack.widgetJson;
+      expect(
+        await channel.invokeMethod<bool>('writeCalendar', calendar),
+        isFalse,
+      );
+      await expectLater(
+        channel.invokeMethod<bool>(
+          'writeCalendar',
+          calendar.replaceFirst('"sha256":"', '"sha256":"bad'),
+        ),
+        throwsA(isA<PlatformException>()),
+      );
+      expect(await channel.invokeMethod<String>('snapshot', now), nativeJson);
     }
     if (desktop) {
       expect(await windowManager.isAlwaysOnTop(), isTrue);

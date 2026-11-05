@@ -355,6 +355,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get retired => '退職済み';
 
   @override
+  String get durationDays => '日';
+
+  @override
   String get daysRemaining => '日後に退職';
 
   @override

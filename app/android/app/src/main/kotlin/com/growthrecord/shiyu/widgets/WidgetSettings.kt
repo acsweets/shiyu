@@ -15,7 +15,32 @@ object WidgetSettings {
 
     fun read(context: Context): String? = read(context, "settings.json")
 
-    fun write(context: Context, json: String) = write(context, "settings.json", json)
+    fun write(context: Context, json: String) {
+        write(context, "settings.json", json)
+        runCatching { write(context, "settings.last-good.json", json) }
+    }
+
+    fun readLastGood(context: Context): String? = read(context, "settings.last-good.json")
+
+    fun readCalendar(context: Context, region: String): String? = calendar(context, region)?.calendar
+
+    fun writeCalendar(context: Context, raw: String): Boolean {
+        val next = WidgetCalendar.parse(raw)
+        val name = "calendar-${next.region}.json"
+        if ((calendar(context, next.region)?.version ?: 0L) >= next.version) return false
+        write(context, name, raw)
+        runCatching { write(context, "$name.bak", raw) }
+        return true
+    }
+
+    private fun calendar(context: Context, region: String): WidgetCalendar? {
+        if (region !in WidgetCalendar.regions) return null
+        val name = "calendar-$region.json"
+        return readCalendarFile(context, name, region) ?: readCalendarFile(context, "$name.bak", region)
+    }
+
+    private fun readCalendarFile(context: Context, name: String, region: String): WidgetCalendar? =
+        runCatching { read(context, name)?.let(WidgetCalendar::parse)?.takeIf { it.region == region } }.getOrNull()
 
     // 外观单独保存，避免把显示选项写进 Rust 设置契约。
     fun readAppearance(context: Context): String? = read(context, "widget_appearance.json")

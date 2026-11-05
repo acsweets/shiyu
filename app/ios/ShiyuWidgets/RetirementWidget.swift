@@ -8,6 +8,7 @@ struct RetirementEntry: TimelineEntry {
     let snapshot: WidgetSnapshot?
     /// 从 App Group 读取的小组件外观。
     let appearance: WidgetAppearance
+    var locale: String? = nil
 
     /// 退休的绝对时间由 Rust 按目标时区计算。
     var target: Date? {
@@ -36,6 +37,53 @@ struct WidgetSnapshot: Decodable {
 struct WidgetReply: Decodable {
     let ok: Bool
     let snapshot: WidgetSnapshot?
+}
+
+/// 正式 UniFFI 独立校验共享设置，缺失时回退且保持金额遮蔽。
+private struct WidgetInputs {
+    let settings: String
+    let calendar: String
+    let locale: String?
+
+    static func load() -> WidgetInputs {
+        let primary = checked(try? SharedWidgetStore.read())
+        var values = primary ?? checked(try? SharedWidgetStore.readLastGoodSettings()) ?? [:]
+        if primary == nil { values["hide_amount"] = true }
+        let data = try? JSONSerialization.data(withJSONObject: values)
+        let settings = data.flatMap { String(data: $0, encoding: .utf8) } ?? defaultSettings()
+        let display = values["display"] as? [String: Any]
+        let region = values["region"] as? String ?? "CN"
+        return WidgetInputs(
+            settings: settings, calendar: SharedWidgetStore.readCalendar(region: region) ?? "{}",
+            locale: display?["locale"] as? String
+        )
+    }
+
+    private static func checked(_ raw: String?) -> [String: Any]? {
+        guard let raw,
+              var candidate = (try? JSONSerialization.jsonObject(with: Data(raw.utf8))) as? [String: Any] else {
+            return nil
+        }
+        if candidate["schema_version"] as? Int == 0 { candidate["schema_version"] = 1 }
+        guard let data = try? JSONSerialization.data(withJSONObject: candidate),
+              let json = String(data: data, encoding: .utf8) else { return nil }
+        let validated = validateSettings(settingsJson: json)
+        guard let reply = (try? JSONSerialization.jsonObject(with: Data(validated.utf8))) as? [String: Any],
+              reply["ok"] as? Bool == true else { return nil }
+        return reply["settings"] as? [String: Any]
+    }
+
+    func snapshot(at date: Date) -> WidgetSnapshot? {
+        let millis = Int64((date.timeIntervalSince1970 * 1000).rounded())
+        let decoder = JSONDecoder()
+        let json = computeSnapshot(settingsJson: settings, holidayJson: calendar, nowMillis: millis)
+        let reply = try? decoder.decode(WidgetReply.self, from: Data(json.utf8))
+        if reply?.ok == true { return reply?.snapshot }
+        guard calendar != "{}" else { return nil }
+        let fallback = computeSnapshot(settingsJson: settings, holidayJson: "{}", nowMillis: millis)
+        let result = try? decoder.decode(WidgetReply.self, from: Data(fallback.utf8))
+        return result?.ok == true ? result?.snapshot : nil
+    }
 }
 
 struct WidgetAppearance: Decodable {
@@ -78,14 +126,14 @@ struct RetirementProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (RetirementEntry) -> Void) {
-        completion(entry(at: Date(), settings: try? SharedWidgetStore.read(), appearance: .load()))
+        completion(entry(at: Date(), input: .load(), appearance: .load()))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<RetirementEntry>) -> Void) {
         let now = Date()
         let appearance = WidgetAppearance.load()
-        let settings = try? SharedWidgetStore.read()
-        let current = entry(at: now, settings: settings, appearance: appearance)
+        let input = WidgetInputs.load()
+        let current = entry(at: now, input: input, appearance: appearance)
         let interval = now.addingTimeInterval(1800)
         let boundary = current.snapshot.map {
             Date(timeIntervalSince1970: Double($0.next_change_at_millis) / 1000)
@@ -93,17 +141,14 @@ struct RetirementProvider: TimelineProvider {
         let next = max(now.addingTimeInterval(60), min(boundary, interval))
         var entries = [current]
         if let target = current.target, target > now, target <= next {
-            entries.append(entry(at: target, settings: settings, appearance: appearance))
+            entries.append(entry(at: target, input: input, appearance: appearance))
         }
         completion(Timeline(entries: entries, policy: .after(next)))
     }
 
     /// 组件扩展直接调用 Rust，打开或关闭 Flutter 都不会改变时间线来源。
-    private func entry(at date: Date, settings: String?, appearance: WidgetAppearance) -> RetirementEntry {
-        let millis = Int64((date.timeIntervalSince1970 * 1000).rounded())
-        let json = computeSnapshot(settingsJson: settings ?? defaultSettings(), holidayJson: "{}", nowMillis: millis)
-        let reply = try? JSONDecoder().decode(WidgetReply.self, from: Data(json.utf8))
-        return RetirementEntry(date: date, snapshot: reply?.ok == true ? reply?.snapshot : nil, appearance: appearance)
+    private func entry(at date: Date, input: WidgetInputs, appearance: WidgetAppearance) -> RetirementEntry {
+        RetirementEntry(date: date, snapshot: input.snapshot(at: date), appearance: appearance, locale: input.locale)
     }
 }
 
@@ -111,7 +156,7 @@ struct RetirementWidgetView: View {
     /// 当前系统时间线条目。
     let entry: RetirementEntry
 
-    private var chinese: Bool { Locale.preferredLanguages.first?.hasPrefix("zh") == true }
+    private var chinese: Bool { (entry.locale ?? Locale.preferredLanguages.first)?.hasPrefix("zh") == true }
 
     private var value: String {
         guard let state = entry.snapshot?.retirement else {
