@@ -1,10 +1,12 @@
 use crate::{
-    calendar,
+    calendar::Calendar,
     contract::{HolidayData, SCHEMA_VERSION, Settings},
+    metrics::{self, Clock},
     validation::{error, parse_settings},
 };
 use jiff::{Timestamp, civil::Date, tz::TimeZone};
-use serde_json::{Value, json};
+use serde::Serialize;
+use serde_json::json;
 use std::str::FromStr;
 
 pub fn default_settings() -> String {
@@ -26,11 +28,25 @@ pub fn compute_snapshot(settings_json: &str, holiday_json: &str, now_millis: i64
     }
 }
 
+#[derive(Serialize)]
+struct Snapshot {
+    schema_version: u32,
+    computed_at_millis: i64,
+    local_date: String,
+    time_zone: String,
+    is_workday: bool,
+    calendar_status: &'static str,
+    next_change_at_millis: i64,
+    unavailable_metrics: [&'static str; 1],
+    #[serde(flatten)]
+    metrics: metrics::Metrics,
+}
+
 fn compute(
     settings_json: &str,
     holiday_json: &str,
     now_millis: i64,
-) -> Result<Value, (&'static str, &'static str)> {
+) -> Result<Snapshot, (&'static str, &'static str)> {
     let settings = parse_settings(settings_json).map_err(|_| ("settings", "invalid_settings"))?;
     let holidays: HolidayData =
         serde_json::from_str(holiday_json).map_err(|_| ("holiday_data", "invalid_json"))?;
@@ -46,43 +62,23 @@ fn compute(
     }
     let zone =
         TimeZone::get(&settings.time_zone).map_err(|_| ("time_zone", "invalid_time_zone"))?;
-    let now = Timestamp::from_millisecond(now_millis)
-        .map_err(|_| ("now", "invalid_timestamp"))?
-        .to_zoned(zone.clone());
-    let date = now.date();
-    let (is_workday, calendar_status) = calendar::workday(&settings, &holidays, date);
-    let tomorrow = date
-        .checked_add(jiff::Span::new().days(1))
-        .map_err(|_| ("now", "out_of_range"))?;
-    let next_midnight = zone
-        .to_ambiguous_zoned(tomorrow.at(0, 0, 0, 0))
-        .unambiguous()
-        .map_err(|_| ("now", "ambiguous_local_time"))?
-        .timestamp()
-        .as_millisecond();
-    let retirement = if let Some(value) = &settings.retirement_date {
-        let target_date = Date::from_str(value).map_err(|_| ("retirement_date", "invalid_date"))?;
-        let target = zone
-            .to_ambiguous_zoned(target_date.at(0, 0, 0, 0))
-            .unambiguous()
-            .map_err(|_| ("retirement_date", "ambiguous_local_time"))?
-            .timestamp()
-            .as_millisecond();
-        let seconds = ((target - now_millis).max(0) + 999) / 1000;
-        let days = date
-            .until(target_date)
-            .map_err(|_| ("retirement_date", "out_of_range"))?
-            .get_days()
-            .max(0);
-        json!({"status":if target<=now_millis {"retired"} else {"active"},"target_millis":target,"remaining_seconds":seconds,"remaining_days":days})
-    } else {
-        json!({"status":"unconfigured","target_millis":null,"remaining_seconds":0,"remaining_days":0})
-    };
-    let next_change = retirement["target_millis"]
-        .as_i64()
-        .filter(|t| *t > now_millis)
-        .map_or(next_midnight, |t| t.min(next_midnight));
-    Ok(
-        json!({"schema_version":SCHEMA_VERSION,"computed_at_millis":now_millis,"local_date":date.to_string(),"time_zone":settings.time_zone,"is_workday":is_workday,"calendar_status":calendar_status,"next_change_at_millis":next_change,"retirement":retirement,"unavailable_metrics":["life","work","salary","payday","holiday"]}),
-    )
+    let timestamp =
+        Timestamp::from_millisecond(now_millis).map_err(|_| ("now", "invalid_timestamp"))?;
+    let clock = Clock(timestamp.to_zoned(zone));
+    let date = clock.date();
+    let calendar = Calendar::new(&settings, &holidays);
+    let next_midnight = clock.next_day_boundary().ok_or(("now", "out_of_range"))?;
+    let (metrics, next_change_at_millis) =
+        metrics::compute(&settings, &calendar, &clock, next_midnight);
+    Ok(Snapshot {
+        schema_version: SCHEMA_VERSION,
+        computed_at_millis: now_millis,
+        local_date: date.to_string(),
+        time_zone: settings.time_zone,
+        is_workday: calendar.is_workday(date),
+        calendar_status: calendar.status(date),
+        next_change_at_millis,
+        unavailable_metrics: ["salary"],
+        metrics,
+    })
 }

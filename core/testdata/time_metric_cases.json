@@ -1,0 +1,468 @@
+[
+  {
+    "name": "上海工作日各边界",
+    "cases": [
+      {
+        "now": "2026-11-02T00:00:00Z",
+        "expect": {
+          "work": {"status": "before_work", "target_kind": "work_start", "remaining_seconds": 3600}
+        },
+        "times": {
+          "/work/target_millis": "2026-11-02T01:00:00Z",
+          "/next_change_at_millis": "2026-11-02T01:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-02T01:00:00Z",
+        "expect": {
+          "work": {"status": "working", "target_kind": "work_end", "remaining_seconds": 32400}
+        },
+        "times": {
+          "/work/target_millis": "2026-11-02T10:00:00Z",
+          "/next_change_at_millis": "2026-11-02T04:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-02T04:00:00Z",
+        "expect": {
+          "work": {"status": "lunch_break", "target_kind": "lunch_end", "remaining_seconds": 3600}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-11-02T05:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-02T05:00:00Z",
+        "expect": {
+          "work": {"status": "working", "target_kind": "work_end", "remaining_seconds": 18000}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-11-02T10:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-02T10:00:00Z",
+        "expect": {
+          "work": {"status": "after_work", "target_kind": "work_start", "remaining_seconds": 54000}
+        },
+        "times": {
+          "/work/target_millis": "2026-11-03T01:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-07T04:00:00Z",
+        "expect": {
+          "work": {"status": "rest_day", "target_kind": "work_start", "remaining_days": 2}
+        },
+        "times": {
+          "/work/target_millis": "2026-11-09T01:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "关闭午休",
+    "settings": {"schedule": {"lunch": null}},
+    "cases": [
+      {
+        "now": "2026-11-02T04:30:00Z",
+        "expect": {
+          "work": {"status": "working", "remaining_seconds": 19800}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-11-02T10:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "夏令时跳时内的午休收敛为同一边界",
+    "settings": {"time_zone": "America/New_York", "schedule": {"workdays": [7], "start": "01:30", "end": "03:10", "lunch": ["02:05", "02:45"]}},
+    "cases": [
+      {
+        "now": "2026-03-08T06:45:00Z",
+        "expect": {
+          "work": {"status": "working", "remaining_seconds": 1500}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-03-08T07:10:00Z"
+        }
+      },
+      {
+        "now": "2026-03-08T07:00:00Z",
+        "expect": {
+          "work": {"status": "working", "remaining_seconds": 600}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "夏令时重复时段不会倒退工作状态",
+    "settings": {"time_zone": "America/New_York", "schedule": {"workdays": [7], "start": "01:30", "end": "03:00", "lunch": null}},
+    "cases": [
+      {
+        "now": "2026-11-01T05:20:00Z",
+        "expect": {
+          "work": {"status": "before_work"}
+        },
+        "times": {
+          "/work/target_millis": "2026-11-01T05:30:00Z"
+        }
+      },
+      {
+        "now": "2026-11-01T06:15:00Z",
+        "expect": {
+          "work": {"status": "working", "remaining_seconds": 6300}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-11-01T08:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "跳过的日历日期不会阻断其他指标",
+    "settings": {"time_zone": "Pacific/Apia", "schedule": {"workdays": [5, 6], "lunch": null}},
+    "cases": [
+      {
+        "now": "2011-12-30T06:00:00Z",
+        "expect": {
+          "local_date": "2011-12-29",
+          "work": {"status": "rest_day"}
+        },
+        "times": {
+          "/work/target_millis": "2011-12-30T19:00:00Z",
+          "/next_change_at_millis": "2011-12-30T10:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "闰日与小数寿命",
+    "settings": {"time_zone": "UTC", "birth": {"date": "2000-02-29", "life_expectancy_years": "25.5"}},
+    "cases": [
+      {
+        "now": "2025-02-28T00:00:00Z",
+        "expect": {
+          "life": {"status": "active", "remaining_seconds": 15768000},
+          "calendar_remaining": {"life": {"years": 0, "months": 0, "days": 182, "hours": 12, "minutes": 0, "seconds": 0}}
+        },
+        "times": {
+          "/life/target_millis": "2025-08-29T12:00:00Z"
+        }
+      },
+      {
+        "now": "2025-08-29T11:59:59.500Z",
+        "expect": {
+          "life": {"status": "active", "remaining_seconds": 1},
+          "calendar_remaining": {"life": {"seconds": 1}}
+        },
+        "times": {
+          "/next_change_at_millis": "2025-08-29T12:00:00Z"
+        }
+      },
+      {
+        "now": "2025-08-29T12:00:00Z",
+        "expect": {
+          "life": {"status": "exceeded", "remaining_seconds": 0, "remaining_days": 0},
+          "calendar_remaining": {"life": {"years": 0, "months": 0, "days": 0, "hours": 0, "minutes": 0, "seconds": 0}}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "默认寿命与退休展示拆分",
+    "settings": {"time_zone": "UTC", "birth": {"date": "2000-02-29"}, "retirement_date": "2027-02-05"},
+    "cases": [
+      {
+        "now": "2026-11-04T12:00:00Z",
+        "expect": {
+          "life": {"status": "active"},
+          "calendar_remaining": {"retirement": {"years": 0, "months": 3, "days": 0, "hours": 12, "minutes": 0, "seconds": 0}}
+        },
+        "times": {
+          "/life/target_millis": "2100-02-28T00:00:00Z"
+        }
+      },
+      {
+        "now": "2027-02-05T00:00:00Z",
+        "expect": {
+          "retirement": {"status": "retired", "remaining_seconds": 0},
+          "calendar_remaining": {"retirement": {"days": 0}}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "出生时刻保留，整年闰日夹到月末",
+    "settings": {"time_zone": "UTC", "birth": {"date": "2000-02-29", "time": "08:12", "life_expectancy_years": "25"}},
+    "cases": [
+      {
+        "now": "2025-02-28T08:00:00Z",
+        "expect": {
+          "life": {"remaining_seconds": 720}
+        },
+        "times": {
+          "/life/target_millis": "2025-02-28T08:12:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "31 号发薪，平年短月且不调整",
+    "settings": {"payday": {"rule": "fixed_day", "days": [31], "adjustment": "none"}},
+    "cases": [
+      {
+        "now": "2026-02-26T04:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2026-02-28", "remaining_days": 2}
+        },
+        "times": {
+          "/payday/target_millis": "2026-02-27T16:00:00Z"
+        }
+      },
+      {
+        "now": "2026-02-28T15:59:59Z",
+        "expect": {
+          "payday": {"status": "today", "remaining_seconds": 0}
+        },
+        "times": {
+          "/next_change_at_millis": "2026-02-28T16:00:00Z"
+        }
+      },
+      {
+        "now": "2026-02-28T16:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2026-03-31"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "默认顺延到下月",
+    "settings": {"payday": {"rule": "fixed_day", "days": [31]}},
+    "cases": [
+      {
+        "now": "2026-02-26T04:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2026-03-02"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2026-03-02T08:00:00Z",
+        "expect": {
+          "payday": {"status": "today", "target_date": "2026-03-02"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2026-03-03T08:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2026-03-31"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "发薪提前与月末工作日",
+    "settings": {"payday": {"rule": "fixed_day", "days": [31], "adjustment": "previous_workday"}},
+    "cases": [
+      {
+        "now": "2026-02-26T04:00:00Z",
+        "expect": {
+          "payday": {"target_date": "2026-02-27"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2026-02-28T04:00:00Z",
+        "expect": {
+          "payday": {"target_date": "2026-03-31"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "每月最后工作日",
+    "settings": {"payday": {"rule": "last_workday", "days": []}},
+    "cases": [
+      {
+        "now": "2026-02-26T04:00:00Z",
+        "expect": {
+          "payday": {"target_date": "2026-02-27"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2026-02-28T04:00:00Z",
+        "expect": {
+          "payday": {"target_date": "2026-03-31"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "每月两次的短月同日去重",
+    "settings": {"payday": {"rule": "twice_monthly", "days": [31, 30], "adjustment": "none"}},
+    "cases": [
+      {
+        "now": "2028-02-28T00:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2028-02-29"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2028-02-29T00:00:00Z",
+        "expect": {
+          "payday": {"status": "today", "target_date": "2028-02-29"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2028-03-01T00:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2028-03-30"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "跨年顺延与同日合并",
+    "settings": {"payday": {"rule": "twice_monthly", "days": [1, 31]}, "holidays": [{"name": "测试长假", "start": "2026-12-31", "end": "2027-01-07", "kind": "test"}]},
+    "cases": [
+      {
+        "now": "2027-01-01T00:00:00Z",
+        "expect": {
+          "payday": {"target_date": "2027-01-08"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2027-01-08T00:00:00Z",
+        "expect": {
+          "payday": {"status": "today", "target_date": "2027-01-08"}
+        },
+        "times": {}
+      },
+      {
+        "now": "2027-01-09T00:00:00Z",
+        "expect": {
+          "payday": {"status": "upcoming", "target_date": "2027-02-01"}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "周休与地区、个人假期连续合并",
+    "holiday_data": {"schema_version": 1, "region": "CN", "years": [2026], "date_overrides": {"2026-11-09": false}},
+    "settings": {"holidays": [{"name": "测试假期", "start": "2026-11-10", "end": "2026-11-10", "kind": "test"}]},
+    "cases": [
+      {
+        "now": "2026-11-06T09:59:59Z",
+        "expect": {
+          "calendar_status": "available",
+          "holiday": {"status": "upcoming", "remaining_seconds": 1, "interval": {"first_rest_date": "2026-11-07", "last_rest_date": "2026-11-10"}}
+        },
+        "times": {
+          "/holiday/target_millis": "2026-11-06T10:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-06T10:00:00Z",
+        "expect": {
+          "holiday": {"status": "on_holiday", "next_interval": {"first_rest_date": "2026-11-14", "last_rest_date": "2026-11-15"}}
+        },
+        "times": {
+          "/holiday/target_millis": "2026-11-10T16:00:00Z"
+        }
+      },
+      {
+        "now": "2026-11-10T16:00:00Z",
+        "expect": {
+          "holiday": {"status": "upcoming", "interval": {"first_rest_date": "2026-11-14", "last_rest_date": "2026-11-15"}}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "周休开关仅排除纯周休",
+    "settings": {"weekly_rest_as_holiday": false},
+    "cases": [
+      {
+        "now": "2026-11-07T04:00:00Z",
+        "expect": {
+          "work": {"status": "rest_day"},
+          "holiday": {"status": "no_target", "target_millis": null, "interval": null}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "周休关闭时显式假期仍与相连休息日合并",
+    "settings": {"weekly_rest_as_holiday": false, "date_overrides": {"2026-11-07": false}},
+    "cases": [
+      {
+        "now": "2026-11-08T04:00:00Z",
+        "expect": {
+          "holiday": {"status": "on_holiday", "interval": {"first_rest_date": "2026-11-07", "last_rest_date": "2026-11-08"}, "next_interval": null}
+        },
+        "times": {}
+      }
+    ]
+  },
+  {
+    "name": "个人补班拆开原本连续的休息段",
+    "settings": {"date_overrides": {"2026-11-07": true}, "holidays": [{"name": "测试假期", "start": "2026-11-07", "end": "2026-11-09", "kind": "test"}]},
+    "cases": [
+      {
+        "now": "2026-11-07T04:00:00Z",
+        "expect": {
+          "is_workday": true,
+          "holiday": {"status": "upcoming", "interval": {"first_rest_date": "2026-11-08", "last_rest_date": "2026-11-09"}}
+        },
+        "times": {
+          "/holiday/target_millis": "2026-11-07T10:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "name": "空工作周仍能跳到稀疏覆盖",
+    "settings": {"schedule": {"workdays": []}, "date_overrides": {"2099-12-31": true}, "payday": {"rule": "fixed_day", "days": [31]}},
+    "cases": [
+      {
+        "now": "2026-11-07T04:00:00Z",
+        "expect": {
+          "work": {"status": "rest_day"},
+          "payday": {"target_date": "2099-12-31"},
+          "holiday": {"status": "on_holiday", "interval": {"first_rest_date": null, "last_rest_date": "2099-12-30"}, "next_interval": {"first_rest_date": "2100-01-01", "end_millis": null}}
+        },
+        "times": {
+          "/work/target_millis": "2099-12-31T01:00:00Z"
+        }
+      },
+      {
+        "now": "2100-01-02T00:00:00Z",
+        "expect": {
+          "work": {"status": "rest_day", "target_millis": null},
+          "payday": {"status": "no_target", "target_millis": null},
+          "holiday": {"status": "on_holiday", "target_millis": null}
+        },
+        "times": {}
+      }
+    ]
+  }
+]

@@ -14,13 +14,13 @@ pub struct Settings {
     pub region: String,
     /// 用户指定的退休日期，未填写时不生成虚构目标。
     pub retirement_date: Option<String>,
-    /// 生命相关输入，计算在后续节点实现。
+    /// 生命倒计时输入。
     pub birth: Option<Birth>,
     /// 工作周与每天作息。
     pub schedule: Schedule,
     /// 薪资以十进制字符串保存，当前尚未计算薪资。
     pub salary: Option<Salary>,
-    /// 发薪规则，计算在节点 03 实现。
+    /// 发薪规则。
     pub payday: Option<Payday>,
     /// 是否将每周休息日纳入下次放假指标。
     pub weekly_rest_as_holiday: bool,
@@ -82,11 +82,16 @@ impl Default for Schedule {
 pub struct Birth {
     /// 出生日期。
     pub date: String,
-    /// 出生时刻，省略时由后续计算按 00:00 解释。
+    /// 出生时刻，省略时按 00:00 解释。
     pub time: Option<String>,
     /// 日历年寿命，十进制字符串，允许一位小数。
+    #[serde(default = "default_lifespan")]
     pub life_expectancy_years: String,
 }
+fn default_lifespan() -> String {
+    "100".into()
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Salary {
@@ -119,6 +124,7 @@ pub struct Payday {
     /// 每月最后工作日用空数组，其余规则分别用一项或两项。
     pub days: Vec<u8>,
     /// 休息日顺延、提前或不调整。
+    #[serde(default)]
     pub adjustment: PaydayAdjustment,
 }
 
@@ -130,9 +136,10 @@ pub enum PaydayRule {
     TwiceMonthly,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaydayAdjustment {
+    #[default]
     NextWorkday,
     PreviousWorkday,
     None,

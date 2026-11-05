@@ -51,6 +51,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     expect(stored['retirement_date'], '2050-01-01');
     expect(await controller.save('2050-01-01', 'Invalid/Zone'), isFalse);
     expect(controller.timeZone, 'Asia/Shanghai');
+    await _verifyTimeMetrics();
     const int now = 1793764800000;
     final String dartJson = await rust.computeSnapshot(
       settingsJson: jsonEncode(controller.settings),
@@ -81,6 +82,31 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     controller.dispose();
     layout.dispose();
   }
+}
+
+/// 用合成设置核对真实 FRB 时间指标，避免改动用户的生辰或发薪设置。
+Future<void> _verifyTimeMetrics() async {
+  const String settings = '''
+{
+  "time_zone": "Asia/Shanghai",
+  "birth": {"date": "1996-02-29"},
+  "payday": {"rule": "fixed_day", "days": [15]}
+}
+''';
+  final String raw = await rust.computeSnapshot(
+    settingsJson: settings,
+    holidayJson: '{}',
+    nowMillis: 1793764800000,
+  );
+  final Map<String, dynamic> reply = jsonDecode(raw) as Map<String, dynamic>;
+  expect(reply['ok'], isTrue);
+  final Map<String, dynamic> snapshot =
+      reply['snapshot'] as Map<String, dynamic>;
+  expect(snapshot['unavailable_metrics'], <String>['salary']);
+  expect(snapshot['work'], containsPair('status', 'lunch_break'));
+  expect(snapshot['life'], containsPair('status', 'active'));
+  expect(snapshot['payday'], containsPair('target_date', '2026-11-16'));
+  expect(snapshot['holiday'], containsPair('status', 'upcoming'));
 }
 
 Future<void> _verifyMainWindowVisibility(

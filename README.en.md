@@ -12,7 +12,7 @@ A local-first time and earnings tool for Windows, macOS, iOS, and Android. `work
 
 ## Current features
 
-Node 02 delivers a **working retirement countdown slice**, with the remaining MVP features still pending.
+The project is at node 03. The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust now exposes five time metrics. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
 
 | Feature | Current behavior |
 | --- | --- |
@@ -22,6 +22,7 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android home screen widget | The cat sits above the card, with the title above a single-line retirement countdown. Tap the widget to open settings. It calls Rust via UniFFI independently of Flutter |
 | iOS home screen widget | Small and medium WidgetKit layouts show the cat retirement countdown. The extension reads App Group settings and calls Rust independently. Requires verification on a Mac |
+| Time calculation core | Rust snapshots cover lifespan, work shifts, paydays, breaks, and retirement. The new metrics are available through the contract and tests. Product UI and configuration follow in later nodes |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
 | Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
@@ -31,7 +32,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 ## Still pending
 
-- Life, work status, daily/monthly earnings, payday and next-break calculations and complete settings.
+- Daily and monthly earnings calculations, complete settings, and UI integration for lifespan, work status, paydays, and breaks.
 - Custom desktop countdowns; full three-mode window/metric ordering, edge snapping, click-through, multiple displays, full-screen behavior, skins and resource packs.
 - Bundled six-region holiday data and updates; import/export, migration/backup/recovery and onboarding.
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
@@ -54,7 +55,7 @@ flutter run -d emulator-5554
 
 On Mac, use `flutter run -d macos`. The [Apple guide](native/ios/README.md) covers widget builds, signing and adding the widget. On mobile, open Shiyu and choose your retirement date. On Android, add the widget from Settings or your launcher. On iOS, add it from the home screen widget gallery. See the [mobile home screen widget and settings design](docs/界面设计/08-手机浮窗与设置.md).
 
-From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native node 02 checks:
+From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native integration checks for nodes 02–03:
 
 ```powershell
 cd app

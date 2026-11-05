@@ -12,7 +12,7 @@ Windows、macOS、Android 和 iOS 使用统一的[橘猫应用图标](app/assets
 
 ## 当前功能
 
-目前开发至节点 02，提供**退休倒计时的可运行切片**，尚未完成全部 MVP。
+当前进入节点 03。用户可运行退休倒计时，Rust 已提供五类时间指标。[项目记录](docs/项目记录/README.md)保存用户确认的设计与功能基线。
 
 | 功能 | 当前行为 |
 | --- | --- |
@@ -22,6 +22,7 @@ Windows、macOS、Android 和 iOS 使用统一的[橘猫应用图标](app/assets
 | 本地设置 | 桌面应用数据目录、Android 私有文件、iOS App Group；先校验再原子保存，重启读取，坏文件不自动覆盖 |
 | Android 主屏幕小组件 | 橘猫贴在卡片上沿，标题下方一行显示完整退休倒计时。点击组件打开设置。组件经 UniFFI 调 Rust，无需运行 Flutter |
 | iOS 主屏幕小组件 | WidgetKit 小/中尺寸猫猫退休倒计时，从 App Group 读取配置并独立调用 Rust。待用户在 Mac 实测 |
+| 时间计算核心 | Rust 快照包含生命、上下班、发薪、放假和退休，支持固定时间复算。新增四类计算当前通过契约与测试验证，正式显示和配置按后续节点接入 |
 | 核心契约与日历 | 版本化 JSON、字段校验、显式 now/IANA 时区、个人日期覆盖/自定义假期/地区日期覆盖/工作周优先级；缺节假日数据时明确回退 |
 | 国际化与验证入口 | 移动端沿用八语言 ARB；本次桌面试用界面暂为中文，原生小工具提供中文/英文。`lib/main_probe.dart` 保留独立工程探测 |
 
@@ -31,7 +32,7 @@ Windows、macOS、Android 和 iOS 使用统一的[橘猫应用图标](app/assets
 
 ## 尚未完成
 
-- 生命、上下班、今日/本月薪资、发薪日、下次放假计算与完整设置。
+- 今日与本月薪资计算、完整设置，以及生命、上下班、发薪和下次放假的正式界面接入。
 - 桌面自定义倒计时，完整三态/指标开关排序、吸边、穿透、多屏与全屏策略、两套皮肤和资源包。
 - 六地区内置节假日数据及更新、导入导出、迁移/备份/恢复、完整首次引导。
 - 四类倒计时及薪资小组件、Android 真机和 Apple 本节点实测、性能与长稳、签名发布。
@@ -54,7 +55,7 @@ flutter run -d emulator-5554
 
 Mac 上运行 `flutter run -d macos`。iOS 小工具构建、签名和添加步骤见 [Apple 说明](native/ios/README.md)。手机打开时余后设置退休日期。Android 可在设置中请求添加小组件，或从启动器的组件列表添加。iOS 在主屏幕编辑模式中添加。详见[手机主屏幕小组件与设置](docs/界面设计/08-手机浮窗与设置.md)。
 
-在仓库根目录执行 `./scripts/check.ps1 -BuildWindows`，检查 Flutter 格式/分析/测试、Windows Release 及 Rust fmt/clippy/test。节点 02 真机通道测试：
+在仓库根目录执行 `./scripts/check.ps1 -BuildWindows`，检查 Flutter 格式/分析/测试、Windows Release 及 Rust fmt/clippy/test。节点 02–03 原生通道集成测试：
 
 ```powershell
 cd app
