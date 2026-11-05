@@ -391,11 +391,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearTarget => 'Borrar fecha';
 
   @override
-  String get addWidget => 'Añadir widget de inicio';
+  String get addWidget => 'Añadir cuenta regresiva';
+
+  @override
+  String get addSalaryWidget => 'Añadir widget de ingresos';
 
   @override
   String get widgetInstructions =>
-      'Mantén pulsada la pantalla de inicio y añade el widget de jubilación de Shiyu.';
+      'Mantén pulsada la pantalla de inicio para añadir la cuenta regresiva o los ingresos de Shiyu. Edita el widget para elegir un indicador. El sistema programa las actualizaciones.';
 
   @override
   String get settingsError =>

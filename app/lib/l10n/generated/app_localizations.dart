@@ -850,13 +850,19 @@ abstract class AppLocalizations {
   /// No description provided for @addWidget.
   ///
   /// In zh, this message translates to:
-  /// **'添加桌面小组件'**
+  /// **'添加倒计时小组件'**
   String get addWidget;
+
+  /// No description provided for @addSalaryWidget.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加薪资小组件'**
+  String get addSalaryWidget;
 
   /// No description provided for @widgetInstructions.
   ///
   /// In zh, this message translates to:
-  /// **'长按手机桌面，添加“时余 · 退休倒计时”小组件。'**
+  /// **'长按手机桌面，添加时余的倒计时或薪资小组件。编辑倒计时组件可选择主指标，刷新时间由系统调度。'**
   String get widgetInstructions;
 
   /// No description provided for @settingsError.

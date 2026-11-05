@@ -1,8 +1,24 @@
 <resources>
-    <string name="widget_title">时余 · 退休倒计时</string>
+    <string name="widget_title">时余 · 倒计时</string>
     <string name="widget_heading">退休倒计时</string>
     <string name="widget_duration">%1$s 天 %2$s</string>
     <string name="widget_retired">已退休</string>
     <string name="widget_setup">设置退休日期</string>
     <string name="widget_error">检查设置</string>
+    <string name="widget_work">上下班倒计时</string>
+    <string name="widget_holiday">距离放假</string>
+    <string name="widget_payday">距离发薪</string>
+    <string name="widget_work_start">距离上班</string>
+    <string name="widget_work_end">距离下班</string>
+    <string name="widget_lunch_end">距离午休结束</string>
+    <string name="widget_holiday_end">距离假期结束</string>
+    <string name="widget_payday_today">今天发薪</string>
+    <string name="widget_salary_title">时余 · 薪资</string>
+    <string name="widget_today_earned">今日已赚</string>
+    <string name="widget_month_earned">本月已赚</string>
+    <string name="widget_updated" formatted="false">%s 前更新</string>
+    <string name="widget_not_configured">未设置</string>
+    <string name="widget_unavailable">暂不可用</string>
+    <string name="widget_choose_metric">选择倒计时</string>
+    <string name="widget_save_metric">保存小组件</string>
 </resources>

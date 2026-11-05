@@ -379,10 +379,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get clearTarget => '날짜 지우기';
 
   @override
-  String get addWidget => '홈 화면 위젯 추가';
+  String get addWidget => '카운트다운 위젯 추가';
 
   @override
-  String get widgetInstructions => '홈 화면을 길게 누른 후 Shiyu 은퇴 위젯을 추가하세요.';
+  String get addSalaryWidget => '급여 위젯 추가';
+
+  @override
+  String get widgetInstructions =>
+      '홈 화면을 길게 눌러 시유의 카운트다운 또는 급여 위젯을 추가하세요. 편집에서 지표를 선택할 수 있으며 시스템이 새로고침을 관리합니다.';
 
   @override
   String get settingsError => '날짜, 시간대, 공유 저장소를 확인하고 다시 시도하세요.';

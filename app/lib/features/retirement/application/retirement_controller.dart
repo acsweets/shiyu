@@ -112,7 +112,7 @@ class RetirementController extends ChangeNotifier {
     editingBlocked = loaded.problem != null;
     canRestoreBackup = loaded.canRestore;
     problem = loaded.problem;
-    await reloadHolidays();
+    await reloadHolidays(refreshWidgets: widgets.supported);
   }
 
   /// 更新本地假日输入，供导入和地区变化后立即重算。

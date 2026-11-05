@@ -12,7 +12,7 @@ A local-first time and earnings tool for Windows, macOS, iOS, and Android. `work
 
 ## Current features
 
-The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust exposes all six built-in metrics and custom countdowns. The app supports local settings backups, recovery, and offline holiday data for six regions. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
+Desktop floating windows and the mobile dashboard show metrics calculated by Rust. Desktop also supports custom countdowns. Android and iOS offer countdown and earnings home screen widgets. The app supports local settings backups, recovery, and offline holiday data for six regions. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
 
 | Feature | Current behavior |
 | --- | --- |
@@ -25,22 +25,22 @@ The retirement countdown is available in desktop floating windows and mobile hom
 | Onboarding and full settings | New installs guide you through personal information, work and pay, and a live preview. Configure paydays, date overrides, holidays, and one of eight languages. Settings autosave and can be imported or exported as local JSON. Desktop settings include custom countdowns and mini-window metric preferences |
 | Local settings and widget data | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving, with legacy migration and backup recovery. Mobile apps atomically share verified holiday data by region with native widgets. Amounts are masked when widget settings fall back to a backup |
 | Refresh | Active countdowns refresh on whole seconds. Desktop refresh pauses when all floating windows are hidden or when paused in Countdowns settings. It recalculates from the current system time when shown or resumed |
-| Android home screen widget | The cat sits above the card, with the title above a single-line retirement countdown. Tap the widget to open settings. It calls Rust via UniFFI independently of Flutter |
-| iOS home screen widget | Small and medium WidgetKit layouts show the cat retirement countdown. The extension reads App Group settings and calls Rust independently. Requires verification on a Mac |
+| Android home screen widgets | Add countdown and earnings widgets. Choose work, holidays, payday, or retirement for each compact instance. Wide widgets show all four. Earnings shows today and this month and respects amount masking. Both call Rust via UniFFI |
+| iOS home screen widgets | Small and medium WidgetKit layouts support four countdowns and earnings. iOS 17 or later lets you select the compact widget metric, and earlier versions offer fixed-metric variants. The extension reads App Group data and calls Rust via UniFFI. Requires verification on a Mac |
 | Calculation core | Rust snapshots cover lifespan, work shifts, earnings, paydays, breaks, retirement, and custom countdowns. Supports fixed-clock snapshots, batched timelines, and in-memory countdown updates |
 | Earnings and privacy | Gross or net monthly pay accrues across scheduled workdays and actual working time. Amounts are truncated as decimal strings, and hidden snapshots expose only the mask |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
 | Regional holidays | Bundled 2026–2027 holiday data for mainland China, the US, Japan, South Korea, Hong Kong, and Taiwan. Settings can check for updates and import regional JSON. Missing data falls back to the weekly schedule. [Sources and format](docs/决策记录/0003-节假日来源与更新.md) |
 | Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
-On phones, the countdown lives on the system home screen. Android displays the most recent countdown snapshot as days and a clock. Settings changes trigger a refresh, and the OS schedules regular updates. iOS uses a WidgetKit timeline, with a system countdown during the final day on iOS 16 and later.
+See Home Screen Widgets in mobile Settings for setup. Both platforms show the age of the last calculation. Android displays the latest Rust snapshot. On iOS 16 and later, a system timer can display the final day. The app requests earnings updates about once a minute, with timing controlled by the OS. [Node 12 checks](docs/验收记录/12/README.md)
 
 Node 01 Windows/Android runtime checks passed, and the user has reported Mac validation ready. See the [node 02 acceptance record](docs/验收记录/02/README.md) for this node’s executed checks and outstanding acceptance items. New iOS widget compilation, signing and runtime verification require the user’s Mac; static checks on Windows do not establish an Apple runtime pass.
 
 ## Still pending
 
 - Multi-display, full-screen, and Apple manual checks are tracked in the [node 09 record](docs/验收记录/09/README.md) and [node 10 record](docs/验收记录/10/README.md).
-- All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
+- Physical Android and Apple widget checks, performance, endurance, and signed releases.
 
 These remain in the [node plan](docs/开发计划/README.md). Early retirement integration does not complete nodes 08–12. See the [frozen MVP scope](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md).
 

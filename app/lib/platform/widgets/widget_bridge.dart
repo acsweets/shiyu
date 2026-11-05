@@ -31,8 +31,12 @@ class WidgetBridge {
     if (supported) await _channel.invokeMethod<void>('refresh');
   }
 
-  Future<bool> pin() async {
+  Future<bool> pin({bool salary = false}) async {
     if (!offersPin) return false;
-    return await _channel.invokeMethod<bool>('pin') ?? false;
+    return await _channel.invokeMethod<bool>(
+          'pin',
+          salary ? 'salary' : 'countdown',
+        ) ??
+        false;
   }
 }

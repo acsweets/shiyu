@@ -379,10 +379,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearTarget => '清除日期';
 
   @override
-  String get addWidget => '添加桌面小组件';
+  String get addWidget => '添加倒计时小组件';
 
   @override
-  String get widgetInstructions => '长按手机桌面，添加“时余 · 退休倒计时”小组件。';
+  String get addSalaryWidget => '添加薪资小组件';
+
+  @override
+  String get widgetInstructions =>
+      '长按手机桌面，添加时余的倒计时或薪资小组件。编辑倒计时组件可选择主指标，刷新时间由系统调度。';
 
   @override
   String get settingsError => '设置或共享数据操作失败，请检查日期、时区和存储权限后重试。';
@@ -804,10 +808,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get clearTarget => '清除日期';
 
   @override
-  String get addWidget => '加入桌面小工具';
+  String get addWidget => '加入倒數小工具';
 
   @override
-  String get widgetInstructions => '長按手機主畫面，加入「時餘 · 退休倒數」小工具。';
+  String get addSalaryWidget => '加入薪資小工具';
+
+  @override
+  String get widgetInstructions =>
+      '長按主畫面，加入時余的倒數或薪資小工具。編輯倒數小工具可選擇主要指標，更新由系統排程。';
 
   @override
   String get settingsError => '操作失敗，請檢查日期、時區及共用儲存空間後重試。';

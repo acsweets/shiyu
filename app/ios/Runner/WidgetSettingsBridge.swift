@@ -32,10 +32,10 @@ final class WidgetSettingsBridge: NSObject, FlutterPlugin {
                     return
                 }
                 try SharedWidgetStore.writeAppearance(json)
-                WidgetCenter.shared.reloadTimelines(ofKind: "ShiyuRetirement")
+                WidgetCenter.shared.reloadAllTimelines()
                 result(nil)
             case "refresh":
-                WidgetCenter.shared.reloadTimelines(ofKind: "ShiyuRetirement")
+                WidgetCenter.shared.reloadAllTimelines()
                 result(nil)
             case "pin": result(false)
             default: result(FlutterMethodNotImplemented)

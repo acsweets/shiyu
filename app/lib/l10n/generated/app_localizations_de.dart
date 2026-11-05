@@ -389,11 +389,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get clearTarget => 'Datum löschen';
 
   @override
-  String get addWidget => 'Startbildschirm-Widget hinzufügen';
+  String get addWidget => 'Countdown-Widget hinzufügen';
+
+  @override
+  String get addSalaryWidget => 'Verdienst-Widget hinzufügen';
 
   @override
   String get widgetInstructions =>
-      'Halte den Startbildschirm gedrückt und füge das Shiyu-Renten-Widget hinzu.';
+      'Halte den Startbildschirm gedrückt und füge ein Countdown- oder Verdienst-Widget von Shiyu hinzu. Beim Bearbeiten kannst du den Countdown auswählen. Das System plant die Aktualisierung.';
 
   @override
   String get settingsError =>

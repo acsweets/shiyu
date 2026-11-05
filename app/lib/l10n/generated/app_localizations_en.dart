@@ -389,11 +389,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearTarget => 'Clear date';
 
   @override
-  String get addWidget => 'Add home screen widget';
+  String get addWidget => 'Add countdown widget';
+
+  @override
+  String get addSalaryWidget => 'Add earnings widget';
 
   @override
   String get widgetInstructions =>
-      'Long-press your home screen and add the Shiyu retirement widget.';
+      'Touch and hold the home screen, then add a Shiyu countdown or earnings widget. Edit the countdown widget to choose a metric. The system schedules updates.';
 
   @override
   String get settingsError =>

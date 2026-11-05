@@ -165,18 +165,24 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
       if (widget.controller.widgets.offersPin) ...<Widget>[
         const SizedBox(height: 14),
         OutlinedButton.icon(
-          onPressed: _addWidget,
+          onPressed: () => _addWidget(salary: false),
           icon: const Icon(Icons.add_rounded),
           label: Text(strings.addWidget),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => _addWidget(salary: true),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(strings.addSalaryWidget),
         ),
       ],
     ],
   );
 
-  Future<void> _addWidget() async {
+  Future<void> _addWidget({required bool salary}) async {
     bool requested = false;
     try {
-      requested = await widget.controller.widgets.pin();
+      requested = await widget.controller.widgets.pin(salary: salary);
     } catch (_) {
       // 启动器不支持应用请求时，引导用户手动添加。
     }

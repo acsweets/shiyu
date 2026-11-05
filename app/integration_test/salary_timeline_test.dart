@@ -71,5 +71,20 @@ Future<void> _verifySalaryTimeline(WidgetTester tester) async {
       },
     );
     expect(jsonDecode(native!), timeline);
+    final List<String>? recovery = await channel.invokeListMethod<String>(
+      'verifyWidgetRecovery',
+      <String, Object>{'settingsJson': normalized, 'now': start},
+    );
+    expect(recovery, hasLength(4));
+    expect(jsonDecode(recovery!.first), snapshot);
+    for (final String item in recovery.skip(1)) {
+      final Map<String, dynamic> reply =
+          jsonDecode(item) as Map<String, dynamic>;
+      final Map<String, dynamic> value =
+          reply['snapshot'] as Map<String, dynamic>;
+      expect(value['salary'], containsPair('today_earned', '****'));
+      expect(value['salary'], containsPair('month_earned', '****'));
+      expect(value['work'], first['work']);
+    }
   }
 }

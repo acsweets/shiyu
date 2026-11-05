@@ -379,10 +379,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get clearTarget => '日付をクリア';
 
   @override
-  String get addWidget => 'ホーム画面にウィジェットを追加';
+  String get addWidget => 'カウントダウンを追加';
 
   @override
-  String get widgetInstructions => 'ホーム画面を長押しして、Shiyu の退職ウィジェットを追加してください。';
+  String get addSalaryWidget => '給与ウィジェットを追加';
+
+  @override
+  String get widgetInstructions =>
+      'ホーム画面を長押しして時余のカウントダウンまたは給与ウィジェットを追加します。指標は編集画面で選択します。更新はシステムが管理します。';
 
   @override
   String get settingsError => '日付、タイムゾーン、共有ストレージを確認して再試行してください。';

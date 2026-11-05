@@ -1,8 +1,24 @@
 <resources>
-    <string name="widget_title">Shiyu · Retirement</string>
+    <string name="widget_title">Shiyu · Countdown</string>
     <string name="widget_heading">Retirement countdown</string>
     <string name="widget_duration">%1$sd %2$s</string>
     <string name="widget_retired">Retired</string>
     <string name="widget_setup">Set a retirement date</string>
     <string name="widget_error">Check settings</string>
+    <string name="widget_work">Work countdown</string>
+    <string name="widget_holiday">Until the next break</string>
+    <string name="widget_payday">Until payday</string>
+    <string name="widget_work_start">Until work starts</string>
+    <string name="widget_work_end">Until work ends</string>
+    <string name="widget_lunch_end">Until lunch ends</string>
+    <string name="widget_holiday_end">Until break ends</string>
+    <string name="widget_payday_today">Payday today</string>
+    <string name="widget_salary_title">Shiyu · Earnings</string>
+    <string name="widget_today_earned">Earned today</string>
+    <string name="widget_month_earned">Earned this month</string>
+    <string name="widget_updated" formatted="false">Updated %s ago</string>
+    <string name="widget_not_configured">Not set</string>
+    <string name="widget_unavailable">Unavailable</string>
+    <string name="widget_choose_metric">Choose a countdown</string>
+    <string name="widget_save_metric">Save widget</string>
 </resources>
