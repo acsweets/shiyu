@@ -1,5 +1,7 @@
 # Shiyu Flutter app
 
+The desktop entry now shows the cat-sticker iteration, with a main sticker and draggable surrounding stickers. Clearly labeled sample preview is on initially; turn it off for real retirement data. See the [desktop delivery notes](../docs/界面设计/05-桌面猫猫贴纸首版.md).
+
 [简体中文](README.md) | [English](README.en.md)
 
 This directory is the Flutter root. The independent Git repository is its parent, `shiyu/`.

@@ -1,5 +1,7 @@
 # Shiyu · 时余
 
+> 2026-11-05: A [desktop cat-sticker preview](docs/界面设计/05-桌面猫猫贴纸首版.md) is available. First launch shows clearly labeled static sample times. Turn off preview in settings for the real Rust retirement countdown. Stickers support dragging, selecting the main metric, saved visibility/layout, and replacing the character PNG. Mobile UI is unchanged in this iteration.
+
 [简体中文](README.md) | [English](README.en.md)
 
 A local-first time and earnings tool for Windows, macOS, iOS, and Android. `workspace/shiyu` is an independent Git repository; its parent holds unrelated projects with separate dependencies and histories.
@@ -11,13 +13,13 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | Feature | Current behavior |
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
-| Desktop floating window | Windows/macOS frameless, transparent background, always on top, draggable header, expandable settings and hiding. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
+| Desktop floating window | Windows/macOS frameless, transparent background, always on top, draggable toolbar, independently draggable stickers, settings dialog and hiding. Tray/menu bar restore and exit; Ctrl/Cmd+Shift+T toggles visibility |
 | Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |
 | iOS native widget | Independent embedded WidgetKit target, App Group and Rust static-library build are connected. Small/medium retirement widget with system-scheduled timelines; this node requires user verification on a Mac |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
-| Localization/probes | Flutter ARB for eight languages, including translated new feature strings; native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
+| Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
 Widgets currently show **retirement days only**, with no promise of second-by-second background updates. Android requests a system-controlled 30-minute interval, plus manual/settings-triggered refreshes. iOS requests a timeline after the next Rust calendar boundary; the OS controls delivery. Foreground and widget display precision differs while sharing the same rules.
 

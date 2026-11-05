@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../features/retirement/application/retirement_controller.dart';
 import '../features/retirement/presentation/retirement_page.dart';
+import '../features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import '../platform/desktop/floating_window_controller.dart';
 import '../l10n/generated/app_localizations.dart';
 
@@ -31,10 +32,16 @@ class ShiyuApp extends StatelessWidget {
         Locale('fr'),
       ],
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF477568)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: window == null
+              ? const Color(0xFF477568)
+              : const Color(0xFFC68A59),
+        ),
         useMaterial3: true,
       ),
-      home: RetirementPage(controller: controller, window: window),
+      home: window == null
+          ? RetirementPage(controller: controller)
+          : DesktopStickerPage(controller: controller, window: window!),
     );
   }
 }

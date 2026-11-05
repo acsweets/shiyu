@@ -52,15 +52,14 @@ class FloatingWindowController with TrayListener, WindowListener {
     await windowManager.setAsFrameless();
     await windowManager.setBackgroundColor(Colors.transparent);
     await windowManager.setAlwaysOnTop(true);
-    await windowManager.setMinimumSize(const Size(340, 360));
+    await windowManager.setMinimumSize(const Size(760, 560));
     await setExpanded(false);
     await windowManager.setSkipTaskbar(true);
     await show();
   }
 
-  Future<void> setExpanded(bool expanded) => windowManager.setSize(
-    expanded ? const Size(460, 640) : const Size(360, 400),
-  );
+  Future<void> setExpanded(bool expanded) =>
+      windowManager.setSize(const Size(760, 560));
   Future<void> drag() => windowManager.startDragging();
   Future<void> show() async {
     await windowManager.show();

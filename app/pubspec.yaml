@@ -35,3 +35,4 @@ flutter:
   assets:
     - assets/diagnostics/icon.ico
     - assets/diagnostics/icon.png
+    - assets/stickers/character.png

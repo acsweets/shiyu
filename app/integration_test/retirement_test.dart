@@ -9,7 +9,7 @@ import 'package:shiyu/main.dart' as application;
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
 import 'package:shiyu/features/retirement/data/settings_store.dart';
 import 'package:shiyu/platform/rust/generated/api/snapshot.dart' as rust;
-import 'package:shiyu/features/retirement/presentation/retirement_page.dart';
+import 'package:shiyu/features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -30,9 +30,11 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
   await tester.pumpAndSettle();
   final String? originalDate = controller.retirementDate;
   final String originalZone = controller.timeZone;
-  final FloatingWindowController? window = tester
-      .widget<RetirementPage>(find.byType(RetirementPage))
-      .window;
+  final FloatingWindowController? window = desktop
+      ? tester
+            .widget<DesktopStickerPage>(find.byType(DesktopStickerPage))
+            .window
+      : null;
   try {
     expect(await controller.save('2050-01-01', 'Asia/Shanghai'), isTrue);
     await tester.pumpAndSettle();
@@ -60,7 +62,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     if (desktop) {
       expect(await windowManager.isAlwaysOnTop(), isTrue);
       expect(await windowManager.isPreventClose(), isTrue);
-      expect((await windowManager.getSize()).width, closeTo(360, 2));
+      expect((await windowManager.getSize()).width, closeTo(760, 2));
     }
   } finally {
     await controller.save(originalDate, originalZone);
