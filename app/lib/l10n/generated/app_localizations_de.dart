@@ -64,4 +64,55 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get currentSlice =>
       'Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten.';
+
+  @override
+  String get mobileSettings => 'Einstellungen';
+
+  @override
+  String get mobileAppearance => 'Darstellung';
+
+  @override
+  String get mobileWidget => 'Startbildschirm-Widget';
+
+  @override
+  String get mobileShowCard => 'Schwebende Karte anzeigen';
+
+  @override
+  String get mobileShowTitle => 'Titel anzeigen';
+
+  @override
+  String get mobileTitleSize => 'Titelgröße';
+
+  @override
+  String get mobileMacaron => 'Macaron';
+
+  @override
+  String get mobileCool => 'Kühl';
+
+  @override
+  String get mobileSunset => 'Sonnenuntergang';
+
+  @override
+  String get mobileSave => 'Einstellungen speichern';
+
+  @override
+  String get mobileSaved => 'Einstellungen gespeichert';
+
+  @override
+  String get mobileAppearanceError =>
+      'Darstellung konnte nicht gespeichert werden. Erneut versuchen.';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days T $clock';
+  }
+
+  @override
+  String get mobileCardHidden => 'Schwebende Karte ausgeblendet';
+
+  @override
+  String get mobileResetPosition => 'Kartenposition zurücksetzen';
+
+  @override
+  String get mobileNotSet => 'Nicht festgelegt';
 }

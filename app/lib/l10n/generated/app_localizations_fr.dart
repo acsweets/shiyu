@@ -64,4 +64,55 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get currentSlice =>
       'Le compte à rebours avant la retraite est disponible. Les autres indicateurs seront ajoutés ultérieurement.';
+
+  @override
+  String get mobileSettings => 'Réglages';
+
+  @override
+  String get mobileAppearance => 'Apparence';
+
+  @override
+  String get mobileWidget => 'Widget d’écran d’accueil';
+
+  @override
+  String get mobileShowCard => 'Afficher la carte flottante';
+
+  @override
+  String get mobileShowTitle => 'Afficher le titre';
+
+  @override
+  String get mobileTitleSize => 'Taille du titre';
+
+  @override
+  String get mobileMacaron => 'Macaron';
+
+  @override
+  String get mobileCool => 'Froid';
+
+  @override
+  String get mobileSunset => 'Coucher de soleil';
+
+  @override
+  String get mobileSave => 'Enregistrer les réglages';
+
+  @override
+  String get mobileSaved => 'Réglages enregistrés';
+
+  @override
+  String get mobileAppearanceError =>
+      'Impossible d’enregistrer l’apparence. Réessayez.';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days j $clock';
+  }
+
+  @override
+  String get mobileCardHidden => 'Carte flottante masquée';
+
+  @override
+  String get mobileResetPosition => 'Réinitialiser la position de la carte';
+
+  @override
+  String get mobileNotSet => 'Non défini';
 }

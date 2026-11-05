@@ -16,5 +16,21 @@
   "widgetInstructions": "Halte den Startbildschirm gedrückt und füge das Shiyu-Renten-Widget hinzu.",
   "settingsError": "Prüfe Datum, Zeitzone und gemeinsamen Speicher und versuche es erneut.",
   "calendarFallback": "Feiertagsdaten sind noch nicht verbunden; die eingestellten wöchentlichen Arbeitstage werden verwendet.",
-  "currentSlice": "Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten."
+  "currentSlice": "Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten.",
+  "mobileSettings": "Einstellungen",
+  "mobileAppearance": "Darstellung",
+  "mobileWidget": "Startbildschirm-Widget",
+  "mobileShowCard": "Schwebende Karte anzeigen",
+  "mobileShowTitle": "Titel anzeigen",
+  "mobileTitleSize": "Titelgröße",
+  "mobileMacaron": "Macaron",
+  "mobileCool": "Kühl",
+  "mobileSunset": "Sonnenuntergang",
+  "mobileSave": "Einstellungen speichern",
+  "mobileSaved": "Einstellungen gespeichert",
+  "mobileAppearanceError": "Darstellung konnte nicht gespeichert werden. Erneut versuchen.",
+  "mobileCountdown": "{days} T {clock}",
+  "mobileCardHidden": "Schwebende Karte ausgeblendet",
+  "mobileResetPosition": "Kartenposition zurücksetzen",
+  "mobileNotSet": "Nicht festgelegt"
 }

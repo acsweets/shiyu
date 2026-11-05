@@ -16,5 +16,31 @@
   "widgetInstructions": "长按手机桌面，添加“时余 · 退休倒计时”小组件。",
   "settingsError": "设置或共享数据操作失败，请检查日期、时区和存储权限后重试。",
   "calendarFallback": "节假日数据尚未接入，当前按每周工作日设置计算。",
-  "currentSlice": "当前已接入退休倒计时，其他内置指标将在后续节点提供。"
+  "currentSlice": "当前已接入退休倒计时，其他内置指标将在后续节点提供。",
+  "mobileSettings": "设置",
+  "mobileAppearance": "外观",
+  "mobileWidget": "主屏幕小组件",
+  "mobileShowCard": "显示浮窗",
+  "mobileShowTitle": "显示标题",
+  "mobileTitleSize": "提示文字大小",
+  "mobileMacaron": "马卡龙色系",
+  "mobileCool": "冷酷色系",
+  "mobileSunset": "日落暖调",
+  "mobileSave": "保存设置",
+  "mobileSaved": "设置已保存",
+  "mobileAppearanceError": "外观未能保存，请重试。",
+  "mobileCountdown": "{days} 天 {clock}",
+  "mobileCardHidden": "浮窗已隐藏",
+  "mobileResetPosition": "重置浮窗位置",
+  "mobileNotSet": "未设置",
+  "@mobileCountdown": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "clock": {
+        "type": "String"
+      }
+    }
+  }
 }

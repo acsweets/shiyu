@@ -16,5 +16,21 @@
   "widgetInstructions": "長按手機主畫面，加入「時餘 · 退休倒數」小工具。",
   "settingsError": "操作失敗，請檢查日期、時區及共用儲存空間後重試。",
   "calendarFallback": "尚未接入假日資料，目前依每週工作日設定計算。",
-  "currentSlice": "目前支援退休倒數，其他內建指標將於後續節點提供。"
+  "currentSlice": "目前支援退休倒數，其他內建指標將於後續節點提供。",
+  "mobileSettings": "設定",
+  "mobileAppearance": "外觀",
+  "mobileWidget": "主畫面小工具",
+  "mobileShowCard": "顯示浮窗",
+  "mobileShowTitle": "顯示標題",
+  "mobileTitleSize": "提示文字大小",
+  "mobileMacaron": "馬卡龍色系",
+  "mobileCool": "冷色系",
+  "mobileSunset": "日落暖調",
+  "mobileSave": "儲存設定",
+  "mobileSaved": "設定已儲存",
+  "mobileAppearanceError": "無法儲存外觀，請再試一次。",
+  "mobileCountdown": "{days} 天 {clock}",
+  "mobileCardHidden": "浮窗已隱藏",
+  "mobileResetPosition": "重設浮窗位置",
+  "mobileNotSet": "尚未設定"
 }

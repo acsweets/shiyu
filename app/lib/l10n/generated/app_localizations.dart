@@ -210,6 +210,102 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'当前已接入退休倒计时，其他内置指标将在后续节点提供。'**
   String get currentSlice;
+
+  /// No description provided for @mobileSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置'**
+  String get mobileSettings;
+
+  /// No description provided for @mobileAppearance.
+  ///
+  /// In zh, this message translates to:
+  /// **'外观'**
+  String get mobileAppearance;
+
+  /// No description provided for @mobileWidget.
+  ///
+  /// In zh, this message translates to:
+  /// **'主屏幕小组件'**
+  String get mobileWidget;
+
+  /// No description provided for @mobileShowCard.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示浮窗'**
+  String get mobileShowCard;
+
+  /// No description provided for @mobileShowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示标题'**
+  String get mobileShowTitle;
+
+  /// No description provided for @mobileTitleSize.
+  ///
+  /// In zh, this message translates to:
+  /// **'提示文字大小'**
+  String get mobileTitleSize;
+
+  /// No description provided for @mobileMacaron.
+  ///
+  /// In zh, this message translates to:
+  /// **'马卡龙色系'**
+  String get mobileMacaron;
+
+  /// No description provided for @mobileCool.
+  ///
+  /// In zh, this message translates to:
+  /// **'冷酷色系'**
+  String get mobileCool;
+
+  /// No description provided for @mobileSunset.
+  ///
+  /// In zh, this message translates to:
+  /// **'日落暖调'**
+  String get mobileSunset;
+
+  /// No description provided for @mobileSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存设置'**
+  String get mobileSave;
+
+  /// No description provided for @mobileSaved.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置已保存'**
+  String get mobileSaved;
+
+  /// No description provided for @mobileAppearanceError.
+  ///
+  /// In zh, this message translates to:
+  /// **'外观未能保存，请重试。'**
+  String get mobileAppearanceError;
+
+  /// No description provided for @mobileCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'{days} 天 {clock}'**
+  String mobileCountdown(String days, String clock);
+
+  /// No description provided for @mobileCardHidden.
+  ///
+  /// In zh, this message translates to:
+  /// **'浮窗已隐藏'**
+  String get mobileCardHidden;
+
+  /// No description provided for @mobileResetPosition.
+  ///
+  /// In zh, this message translates to:
+  /// **'重置浮窗位置'**
+  String get mobileResetPosition;
+
+  /// No description provided for @mobileNotSet.
+  ///
+  /// In zh, this message translates to:
+  /// **'未设置'**
+  String get mobileNotSet;
 }
 
 class _AppLocalizationsDelegate

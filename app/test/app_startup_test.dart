@@ -9,7 +9,8 @@ import 'package:shiyu/features/retirement/application/retirement_controller.dart
 
 void main() {
   testWidgets('中文环境可以启动', _verifyChineseStartup);
-  testWidgets('英文小屏和大字号下可以启动', _verifyEnglishCompactStartup);
+  testWidgets('英文小屏和大字号下可以启动并打开设置', _verifyEnglishCompactStartup);
+  testWidgets('手机设置保存时区后可回到倒计时首页', _verifyMobileSettings);
 }
 
 Future<void> _verifyChineseStartup(WidgetTester tester) async {
@@ -43,5 +44,38 @@ Future<void> _verifyEnglishCompactStartup(WidgetTester tester) async {
   await tester.pumpAndSettle();
 
   expect(find.text('Time Remaining'), findsOneWidget);
+  await tester.tap(find.byTooltip('Settings'));
+  await tester.pumpAndSettle();
+  expect(find.text('Choose retirement date'), findsOneWidget);
+  await tester.scrollUntilVisible(
+    find.text('Add home screen widget'),
+    200,
+    scrollable: find
+        .descendant(
+          of: find.byType(ListView),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
   expect(tester.takeException(), isNull);
+}
+
+Future<void> _verifyMobileSettings(WidgetTester tester) async {
+  tester.platformDispatcher.localesTestValue = const <Locale>[Locale('zh')];
+  addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+  final RetirementController controller = await createTestController();
+  addTearDown(controller.dispose);
+  await tester.pumpWidget(ShiyuApp(controller: controller));
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byTooltip('设置'));
+  await tester.pumpAndSettle();
+  await tester.enterText(find.byType(TextField), 'Asia/Tokyo');
+  expect(controller.timeZone, 'Asia/Shanghai');
+  await tester.tap(find.text('保存设置'));
+  await tester.pumpAndSettle();
+  expect(controller.timeZone, 'Asia/Tokyo');
+  await tester.tap(find.byType(BackButton));
+  await tester.pumpAndSettle();
+  expect(find.byKey(const ValueKey<String>('retirementValue')), findsOneWidget);
 }

@@ -18,14 +18,14 @@ Node 02 delivers a **working retirement countdown slice**, with the remaining MV
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
 | Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, per-window visibility and title controls, and an adjustable title font size. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
-| Mobile settings | Android/iOS retirement date and time zone inputs. Foreground updates recompute from the actual time every second; background UI ticks stop and resume with fresh calculations |
+| Mobile floating card and settings | Drag the cat and its single-line countdown around the Android/iOS home page. Use the white settings page to set your retirement date and time zone, choose from three palettes, show or hide the card and title, adjust title size, reset its position, or add a home screen widget. The countdown updates every second in the foreground. Appearance and position persist across launches |
 | Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
 | Android native widget | Retirement calendar days, time zone, update time, manual refresh and tap to open. Calls Rust via UniFFI without starting a Flutter engine |
 | iOS native widget | Independent embedded WidgetKit target, App Group and Rust static-library build are connected. Small/medium retirement widget with system-scheduled timelines; this node requires user verification on a Mac |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
 | Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
-Widgets currently show **retirement days only**, with no promise of second-by-second background updates. Android requests a system-controlled 30-minute interval, plus manual/settings-triggered refreshes. iOS requests a timeline after the next Rust calendar boundary; the OS controls delivery. Foreground and widget display precision differs while sharing the same rules.
+Widgets currently show **retirement days only**, with no promise of second-by-second background updates. Android requests a system-controlled 30-minute interval, plus manual/settings-triggered refreshes. iOS requests a timeline after the next Rust calendar boundary; the OS controls delivery. The in-app card formats the remaining duration as full days and a clock. Widgets display calendar days remaining. Both use the same retirement target and time zone.
 
 Node 01 Windows/Android runtime checks passed, and the user has reported Mac validation ready. See the [node 02 acceptance record](docs/验收记录/02/README.md) for this node’s executed checks and outstanding acceptance items. New iOS widget compilation, signing and runtime verification require the user’s Mac; static checks on Windows do not establish an Apple runtime pass.
 
@@ -52,7 +52,7 @@ flutter run -d windows
 flutter run -d emulator-5554
 ```
 
-On Mac, use `flutter run -d macos`. The [Apple guide](native/ios/README.md) covers widget builds, signing and adding the widget. On Android, tap “Add home screen widget” or add the Shiyu retirement widget from the launcher. Choose your own retirement date first.
+On Mac, use `flutter run -d macos`. The [Apple guide](native/ios/README.md) covers widget builds, signing and adding the widget. On mobile, open settings using the gear icon and choose your retirement date. On Android, tap “Add home screen widget” in Settings or add the Shiyu retirement widget from the launcher. See the [mobile floating card and settings design](docs/界面设计/08-手机浮窗与设置.md).
 
 From the repository root, run `./scripts/check.ps1 -BuildWindows` for Flutter formatting/analysis/tests, Windows Release and Rust fmt/clippy/tests. Native node 02 checks:
 

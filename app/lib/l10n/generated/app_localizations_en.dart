@@ -64,4 +64,54 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get currentSlice =>
       'Retirement countdown is available. Other built-in metrics are planned for later nodes.';
+
+  @override
+  String get mobileSettings => 'Settings';
+
+  @override
+  String get mobileAppearance => 'Appearance';
+
+  @override
+  String get mobileWidget => 'Home screen widget';
+
+  @override
+  String get mobileShowCard => 'Show floating card';
+
+  @override
+  String get mobileShowTitle => 'Show title';
+
+  @override
+  String get mobileTitleSize => 'Title text size';
+
+  @override
+  String get mobileMacaron => 'Macaron';
+
+  @override
+  String get mobileCool => 'Cool';
+
+  @override
+  String get mobileSunset => 'Sunset';
+
+  @override
+  String get mobileSave => 'Save settings';
+
+  @override
+  String get mobileSaved => 'Settings saved';
+
+  @override
+  String get mobileAppearanceError => 'Couldn’t save appearance. Try again.';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '${days}d $clock';
+  }
+
+  @override
+  String get mobileCardHidden => 'Floating card hidden';
+
+  @override
+  String get mobileResetPosition => 'Reset card position';
+
+  @override
+  String get mobileNotSet => 'Not set';
 }

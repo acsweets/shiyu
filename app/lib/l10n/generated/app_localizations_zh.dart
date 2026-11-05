@@ -59,6 +59,56 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get currentSlice => '当前已接入退休倒计时，其他内置指标将在后续节点提供。';
+
+  @override
+  String get mobileSettings => '设置';
+
+  @override
+  String get mobileAppearance => '外观';
+
+  @override
+  String get mobileWidget => '主屏幕小组件';
+
+  @override
+  String get mobileShowCard => '显示浮窗';
+
+  @override
+  String get mobileShowTitle => '显示标题';
+
+  @override
+  String get mobileTitleSize => '提示文字大小';
+
+  @override
+  String get mobileMacaron => '马卡龙色系';
+
+  @override
+  String get mobileCool => '冷酷色系';
+
+  @override
+  String get mobileSunset => '日落暖调';
+
+  @override
+  String get mobileSave => '保存设置';
+
+  @override
+  String get mobileSaved => '设置已保存';
+
+  @override
+  String get mobileAppearanceError => '外观未能保存，请重试。';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days 天 $clock';
+  }
+
+  @override
+  String get mobileCardHidden => '浮窗已隐藏';
+
+  @override
+  String get mobileResetPosition => '重置浮窗位置';
+
+  @override
+  String get mobileNotSet => '未设置';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -115,4 +165,54 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get currentSlice => '目前支援退休倒數，其他內建指標將於後續節點提供。';
+
+  @override
+  String get mobileSettings => '設定';
+
+  @override
+  String get mobileAppearance => '外觀';
+
+  @override
+  String get mobileWidget => '主畫面小工具';
+
+  @override
+  String get mobileShowCard => '顯示浮窗';
+
+  @override
+  String get mobileShowTitle => '顯示標題';
+
+  @override
+  String get mobileTitleSize => '提示文字大小';
+
+  @override
+  String get mobileMacaron => '馬卡龍色系';
+
+  @override
+  String get mobileCool => '冷色系';
+
+  @override
+  String get mobileSunset => '日落暖調';
+
+  @override
+  String get mobileSave => '儲存設定';
+
+  @override
+  String get mobileSaved => '設定已儲存';
+
+  @override
+  String get mobileAppearanceError => '無法儲存外觀，請再試一次。';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days 天 $clock';
+  }
+
+  @override
+  String get mobileCardHidden => '浮窗已隱藏';
+
+  @override
+  String get mobileResetPosition => '重設浮窗位置';
+
+  @override
+  String get mobileNotSet => '尚未設定';
 }

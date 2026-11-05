@@ -64,4 +64,55 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get currentSlice =>
       'La cuenta atrás para la jubilación está disponible. Los demás indicadores llegarán en etapas posteriores.';
+
+  @override
+  String get mobileSettings => 'Ajustes';
+
+  @override
+  String get mobileAppearance => 'Apariencia';
+
+  @override
+  String get mobileWidget => 'Widget de pantalla de inicio';
+
+  @override
+  String get mobileShowCard => 'Mostrar tarjeta flotante';
+
+  @override
+  String get mobileShowTitle => 'Mostrar título';
+
+  @override
+  String get mobileTitleSize => 'Tamaño del título';
+
+  @override
+  String get mobileMacaron => 'Macaron';
+
+  @override
+  String get mobileCool => 'Frío';
+
+  @override
+  String get mobileSunset => 'Atardecer';
+
+  @override
+  String get mobileSave => 'Guardar ajustes';
+
+  @override
+  String get mobileSaved => 'Ajustes guardados';
+
+  @override
+  String get mobileAppearanceError =>
+      'No se pudo guardar la apariencia. Inténtalo de nuevo.';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days d $clock';
+  }
+
+  @override
+  String get mobileCardHidden => 'Tarjeta flotante oculta';
+
+  @override
+  String get mobileResetPosition => 'Restablecer posición de la tarjeta';
+
+  @override
+  String get mobileNotSet => 'Sin configurar';
 }

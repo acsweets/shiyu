@@ -59,4 +59,54 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get currentSlice => '현재 은퇴 카운트다운을 지원합니다. 다른 지표는 후속 단계에서 제공됩니다.';
+
+  @override
+  String get mobileSettings => '설정';
+
+  @override
+  String get mobileAppearance => '모양';
+
+  @override
+  String get mobileWidget => '홈 화면 위젯';
+
+  @override
+  String get mobileShowCard => '플로팅 카드 표시';
+
+  @override
+  String get mobileShowTitle => '제목 표시';
+
+  @override
+  String get mobileTitleSize => '제목 글자 크기';
+
+  @override
+  String get mobileMacaron => '마카롱';
+
+  @override
+  String get mobileCool => '쿨';
+
+  @override
+  String get mobileSunset => '노을';
+
+  @override
+  String get mobileSave => '설정 저장';
+
+  @override
+  String get mobileSaved => '설정을 저장했습니다';
+
+  @override
+  String get mobileAppearanceError => '모양을 저장하지 못했습니다. 다시 시도해 주세요.';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days일 $clock';
+  }
+
+  @override
+  String get mobileCardHidden => '플로팅 카드 숨김';
+
+  @override
+  String get mobileResetPosition => '카드 위치 초기화';
+
+  @override
+  String get mobileNotSet => '설정되지 않음';
 }

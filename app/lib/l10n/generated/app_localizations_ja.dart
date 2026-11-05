@@ -59,4 +59,54 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get currentSlice => '現在は退職カウントダウンに対応しています。他の指標は今後追加予定です。';
+
+  @override
+  String get mobileSettings => '設定';
+
+  @override
+  String get mobileAppearance => '外観';
+
+  @override
+  String get mobileWidget => 'ホーム画面のウィジェット';
+
+  @override
+  String get mobileShowCard => 'フローティングカードを表示';
+
+  @override
+  String get mobileShowTitle => 'タイトルを表示';
+
+  @override
+  String get mobileTitleSize => 'タイトルの文字サイズ';
+
+  @override
+  String get mobileMacaron => 'マカロン';
+
+  @override
+  String get mobileCool => 'クール';
+
+  @override
+  String get mobileSunset => 'サンセット';
+
+  @override
+  String get mobileSave => '設定を保存';
+
+  @override
+  String get mobileSaved => '設定を保存しました';
+
+  @override
+  String get mobileAppearanceError => '外観を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String mobileCountdown(String days, String clock) {
+    return '$days 日 $clock';
+  }
+
+  @override
+  String get mobileCardHidden => 'フローティングカードは非表示です';
+
+  @override
+  String get mobileResetPosition => 'カードの位置をリセット';
+
+  @override
+  String get mobileNotSet => '未設定';
 }
