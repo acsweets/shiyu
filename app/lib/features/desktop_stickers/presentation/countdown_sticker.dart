@@ -17,9 +17,6 @@ class StickerGroupSurface extends StatelessWidget {
   /// 主窗的设置入口，子窗只有倒计时。
   final VoidCallback? onSettings;
 
-  /// 暖棕色正文。
-  static const Color ink = Color(0xFF59483E);
-
   /// 内置独立猫猫图。
   static const String catAsset = 'assets/stickers/character.png';
 
@@ -78,8 +75,8 @@ class StickerGroupSurface extends StatelessWidget {
                   tooltip: '浮窗设置',
                   onPressed: onSettings,
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFFBF4),
-                    foregroundColor: ink,
+                    backgroundColor: view.background,
+                    foregroundColor: view.foreground,
                     minimumSize: const Size(34, 34),
                     padding: EdgeInsets.zero,
                   ),
@@ -95,9 +92,15 @@ class StickerGroupSurface extends StatelessWidget {
   }
 
   Widget _paper() => DecoratedBox(
+    key: const ValueKey<String>('sticker-window-background'),
     decoration: BoxDecoration(
-      color: const Color(0xFFFFFBF4),
-      border: Border.all(color: const Color(0xFF806856)),
+      color: view.background,
+      border: Border.all(
+        color: Color.alphaBlend(
+          view.foreground.withValues(alpha: 0.30),
+          view.background,
+        ),
+      ),
       borderRadius: BorderRadius.circular(18),
     ),
     child: LayoutBuilder(builder: _grid),
@@ -127,59 +130,45 @@ class StickerGroupSurface extends StatelessWidget {
     );
   }
 
-  Widget _card(String id) {
-    final Color paper = switch (id) {
-      'holiday' => const Color(0xFFF5EEF9),
-      'payday' => const Color(0xFFEFF3FC),
-      'retirement' => const Color(0xFFFFF0E3),
-      _ => const Color(0xFFFFF2D8),
-    };
-    return Container(
-      key: ValueKey<String>('sticker-$id'),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: paper,
-        borderRadius: BorderRadius.circular(13),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (view.showsTitle)
-            SizedBox(
-              height: 18,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  StickerLayout.titles[id]!,
-                  style: const TextStyle(fontSize: 13, color: ink),
-                ),
-              ),
-            ),
+  Widget _card(String id) => Padding(
+    key: ValueKey<String>('sticker-$id'),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        if (view.showsTitle)
           SizedBox(
-            height: 28,
-            width: double.infinity,
+            height: 18,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                view.values[id]!,
-                semanticsLabel: view.preview
-                    ? '示例倒计时 ${view.values[id]!}'
-                    : null,
-                maxLines: 1,
-                softWrap: false,
-                style: const TextStyle(
-                  color: ink,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
-                ),
+                StickerLayout.titles[id]!,
+                style: TextStyle(fontSize: 13, color: view.foreground),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        SizedBox(
+          height: 28,
+          width: double.infinity,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              view.values[id]!,
+              semanticsLabel: view.preview ? '示例倒计时 ${view.values[id]!}' : null,
+              maxLines: 1,
+              softWrap: false,
+              style: TextStyle(
+                color: view.foreground,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 /// 从右下角缩放，合并连续鼠标事件以免原生消息堆积。

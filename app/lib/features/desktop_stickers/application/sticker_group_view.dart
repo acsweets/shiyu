@@ -25,6 +25,8 @@ class StickerGroupView {
     'titles': layout.showsTitle(group),
     'preview': layout.preview,
     'visible': visible,
+    'background': layout.palette.backgroundFor(group).toARGB32(),
+    'foreground': layout.palette.foreground.toARGB32(),
     if (group == layout.mainGroup) 'character': layout.character?.path,
     if (group == layout.mainGroup) 'assetRevision': layout.assetRevision,
     'initialBounds': StickerLayout.encodeBounds(
@@ -37,6 +39,8 @@ class StickerGroupView {
   bool get showsTitle => data['titles'] as bool;
   bool get preview => data['preview'] as bool;
   bool get visible => data['visible'] as bool;
+  Color get background => Color(data['background'] as int);
+  Color get foreground => Color(data['foreground'] as int);
   int get assetRevision => data['assetRevision'] as int;
   File? get character {
     final String? path = data['character'] as String?;

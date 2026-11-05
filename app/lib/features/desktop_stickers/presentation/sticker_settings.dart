@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
+import 'sticker_palette_picker.dart';
 
 typedef StickerWindowResize = void Function(int group, int step);
 
@@ -127,6 +128,12 @@ class _StickerSettingsState extends State<StickerSettings> {
           children: <Widget>[
             if (widget.windowFailed) const Text('部分浮窗未能打开'),
             if (widget.layout.writeFailed) const Text('窗口布局未能保存'),
+            const Text('浮窗配色', style: TextStyle(fontWeight: FontWeight.bold)),
+            StickerPalettePicker(
+              selected: widget.layout.palette,
+              onSelected: widget.layout.setPalette,
+            ),
+            const Divider(),
             const Text('窗口显示', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('主窗口关闭后，可从系统托盘或菜单栏打开设置。'),
             ...widget.layout.activeGroups.map(_windowVisibility),

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'sticker_palette.dart';
+
 /// 保存窗口分组与外观，不改变 Rust 业务设置。
 class StickerLayout extends ChangeNotifier {
   StickerLayout({this.directory});
@@ -32,6 +34,9 @@ class StickerLayout extends ChangeNotifier {
 
   /// 当前是否展示示例。
   bool preview = true;
+
+  /// 所有窗口共用的当前色系。
+  StickerPalette _palette = StickerPalette.macaron;
 
   /// 主指标带猫猫，并负责打开设置。
   String main = 'work';
@@ -70,6 +75,7 @@ class StickerLayout extends ChangeNotifier {
   bool _disposed = false;
 
   int get mainGroup => groupOf(main);
+  StickerPalette get palette => _palette;
   int groupOf(String id) => _groups[id]!;
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
@@ -122,6 +128,7 @@ class StickerLayout extends ChangeNotifier {
   void _restore(Map<String, dynamic> data) {
     final Object? version = data['version'];
     if (version != 1 && version != 2) return;
+    _palette = StickerPalette.fromId(data['palette']);
     preview = data['preview'] is! bool || data['preview'] == true;
     final Object? candidate = data['main'];
     if (candidate is String && titles.containsKey(candidate)) main = candidate;
@@ -261,6 +268,13 @@ class StickerLayout extends ChangeNotifier {
     _changed();
   }
 
+  /// 保存配色并让主窗口和子窗口读取新颜色。
+  void setPalette(StickerPalette value) {
+    if (_palette == value) return;
+    _palette = value;
+    _changed();
+  }
+
   void setMain(String id) {
     if (main == id) return;
     main = id;
@@ -287,6 +301,7 @@ class StickerLayout extends ChangeNotifier {
     final String json = jsonEncode(<String, dynamic>{
       'version': 2,
       'preview': preview,
+      'palette': _palette.name,
       'main': main,
       'enabled': enabled.toList(),
       'groups': _groups,

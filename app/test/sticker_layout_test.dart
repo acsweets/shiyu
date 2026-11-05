@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shiyu/features/desktop_stickers/application/sticker_group_view.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
+import 'package:shiyu/features/desktop_stickers/data/sticker_palette.dart';
 import 'package:shiyu/features/desktop_stickers/presentation/countdown_sticker.dart';
 import 'package:shiyu/features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
@@ -12,8 +13,8 @@ import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 import 'support/test_controller.dart';
 
 void main() {
-  test('从旧布局迁移并保存合并、拆分、窗口与标题开关', _persistence);
-  testWidgets('合并后完整倒计时同窗呈现，隐藏标题不隐藏时间', _groupView);
+  test('从旧布局迁移并保存分组、显隐和配色', _persistence);
+  testWidgets('完整倒计时共用窗口底色，设置可切换色系', _groupView);
 }
 
 Future<void> _persistence() async {
@@ -27,6 +28,7 @@ Future<void> _persistence() async {
   await layout.load();
   expect(layout.main, 'retirement');
   expect(layout.preview, isFalse);
+  expect(layout.palette, StickerPalette.macaron);
   expect(layout.enabled, <String>{'work', 'retirement'});
   final int group = layout.mainGroup;
   final int workGroup = layout.groupOf('work');
@@ -36,6 +38,7 @@ Future<void> _persistence() async {
   layout.setTitleVisible(group, false);
   expect(layout.showsGroup(group), isTrue);
   layout.setGroupVisible(group, false);
+  layout.setPalette(StickerPalette.cool);
   expect(layout.activeGroups, <int>{group});
   const Rect bounds = Rect.fromLTWH(240, 60, 500, 240);
   layout.saveBounds(group, bounds);
@@ -46,6 +49,7 @@ Future<void> _persistence() async {
   expect(restored.members(group), <String>['work', 'retirement']);
   expect(restored.showsTitle(group), isFalse);
   expect(restored.showsGroup(group), isFalse);
+  expect(restored.palette, StickerPalette.cool);
   expect(restored.boundsOf(group), bounds);
   restored.assign('work', null);
   expect(restored.activeGroups.length, 2);
@@ -83,6 +87,10 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text('示例'), findsNothing);
   expect(find.byType(Image), findsOneWidget);
   expect(
+    _windowBackground(tester),
+    StickerPalette.macaron.backgroundFor(layout.mainGroup),
+  );
+  expect(
     tester.getBottomLeft(find.byType(Image)).dy,
     lessThanOrEqualTo(
       tester.getTopLeft(find.byKey(const ValueKey<String>('sticker-work'))).dy,
@@ -93,6 +101,31 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text('距离放假'), findsNothing);
   expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
   expect(tester.takeException(), isNull);
+
+  tester.view.physicalSize = const Size(470, 650);
+  await tester.pumpAndSettle();
+  await tester.tap(find.byIcon(Icons.tune_rounded));
+  await tester.pumpAndSettle();
+  final Finder coolSwatch = find.byWidgetPredicate(_isCoolSwatch);
+  expect(tester.getSize(coolSwatch).height, greaterThan(0));
+  await tester.tap(find.widgetWithText(ChoiceChip, '冷酷色系'));
+  await tester.pumpAndSettle();
+  expect(layout.palette, StickerPalette.cool);
+  await tester.tap(find.text('完成'));
+  await tester.pumpAndSettle();
+  expect(
+    _windowBackground(tester),
+    StickerPalette.cool.backgroundFor(layout.mainGroup),
+  );
+  expect(
+    tester
+        .widget<Text>(find.text(StickerLayout.examples['work']!))
+        .style
+        ?.color,
+    StickerPalette.cool.foreground,
+  );
+
+  tester.view.physicalSize = const Size(500, 146);
   await tester.pumpWidget(
     MaterialApp(
       home: StickerGroupSurface(
@@ -109,12 +142,27 @@ Future<void> _groupView(WidgetTester tester) async {
   expect(find.text(StickerLayout.examples['payday']!), findsOneWidget);
   expect(find.byType(Image), findsNothing);
   expect(find.byType(IconButton), findsNothing);
+  expect(
+    _windowBackground(tester),
+    StickerPalette.cool.backgroundFor(layout.groupOf('payday')),
+  );
   expect(tester.takeException(), isNull);
   await tester.pumpWidget(const SizedBox());
   controller.dispose();
   layout.dispose();
   tester.view.resetPhysicalSize();
   tester.view.resetDevicePixelRatio();
+}
+
+bool _isCoolSwatch(Widget widget) =>
+    widget is ColoredBox &&
+    widget.color == StickerPalette.cool.backgroundFor(0);
+
+Color? _windowBackground(WidgetTester tester) {
+  final DecoratedBox background = tester.widget<DecoratedBox>(
+    find.byKey(const ValueKey<String>('sticker-window-background')),
+  );
+  return (background.decoration as BoxDecoration).color;
 }
 
 void _visibility(bool visible) {}
