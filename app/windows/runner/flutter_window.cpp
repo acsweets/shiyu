@@ -4,6 +4,8 @@
 #include <wtsapi32.h>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "desktop_session.h"
+#include "desktop_geometry.h"
 #include "desktop_multi_window/desktop_multi_window_plugin.h"
 #include "file_selector_windows/file_selector_windows.h"
 #include "resource.h"
@@ -11,6 +13,10 @@
 #include "screen_retriever_windows/screen_retriever_windows_plugin_c_api.h"
 
 namespace {
+constexpr int kVisibilityShortcut = 381;
+constexpr int kFirstAmountShortcut = 382;
+constexpr int kSecondAmountShortcut = 383;
+constexpr UINT kShortcutModifiers = MOD_CONTROL | MOD_SHIFT | MOD_NOREPEAT;
 
 // 子窗口复用可执行文件中的应用图标，异步设置以避免创建时重入。
 void ApplyAppIcon(HWND window, WPARAM type, int width, int height) {
@@ -69,6 +75,14 @@ bool FlutterWindow::OnCreate() {
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
           flutter_controller_->engine()->messenger(), "shiyu/runtime",
           &flutter::StandardMethodCodec::GetInstance());
+  runtime_channel_->SetMethodCallHandler(
+      [this](const auto& call, auto result) {
+        HandleDesktopMethod(call, std::move(result));
+      });
+  desktop_window_ = GetHandle();
+  RegisterDesktopGeometry(flutter_controller_->engine()->messenger(), desktop_window_);
+  fullscreen_ = IsExternalFullscreen();
+  SetTimer(desktop_window_, kShiyuFullscreenTimer, 500, nullptr);
   if (WTSRegisterSessionNotification(GetHandle(), NOTIFY_FOR_THIS_SESSION)) {
     session_window_ = GetHandle();
   }
@@ -83,6 +97,7 @@ bool FlutterWindow::OnCreate() {
         view->engine()->GetRegistrarForPlugin("ScreenRetrieverWindowsPluginCApi"));
     const HWND window = GetAncestor(view->view()->GetNativeWindow(), GA_ROOT);
     if (window != nullptr) {
+      RegisterDesktopGeometry(view->engine()->messenger(), window);
       ApplyAppIcon(window, ICON_SMALL, GetSystemMetrics(SM_CXSMICON),
                    GetSystemMetrics(SM_CYSMICON));
       ApplyAppIcon(window, ICON_BIG, GetSystemMetrics(SM_CXICON),
@@ -103,6 +118,12 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  if (desktop_window_ != nullptr) {
+    SetVisibilityShortcut(false);
+    SetAmountShortcut("");
+    KillTimer(desktop_window_, kShiyuFullscreenTimer);
+    desktop_window_ = nullptr;
+  }
   if (session_window_ != nullptr) {
     WTSUnRegisterSessionNotification(session_window_);
     session_window_ = nullptr;
@@ -115,11 +136,82 @@ void FlutterWindow::OnDestroy() {
   Win32Window::OnDestroy();
 }
 
+bool FlutterWindow::SetVisibilityShortcut(bool enabled) {
+  if (enabled == visibility_shortcut_) return true;
+  if (enabled && !RegisterHotKey(desktop_window_, kVisibilityShortcut, kShortcutModifiers, 'T')) {
+    return false;
+  }
+  if (!enabled) UnregisterHotKey(desktop_window_, kVisibilityShortcut);
+  visibility_shortcut_ = enabled;
+  return true;
+}
+
+bool FlutterWindow::SetAmountShortcut(const std::string& letter) {
+  if (letter == amount_letter_) return true;
+  int candidate = 0;
+  if (!letter.empty()) {
+    if (letter.size() != 1 || letter[0] < 'A' || letter[0] > 'Z' || letter[0] == 'T') {
+      return false;
+    }
+    candidate = amount_shortcut_ == kFirstAmountShortcut ? kSecondAmountShortcut : kFirstAmountShortcut;
+    if (!RegisterHotKey(desktop_window_, candidate, kShortcutModifiers, letter[0])) {
+      return false;
+    }
+  }
+  if (amount_shortcut_ != 0) UnregisterHotKey(desktop_window_, amount_shortcut_);
+  amount_shortcut_ = candidate;
+  amount_letter_ = letter;
+  return true;
+}
+
+void FlutterWindow::HandleDesktopMethod(
+    const flutter::MethodCall<flutter::EncodableValue>& call,
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+  const std::string& method = call.method_name();
+  if (method == "desktopFullscreen") {
+    result->Success(flutter::EncodableValue(IsExternalFullscreen()));
+  } else if (method == "startupSupported") {
+    result->Success(flutter::EncodableValue(true));
+  } else if (method == "startupEnabled") {
+    result->Success(flutter::EncodableValue(StartupEnabled()));
+  } else if (method == "startupSet" || method == "visibilityShortcut") {
+    const bool* enabled = std::get_if<bool>(call.arguments());
+    const bool applied = enabled != nullptr &&
+        (method == "startupSet" ? SetStartupEnabled(*enabled) : SetVisibilityShortcut(*enabled));
+    result->Success(flutter::EncodableValue(applied));
+  } else if (method == "amountShortcut") {
+    const auto* letter = std::get_if<std::string>(call.arguments());
+    result->Success(flutter::EncodableValue(letter != nullptr && SetAmountShortcut(*letter)));
+  } else {
+    result->NotImplemented();
+  }
+}
+
 LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
   if (runtime_channel_) {
+    if (message == kShiyuReopen) {
+      runtime_channel_->InvokeMethod("reopen", nullptr);
+      return 0;
+    }
+    if (message == WM_TIMER && wparam == kShiyuFullscreenTimer) {
+      const bool detected = IsExternalFullscreen();
+      if (fullscreen_ != detected) {
+        fullscreen_ = detected;
+        runtime_channel_->InvokeMethod("fullscreen", std::make_unique<flutter::EncodableValue>(detected));
+      }
+      return 0;
+    }
+    if (message == WM_HOTKEY && wparam == kVisibilityShortcut) {
+      runtime_channel_->InvokeMethod("toggleVisibility", nullptr);
+      return 0;
+    }
+    if (message == WM_HOTKEY && amount_shortcut_ != 0 && wparam == static_cast<WPARAM>(amount_shortcut_)) {
+      runtime_channel_->InvokeMethod("toggleAmount", nullptr);
+      return 0;
+    }
     const char* event = RuntimeEvent(message, wparam);
     if (event != nullptr) runtime_channel_->InvokeMethod(event, nullptr);
   }

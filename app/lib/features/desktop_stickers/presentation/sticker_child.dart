@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../../platform/desktop/desktop_window_bounds.dart';
 import '../application/sticker_group_view.dart';
 import '../data/sticker_layout.dart';
 import 'countdown_sticker.dart';
@@ -24,7 +25,10 @@ Future<void> runStickerChild(Map<String, dynamic> options) async {
   await windowManager.waitUntilReadyToShow();
   final Map<Object?, Object?>? data;
   try {
-    data = await owner.invokeMethod<Map<Object?, Object?>>('view', identity);
+    data = await owner.invokeMethod<Map<Object?, Object?>>(
+      'view',
+      <String, Object?>{...identity, 'initial': true},
+    );
   } on WindowChannelException {
     await windowManager.close();
     return;
@@ -38,9 +42,10 @@ Future<void> runStickerChild(Map<String, dynamic> options) async {
   await windowManager.setAsFrameless();
   await windowManager.setBackgroundColor(Colors.transparent);
   await windowManager.setAlwaysOnTop(true);
+  await _applyDesktopBehavior(view);
   await windowManager.setSkipTaskbar(true);
   await windowManager.setMinimumSize(StickerLayout.minimum);
-  await windowManager.setBounds(view.initialBounds);
+  await DesktopWindowBounds.write(view.initialBounds);
   await windowManager.setPreventClose(true);
   runApp(
     MaterialApp(
@@ -48,7 +53,17 @@ Future<void> runStickerChild(Map<String, dynamic> options) async {
       home: _StickerChild(owner: owner, identity: identity, initialView: view),
     ),
   );
-  if (view.visible) await windowManager.show(inactive: true);
+  if (view.visible) await DesktopWindowBounds.show(inactive: true);
+}
+
+Future<void> _applyDesktopBehavior(StickerGroupView view) async {
+  await windowManager.setIgnoreMouseEvents(view.clickThrough);
+  if (Platform.isMacOS) {
+    await windowManager.setVisibleOnAllWorkspaces(
+      view.coverFullscreen,
+      visibleOnFullScreen: view.coverFullscreen,
+    );
+  }
 }
 
 class _StickerChild extends StatefulWidget {
@@ -104,7 +119,10 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
   Future<Object?> _command(MethodCall call) async {
     if (call.method != 'bounds') throw MissingPluginException(call.method);
     final Rect? bounds = StickerLayout.decodeBounds(call.arguments);
-    if (bounds != null) await windowManager.setBounds(bounds);
+    if (bounds != null) {
+      await DesktopWindowBounds.write(bounds);
+      _reported = bounds;
+    }
     return null;
   }
 
@@ -115,7 +133,7 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
     if (_reading || _closing) return;
     _reading = true;
     try {
-      final Rect bounds = await windowManager.getBounds();
+      final Rect bounds = await DesktopWindowBounds.read();
       final Map<Object?, Object?>? data = await widget.owner
           .invokeMethod<Map<Object?, Object?>>('view', <String, Object?>{
             ...widget.identity,
@@ -129,13 +147,17 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
       }
       _reported = bounds;
       final StickerGroupView next = StickerGroupView(data);
+      if (next.clickThrough != _view.clickThrough ||
+          next.coverFullscreen != _view.coverFullscreen) {
+        await _applyDesktopBehavior(next);
+      }
       final File? character = next.character;
       if (next.assetRevision != _view.assetRevision && character != null) {
         await FileImage(character).evict();
       }
       if (next.visible != _view.visible) {
         if (next.visible) {
-          await windowManager.show(inactive: true);
+          await DesktopWindowBounds.show(inactive: true);
         } else {
           await windowManager.hide();
         }
@@ -167,6 +189,19 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
 
   void _hide() => unawaited(_request('hide'));
   void _toggleMode() => unawaited(_request('toggle_mode'));
+  void _settled() => unawaited(_sendFinalBounds());
+
+  Future<void> _sendFinalBounds() async {
+    try {
+      final Rect bounds = await DesktopWindowBounds.read();
+      await widget.owner.invokeMethod<void>('settle', <String, Object?>{
+        ...widget.identity,
+        'bounds': StickerLayout.encodeBounds(bounds),
+      });
+    } on WindowChannelException {
+      await _close();
+    }
+  }
 
   @override
   void onWindowClose() => _hide();
@@ -179,6 +214,9 @@ class _StickerChildState extends State<_StickerChild> with WindowListener {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      StickerGroupSurface(view: _view, onToggleMode: _toggleMode);
+  Widget build(BuildContext context) => StickerGroupSurface(
+    view: _view,
+    onToggleMode: _toggleMode,
+    onDragSettled: _settled,
+  );
 }

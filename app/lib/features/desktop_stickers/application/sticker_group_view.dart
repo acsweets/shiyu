@@ -44,6 +44,8 @@ class StickerGroupView {
               : metrics.read(id, coreFailed: controller.problem == 'core'),
       },
       'mode': layout.mode.name,
+      'clickThrough': layout.desktop.clickThrough,
+      'coverFullscreen': layout.desktop.coverFullscreen,
       'emptyLabel': metrics.strings.noVisibleMetrics,
       'fallback':
           !layout.preview &&
@@ -83,6 +85,8 @@ class StickerGroupView {
   String get emptyLabel => data['emptyLabel'] as String;
   String? get fallback => data['fallback'] as String?;
   StickerMode get mode => StickerMode.read(data['mode']);
+  bool get clickThrough => data['clickThrough'] == true;
+  bool get coverFullscreen => data['coverFullscreen'] == true;
 
   bool get showsTitle => data['titles'] as bool;
   double get titleSize => (data['titleSize'] as int).toDouble();

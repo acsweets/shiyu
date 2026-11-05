@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../platform/desktop/desktop_options.dart';
 import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/settings_access.dart';
 import '../../retirement/data/settings_repository.dart';
@@ -25,6 +26,8 @@ enum StickerSetting {
   restoreBackup,
   pause,
   mode,
+  desktop,
+  startup,
   holidayCheck,
   holidayImport,
   businessRead,
@@ -63,6 +66,11 @@ class StickerSettingsState {
   bool get canRestore => data['canRestore'] == true;
   bool get paused => data['paused'] == true;
   StickerMode get mode => StickerMode.read(data['mode']);
+  DesktopOptions get desktop => DesktopOptions.read(data['desktop']);
+  bool get visibilityShortcutOk => data['visibilityShortcutOk'] == true;
+  bool get amountShortcutOk => data['amountShortcutOk'] != false;
+  bool get startupSupported => data['startupSupported'] == true;
+  bool get startupEnabled => data['startupEnabled'] == true;
   HolidayStatus? get holidayStatus {
     final Object? raw = data['holidayStatus'];
     return raw is Map<Object?, Object?> ? HolidayStatus(raw) : null;

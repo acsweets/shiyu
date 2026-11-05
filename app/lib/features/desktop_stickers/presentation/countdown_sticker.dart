@@ -17,6 +17,7 @@ class StickerGroupSurface extends StatelessWidget {
     required this.view,
     this.onSettings,
     this.onToggleMode,
+    this.onDragSettled,
     this.interactive = true,
     super.key,
   });
@@ -27,6 +28,7 @@ class StickerGroupSurface extends StatelessWidget {
   /// 设置图标只在主窗出现。
   final VoidCallback? onSettings;
   final VoidCallback? onToggleMode;
+  final VoidCallback? onDragSettled;
 
   /// 设置页预览只绘制内容，禁用系统窗口拖动和缩放。
   final bool interactive;
@@ -89,7 +91,7 @@ class StickerGroupSurface extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          StickerWindowDrag(child: surface),
+          StickerWindowDrag(onSettled: onDragSettled, child: surface),
           const Positioned(right: 0, bottom: 0, child: _ResizeGrip()),
         ],
       ),

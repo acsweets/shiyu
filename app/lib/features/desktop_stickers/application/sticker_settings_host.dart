@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
 
+import '../../../platform/desktop/desktop_options.dart';
+import '../../../platform/desktop/floating_window_controller.dart';
 import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../../retirement/application/settings_access.dart';
@@ -29,6 +31,7 @@ class StickerSettingsHost {
     required this.resize,
     required this.windowFailed,
     required this.changeMode,
+    required this.window,
   });
 
   /// 主引擎的外观配置。
@@ -46,6 +49,40 @@ class StickerSettingsHost {
   /// 获取实时窗口异常状态。
   final StickerWindowFailure windowFailed;
   final StickerModeChange changeMode;
+  final FloatingWindowController window;
+  Future<void> _desktopQueue = Future<void>.value();
+
+  Future<bool> setClickThrough(bool locked) =>
+      _setDesktop('clickThrough', locked);
+
+  Future<bool> _setDesktop(String key, Object? value) {
+    final Future<bool> result = _desktopQueue.then(
+      (void _) => _applyDesktop(key, value),
+    );
+    _desktopQueue = result.then<void>(
+      _finishDesktop,
+      onError: _ignoreDesktopError,
+    );
+    return result;
+  }
+
+  void _finishDesktop(bool applied) {}
+  void _ignoreDesktopError(Object error, StackTrace stack) {}
+
+  Future<bool> _applyDesktop(String key, Object? value) async {
+    final DesktopOptions next = DesktopOptions.read(<String, Object?>{
+      ...layout.desktop.data,
+      key: value,
+    });
+    if (!await window.applyOptions(
+      next,
+      retryShortcut: key == 'amountShortcut',
+    )) {
+      return false;
+    }
+    layout.setDesktop(next);
+    return true;
+  }
 
   void toggleMode() => changeMode(
     layout.mode == StickerMode.mini ? StickerMode.standard : StickerMode.mini,
@@ -73,6 +110,11 @@ class StickerSettingsHost {
       'groups': StickerMetricSelection(layout, controller).activeGroups.toList()
         ..sort(),
       'mode': layout.mode.name,
+      'desktop': layout.desktop.data,
+      'visibilityShortcutOk': window.visibilityShortcutOk,
+      'amountShortcutOk': window.amountShortcutOk,
+      'startupSupported': window.startupSupported,
+      'startupEnabled': window.startupEnabled,
       'enabled': layout.enabled.toList(),
       'retirementDate': controller.retirementDate,
       'timeZone': controller.timeZone,
@@ -96,7 +138,10 @@ class StickerSettingsHost {
     },
   );
 
-  Future<StickerSettingsState> read() async => snapshot();
+  Future<StickerSettingsState> read() async {
+    if (window.initialized) await window.readStartup();
+    return snapshot();
+  }
 
   Future<void> open(WindowController owner) async {
     if (_closed || _opening) return;
@@ -149,7 +194,7 @@ class StickerSettingsHost {
   /// 解析设置窗请求，业务校验和持久化统一走现有控制器。
   Future<Object?> handle(MethodCall call) async {
     if (_closed) return null;
-    if (call.method == 'settings.read') return snapshot().data;
+    if (call.method == 'settings.read') return (await read()).data;
     final Map<Object?, Object?> request =
         call.arguments as Map<Object?, Object?>;
     final StickerSettingsReply reply = await dispatch(
@@ -205,6 +250,17 @@ class StickerSettingsHost {
         controller.setPaused(args['value'] as bool);
       case StickerSetting.mode:
         changeMode(StickerMode.read(args['value']));
+      case StickerSetting.desktop:
+        final String key = args['key'] as String;
+        if (!await _setDesktop(key, args['value'])) {
+          message = key == 'amountShortcut'
+              ? '快捷键已被占用，已保留原快捷键。'
+              : '系统未接受此窗口设置。';
+        }
+      case StickerSetting.startup:
+        if (!await window.setStartup(args['value'] as bool)) {
+          message = '系统未更新登录时启动设置。';
+        }
       case StickerSetting.holidayCheck:
         message = (await controller.checkHolidayUpdates()).name;
       case StickerSetting.holidayImport:

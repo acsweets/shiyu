@@ -3,73 +3,71 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../features/desktop_stickers/data/sticker_layout.dart';
+import '../../features/retirement/application/retirement_controller.dart';
+import '../../features/retirement/data/holiday_repository.dart';
+import 'desktop_bridge.dart';
+import 'desktop_options.dart';
+import 'desktop_window_bounds.dart';
 
 typedef WindowVisibilityChanged = void Function(bool visible);
 
-/// 退休倒计时最小浮窗：先创建恢复入口，再隐藏任务栏，避免不可操作状态。
+/// 托盘保持独立可用。隐藏与全屏抑制分开保存，解除抑制后恢复原状态。
 class FloatingWindowController with TrayListener, WindowListener {
-  FloatingWindowController(this.onVisibilityChanged);
+  FloatingWindowController(this.onVisibilityChanged, {this.business});
 
-  /// 隐藏时停止 UI 刷新，重新显示后立即重算。
   final WindowVisibilityChanged onVisibilityChanged;
-
-  /// 原生窗口已完成初始化。
+  final RetirementController? business;
   bool initialized = false;
-
-  /// 同步所有子窗的显隐。
   WindowVisibilityChanged? onGroupVisibility;
-
-  /// 主浮窗隐藏时仍可从托盘进入设置。
   VoidCallback? openSettings;
-
-  /// 快捷键控制的全局显隐，独立于各窗自己的开关。
-  bool _visible = true;
-
-  /// 主窗当前可见，设置打开时可以临时覆盖。
-  bool _mainVisible = true;
-
-  bool get visible => _visible;
-
-  /// 退出前回收子窗并等待布局保存。
   AsyncCallback? closeGroups;
 
-  /// 仅释放本程序注册的快捷键。
-  final HotKey _hotKey = HotKey(
-    key: PhysicalKeyboardKey.keyT,
-    modifiers: <HotKeyModifier>[
-      Platform.isMacOS ? HotKeyModifier.meta : HotKeyModifier.control,
-      HotKeyModifier.shift,
-    ],
-    scope: HotKeyScope.system,
-  );
+  DesktopOptions _options = const DesktopOptions();
+  bool _requestedVisible = true;
+  bool _mainVisible = true;
+  bool _fullscreen = false;
+  bool _closing = false;
+  bool visibilityShortcutOk = false;
+  bool amountShortcutOk = true;
+  bool startupSupported = false;
+  bool startupEnabled = false;
+  Future<void> _visibilityQueue = Future<void>.value();
+  ({
+    bool visible,
+    bool locked,
+    bool paused,
+    bool hidden,
+    HolidayUpdate holiday,
+  })?
+  _lastMenu;
 
-  /// 注册恢复入口后再启用无边框和任务栏隐藏，保证浮窗始终可找回。
-  Future<void> initialize({bool showMain = true}) async {
+  bool get visible =>
+      _requestedVisible && (!_fullscreen || _options.coverFullscreen);
+
+  Future<void> initialize({
+    bool showMain = true,
+    DesktopOptions options = const DesktopOptions(),
+  }) async {
     _mainVisible = showMain;
+    _options = options;
     await windowManager.ensureInitialized();
-    // 初始化 Windows 任务栏 COM 对象后，才可设置隐藏任务栏。
     await windowManager.waitUntilReadyToShow();
     await windowManager.setTitle('时余');
     trayManager.addListener(this);
     await trayManager.setIcon(
       Platform.isWindows ? 'assets/brand/tray.ico' : 'assets/brand/tray.png',
     );
-    await trayManager.setContextMenu(
-      Menu(
-        items: <MenuItem>[
-          MenuItem(key: 'show', label: '显示已开启的浮窗 / Show'),
-          MenuItem(key: 'settings', label: '设置 / Settings'),
-          MenuItem(key: 'exit', label: '退出 / Exit'),
-        ],
-      ),
-    );
-    await hotKeyManager.register(_hotKey, keyDownHandler: _toggle);
+    await _refreshMenu();
+    visibilityShortcutOk = await desktopFlag('visibilityShortcut', true);
+    amountShortcutOk =
+        options.amountShortcut.isEmpty ||
+        await desktopFlag('amountShortcut', options.amountShortcut);
+    await readStartup();
+    _fullscreen = Platform.isWindows && await desktopFlag('desktopFullscreen');
     windowManager.addListener(this);
     await windowManager.setPreventClose(true);
     await windowManager.setAsFrameless();
@@ -78,77 +76,229 @@ class FloatingWindowController with TrayListener, WindowListener {
     await windowManager.setMinimumSize(StickerLayout.minimum);
     await windowManager.setSize(const Size(280, 172));
     await windowManager.setSkipTaskbar(true);
+    await _applyNativeOptions(options);
     initialized = true;
+    business?.addListener(_businessChanged);
     await show();
   }
 
-  Future<void> setExpanded(bool expanded) => windowManager.setSize(
-    expanded ? const Size(460, 640) : const Size(280, 172),
-  );
-  Future<void> drag() => windowManager.startDragging();
+  Future<void> readStartup() async {
+    startupSupported = await desktopFlag('startupSupported');
+    startupEnabled = startupSupported && await desktopFlag('startupEnabled');
+  }
 
-  /// 全局显示时仍遵循主窗的单独开关。
-  Future<void> show() async {
-    _visible = true;
-    onVisibilityChanged(true);
-    onGroupVisibility?.call(true);
-    if (_mainVisible) {
-      await windowManager.show();
-      if (_visible && _mainVisible) await windowManager.focus();
+  Future<bool> setStartup(bool enabled) async {
+    if (!startupSupported || !await desktopFlag('startupSet', enabled)) {
+      return false;
     }
+    await readStartup();
+    return startupEnabled == enabled;
+  }
+
+  Future<bool> applyOptions(
+    DesktopOptions value, {
+    bool retryShortcut = false,
+  }) async {
+    final DesktopOptions previous = _options;
+    final bool shortcutChanged =
+        value.amountShortcut != previous.amountShortcut ||
+        (retryShortcut && !amountShortcutOk && value.amountShortcut.isNotEmpty);
+    if (shortcutChanged &&
+        !await desktopFlag('amountShortcut', value.amountShortcut)) {
+      return false;
+    }
+    try {
+      await _applyNativeOptions(value);
+    } catch (_) {
+      if (shortcutChanged) {
+        await desktopFlag('amountShortcut', previous.amountShortcut);
+      }
+      await _applyNativeOptions(previous);
+      return false;
+    }
+    _options = value;
+    if (shortcutChanged) amountShortcutOk = true;
+    await _updateVisibility();
+    await _refreshMenu();
+    return true;
+  }
+
+  Future<void> _applyNativeOptions(DesktopOptions value) async {
+    await windowManager.setIgnoreMouseEvents(value.clickThrough);
+    if (Platform.isMacOS) {
+      await windowManager.setVisibleOnAllWorkspaces(
+        value.coverFullscreen,
+        visibleOnFullScreen: value.coverFullscreen,
+      );
+    }
+  }
+
+  Future<void> show() async {
+    _requestedVisible = true;
+    await _updateVisibility(focus: true);
+    await _refreshMenu();
   }
 
   Future<void> hide() async {
-    _visible = false;
-    onVisibilityChanged(false);
-    onGroupVisibility?.call(false);
-    await windowManager.hide();
+    _requestedVisible = false;
+    await _updateVisibility();
+    await _refreshMenu();
   }
 
-  /// 更新主窗开关，不影响其他窗口或业务时钟。
+  Future<void> toggleVisibility() => _requestedVisible ? hide() : show();
+
+  Future<void> setSystemFullscreen(bool fullscreen) async {
+    if (_fullscreen == fullscreen) return;
+    _fullscreen = fullscreen;
+    await _updateVisibility();
+  }
+
   Future<void> setMainVisible(bool visible) async {
     if (_mainVisible == visible) return;
     _mainVisible = visible;
-    if (!_visible) return;
-    if (visible) {
-      await windowManager.show();
-    } else {
-      await windowManager.hide();
+    await _updateVisibility();
+  }
+
+  Future<void> applyInitialVisibility() => _updateVisibility();
+
+  Future<void> reopen() async {
+    await show();
+    openSettings?.call();
+  }
+
+  Future<void> _updateVisibility({bool focus = false}) {
+    onVisibilityChanged(visible);
+    onGroupVisibility?.call(visible);
+    _visibilityQueue = _visibilityQueue.then(
+      (void _) => _applyVisibility(focus),
+    );
+    return _visibilityQueue;
+  }
+
+  Future<void> _applyVisibility(bool focus) async {
+    if (!initialized || _closing) return;
+    try {
+      if (visible && _mainVisible) {
+        await DesktopWindowBounds.show(
+          inactive: !focus || _options.clickThrough,
+        );
+      } else {
+        await windowManager.hide();
+      }
+    } on Exception {
+      // 窗口关闭与显隐请求可能同时到达，后续仍可从托盘重试。
     }
   }
 
-  /// Windows 的首帧由 Runner 显示，主窗关闭时在初始化后隐藏。
-  Future<void> applyInitialVisibility() async {
-    if (!_visible || !_mainVisible) await windowManager.hide();
+  Future<void> toggleAmount() async {
+    final RetirementController? state = business;
+    if (state == null) return;
+    await state.saveSettings(<String, dynamic>{
+      ...state.settings,
+      'hide_amount': state.settings['hide_amount'] == false,
+    });
   }
 
-  Future<void> _toggle(HotKey key) async {
-    if (_visible) {
-      await hide();
-    } else {
-      await show();
-    }
+  void _businessChanged() => unawaited(_refreshMenu());
+
+  Future<void> _refreshMenu() async {
+    final bool locked = _options.clickThrough;
+    final bool paused = business?.paused == true;
+    final bool hidden = business?.settings['hide_amount'] != false;
+    final HolidayUpdate holiday = business?.holidayUpdate ?? HolidayUpdate.idle;
+    final ({
+      bool visible,
+      bool locked,
+      bool paused,
+      bool hidden,
+      HolidayUpdate holiday,
+    })
+    state = (
+      visible: _requestedVisible,
+      locked: locked,
+      paused: paused,
+      hidden: hidden,
+      holiday: holiday,
+    );
+    if (_closing || state == _lastMenu) return;
+    _lastMenu = state;
+    await trayManager.setContextMenu(
+      Menu(
+        items: <MenuItem>[
+          MenuItem(
+            key: 'toggle',
+            label: _requestedVisible ? '隐藏浮窗 / Hide' : '显示浮窗 / Show',
+          ),
+          MenuItem(key: 'settings', label: '设置 / Settings'),
+          MenuItem.separator(),
+          MenuItem(
+            key: 'amount',
+            label: hidden ? '显示金额 / Show amounts' : '隐藏金额 / Hide amounts',
+          ),
+          MenuItem(
+            key: 'pause',
+            label: paused ? '恢复刷新 / Resume' : '暂停刷新 / Pause',
+          ),
+          MenuItem(
+            key: 'lock',
+            label: locked ? '解除点击穿透 / Unlock' : '锁定点击穿透 / Lock',
+          ),
+          MenuItem(key: 'holidays', label: _holidayLabel(holiday)),
+          MenuItem.separator(),
+          MenuItem(key: 'exit', label: '退出 / Exit'),
+        ],
+      ),
+    );
   }
+
+  String _holidayLabel(HolidayUpdate status) => switch (status) {
+    HolidayUpdate.checking => '正在检查节假日… / Checking…',
+    HolidayUpdate.updated ||
+    HolidayUpdate.latest => '节假日数据已更新 / Holidays up to date',
+    HolidayUpdate.failed ||
+    HolidayUpdate.rejected => '检查节假日失败，点击重试 / Retry holiday check',
+    HolidayUpdate.idle => '检查节假日 / Check holidays',
+  };
+
+  Future<bool> Function(bool locked)? setClickThrough;
 
   @override
-  void onWindowClose() {
-    unawaited(hide());
-  }
+  void onWindowClose() => unawaited(hide());
 
   @override
   void onTrayIconMouseDown() {
-    unawaited(show());
+    if (Platform.isMacOS) {
+      unawaited(trayManager.popUpContextMenu());
+    } else {
+      unawaited(show());
+    }
   }
 
   @override
+  void onTrayIconRightMouseDown() => unawaited(trayManager.popUpContextMenu());
+
+  @override
   void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.key == 'show') {
-      unawaited(show());
+    switch (menuItem.key) {
+      case 'toggle':
+        unawaited(toggleVisibility());
+      case 'settings':
+        openSettings?.call();
+      case 'amount':
+        unawaited(toggleAmount());
+      case 'pause':
+        business?.setPaused(!(business?.paused ?? false));
+      case 'lock':
+        unawaited(setClickThrough?.call(!_options.clickThrough));
+      case 'holidays':
+        unawaited(_checkHolidays());
+      case 'exit':
+        unawaited(_exit());
     }
-    if (menuItem.key == 'settings') openSettings?.call();
-    if (menuItem.key == 'exit') {
-      unawaited(_exit());
-    }
+  }
+
+  Future<void> _checkHolidays() async {
+    await business?.checkHolidayUpdates();
   }
 
   Future<void> _exit() async {
@@ -156,11 +306,15 @@ class FloatingWindowController with TrayListener, WindowListener {
     await windowManager.destroy();
   }
 
-  /// 测试和退出时仅清理本窗口注册资源。
   Future<void> dispose() async {
+    if (_closing) return;
+    _closing = true;
+    business?.removeListener(_businessChanged);
+    await _visibilityQueue;
     await closeGroups?.call();
     initialized = false;
-    await hotKeyManager.unregister(_hotKey);
+    await desktopFlag('visibilityShortcut', false);
+    await desktopFlag('amountShortcut', '');
     await trayManager.destroy();
     windowManager.removeListener(this);
     trayManager.removeListener(this);

@@ -5,6 +5,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../../../platform/desktop/desktop_placement.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
 import 'sticker_group_view.dart';
@@ -52,6 +53,7 @@ class StickerWindows {
 
   /// 防止关闭途中继续创建窗口。
   bool _closed = false;
+  DesktopPlacement? placement;
 
   /// 让设置入口等待主窗口通道完成注册。
   final Completer<void> _ready = Completer<void>();
@@ -149,12 +151,6 @@ class StickerWindows {
     if (child != null) unawaited(_setBounds(child, bounds));
   }
 
-  void resetBounds() {
-    for (final int group in _children.keys) {
-      applyBounds(group, layout.initialBounds(group));
-    }
-  }
-
   void setVisible(bool visible) {
     _visible = visible;
   }
@@ -174,7 +170,10 @@ class StickerWindows {
     switch (call.method) {
       case 'view':
         final Rect? bounds = StickerLayout.decodeBounds(request['bounds']);
-        if (wanted && bounds != null) layout.saveBounds(group, bounds);
+        if (wanted && bounds != null) _recordBounds(group, bounds, snap: false);
+        if (wanted && bounds == null && request['initial'] == true) {
+          _restoreBounds(group);
+        }
         return StickerGroupView.fromLayout(
           layout,
           controller,
@@ -187,8 +186,38 @@ class StickerWindows {
       case 'toggle_mode':
         settings.toggleMode();
         return true;
+      case 'settle':
+        final Rect? bounds = StickerLayout.decodeBounds(request['bounds']);
+        if (bounds != null) {
+          _recordBounds(group, bounds, snap: layout.desktop.snap);
+        }
+        return true;
       default:
         throw MissingPluginException(call.method);
+    }
+  }
+
+  void _restoreBounds(int group) {
+    final DesktopPlacement? workspace = placement;
+    if (workspace == null) return;
+    final StickerGroupView view = StickerGroupView.fromLayout(
+      layout,
+      controller,
+      group,
+      true,
+    );
+    final PlacedWindow placed = workspace.restore(
+      view.initialBounds,
+      layout.anchorOf(group),
+    );
+    layout.saveBounds(group, placed.bounds, anchor: placed.anchor);
+  }
+
+  void _recordBounds(int group, Rect bounds, {required bool snap}) {
+    final PlacedWindow? placed = placement?.capture(bounds, snap: snap);
+    layout.saveBounds(group, placed?.bounds ?? bounds, anchor: placed?.anchor);
+    if (snap && placed != null && placed.bounds != bounds) {
+      applyBounds(group, placed.bounds);
     }
   }
 

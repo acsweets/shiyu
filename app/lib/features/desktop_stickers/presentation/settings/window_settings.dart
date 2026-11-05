@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../application/sticker_group_view.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
+import 'desktop_behavior_settings.dart';
 import 'settings_controls.dart';
 
 class WindowSettings extends StatelessWidget {
@@ -27,6 +28,8 @@ class WindowSettings extends StatelessWidget {
           label: const Text('重置窗口位置和大小'),
         ),
       ),
+      const Divider(height: 30),
+      DesktopBehaviorSettings(session: session),
     ],
   );
 

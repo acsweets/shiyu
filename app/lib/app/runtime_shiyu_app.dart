@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import '../features/desktop_stickers/data/sticker_layout.dart';
 import '../features/retirement/application/retirement_controller.dart';
 import '../platform/desktop/floating_window_controller.dart';
+import '../platform/desktop/desktop_bridge.dart';
 import 'shiyu_app.dart';
 import 'settings_locale.dart';
 
@@ -36,7 +37,6 @@ class RuntimeShiyuApp extends ConsumerStatefulWidget {
 
 class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
     with WidgetsBindingObserver {
-  static const MethodChannel _runtime = MethodChannel('shiyu/runtime');
   late final RetirementController _controller;
   final bool _mobile = Platform.isAndroid || Platform.isIOS;
   bool _sleeping = false;
@@ -56,7 +56,7 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
       );
       _controller.setVisible(true);
     } else if (widget.window != null) {
-      _runtime.setMethodCallHandler(_onSystemEvent);
+      desktopRuntimeChannel.setMethodCallHandler(_onSystemEvent);
     }
   }
 
@@ -87,6 +87,18 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
       case 'clockChanged':
         _controller.clockChanged();
         return;
+      case 'toggleVisibility':
+        await widget.window?.toggleVisibility();
+        return;
+      case 'toggleAmount':
+        await widget.window?.toggleAmount();
+        return;
+      case 'reopen':
+        await widget.window?.reopen();
+        return;
+      case 'fullscreen':
+        await widget.window?.setSystemFullscreen(call.arguments == true);
+        return;
       default:
         return;
     }
@@ -108,7 +120,7 @@ class _RuntimeShiyuAppState extends ConsumerState<RuntimeShiyuApp>
     if (_mobile) {
       WidgetsBinding.instance.removeObserver(this);
     } else if (widget.window != null) {
-      _runtime.setMethodCallHandler(null);
+      desktopRuntimeChannel.setMethodCallHandler(null);
     }
     super.dispose();
   }

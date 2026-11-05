@@ -86,9 +86,11 @@ Future<RetirementController> runShiyu({
       (bool visible) => controller.setVisible(
         visible && StickerMetricSelection(layout, controller).hasVisibleMetrics,
       ),
+      business: controller,
     );
     await window.initialize(
       showMain: desktopLayout.showsGroup(desktopLayout.mainGroup),
+      options: desktopLayout.desktop,
     );
   }
   runApp(

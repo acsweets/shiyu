@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../platform/desktop/desktop_options.dart';
+import '../../../platform/desktop/desktop_placement.dart';
 import 'sticker_cat_pose.dart';
 import 'sticker_character.dart';
 import 'sticker_mode.dart';
@@ -43,6 +45,7 @@ class StickerLayout extends ChangeNotifier {
   /// 当前是否展示示例。
   bool preview = true;
   StickerMode mode = StickerMode.mini;
+  DesktopOptions desktop = const DesktopOptions();
 
   /// 所有窗口共用的当前色系。
   StickerPalette _palette = StickerPalette.macaron;
@@ -61,6 +64,7 @@ class StickerLayout extends ChangeNotifier {
 
   /// 各窗口上次保存的桌面位置与尺寸。
   final Map<int, Rect> _bounds = <int, Rect>{};
+  final Map<int, ScreenAnchor> _anchors = <int, ScreenAnchor>{};
 
   /// 隐藏标题的窗口槽位。
   final Set<int> _hiddenTitles = <int>{};
@@ -97,6 +101,7 @@ class StickerLayout extends ChangeNotifier {
   bool showsTitle(int group) => !_hiddenTitles.contains(group);
   bool showsGroup(int group) => !_hiddenGroups.contains(group);
   Rect? boundsOf(int group) => _bounds[group];
+  ScreenAnchor? anchorOf(int group) => _anchors[group];
 
   StickerCharacter? characterOf(int group) =>
       _characters[StickerCatPose.values[group]] ??
@@ -156,6 +161,7 @@ class StickerLayout extends ChangeNotifier {
     final Object? version = data['version'];
     if (version != 1 && version != 2 && version != 3) return;
     mode = StickerMode.read(data['mode']);
+    desktop = DesktopOptions.read(data['desktop']);
     _palette = StickerPalette.fromId(data['palette']);
     final Object? titleSize = data['titleSize'];
     if (titleSize is int) {
@@ -190,6 +196,28 @@ class StickerLayout extends ChangeNotifier {
       for (int group = 0; group < titles.length; group++) {
         final Rect? rect = decodeBounds(bounds['$group']);
         if (rect != null) _bounds[group] = rect;
+      }
+    }
+    final Object? anchors = data['anchors'];
+    if (anchors is Map<String, dynamic>) {
+      for (int group = 0; group < titles.length; group++) {
+        final Object? value = anchors['$group'];
+        if (value is List<Object?> &&
+            value.length == 4 &&
+            value.first is String &&
+            _finite(value[1]) &&
+            _finite(value[2]) &&
+            _finite(value[3]) &&
+            (value[3] as num) > 0) {
+          _anchors[group] = (
+            display: value.first as String,
+            origin: Offset(
+              (value[1] as num).toDouble(),
+              (value[2] as num).toDouble(),
+            ),
+            scale: (value[3] as num).toDouble(),
+          );
+        }
       }
     }
     final Object? hidden = data['hiddenTitles'];
@@ -258,8 +286,14 @@ class StickerLayout extends ChangeNotifier {
           : preferred;
       if (target < 0) return;
       final Rect source = boundsOf(current) ?? initialBounds(current);
-      _bounds[target] ??=
-          (source.topLeft + const Offset(32, 32)) & const Size(280, 172);
+      if (!_bounds.containsKey(target)) {
+        final ScreenAnchor? anchor = _anchors[current];
+        final double scale = anchor?.scale ?? 1;
+        _bounds[target] =
+            (source.topLeft + const Offset(32, 32) * scale) &
+            (const Size(280, 172) * scale);
+        if (anchor != null) _anchors[target] = anchor;
+      }
       _hiddenGroups.remove(target);
     }
     if (target == current || target < 0 || target >= titles.length) return;
@@ -278,10 +312,20 @@ class StickerLayout extends ChangeNotifier {
     _changed();
   }
 
-  void saveBounds(int group, Rect rect) {
-    if (!ready || _bounds[group] == rect) return;
+  void saveBounds(int group, Rect rect, {ScreenAnchor? anchor}) {
+    if (!ready ||
+        (_bounds[group] == rect &&
+            (anchor == null || _anchors[group] == anchor))) {
+      return;
+    }
     _bounds[group] = rect;
+    if (anchor != null) _anchors[group] = anchor;
     persist();
+  }
+
+  void setDesktop(DesktopOptions value) {
+    desktop = value;
+    _changed();
   }
 
   void toggle(String id, bool value) {
@@ -319,7 +363,8 @@ class StickerLayout extends ChangeNotifier {
     final int columns = mode == StickerMode.mini ? 1 : 2;
     final int rows = ((count + columns - 1) ~/ columns).clamp(1, 5);
     final double row = mode.showsDetails ? 108 : 64;
-    return base.topLeft & Size(width, 102 + rows * row);
+    return base.topLeft &
+        (Size(width, 102 + rows * row) * (_anchors[group]?.scale ?? 1));
   }
 
   /// 保存配色并让主窗口和子窗口读取新颜色。
@@ -345,8 +390,9 @@ class StickerLayout extends ChangeNotifier {
   }
 
   /// 复位窗口位置与尺寸，保留分组和标题选项。
-  void reset() {
-    for (final int group in activeGroups) {
+  void reset({Iterable<int>? groups}) {
+    _anchors.clear();
+    for (final int group in groups ?? activeGroups) {
       _bounds[group] = initialBounds(group);
     }
     _changed();
@@ -363,6 +409,7 @@ class StickerLayout extends ChangeNotifier {
     final String json = jsonEncode(<String, dynamic>{
       'version': 3,
       'mode': mode.name,
+      'desktop': desktop.data,
       'preview': preview,
       'palette': _palette.name,
       'titleSize': _titleSize,
@@ -370,6 +417,15 @@ class StickerLayout extends ChangeNotifier {
       'enabled': enabled.toList(),
       'groups': _groups,
       'bounds': _bounds.map(_encodeGroupBounds),
+      'anchors': <String, List<Object>>{
+        for (final MapEntry<int, ScreenAnchor> item in _anchors.entries)
+          '${item.key}': <Object>[
+            item.value.display,
+            item.value.origin.dx,
+            item.value.origin.dy,
+            item.value.scale,
+          ],
+      },
       'hiddenTitles': _hiddenTitles.toList(),
       'hiddenGroups': _hiddenGroups.toList(),
     });

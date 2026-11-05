@@ -7,6 +7,7 @@
 #include <flutter/standard_method_codec.h>
 
 #include <memory>
+#include <string>
 
 #include "win32_window.h"
 
@@ -33,6 +34,17 @@ class FlutterWindow : public Win32Window {
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>>
       runtime_channel_;
   HWND session_window_ = nullptr;
+  HWND desktop_window_ = nullptr;
+  bool fullscreen_ = false;
+  bool visibility_shortcut_ = false;
+  int amount_shortcut_ = 0;
+  std::string amount_letter_;
+
+  void HandleDesktopMethod(
+      const flutter::MethodCall<flutter::EncodableValue>& call,
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  bool SetVisibilityShortcut(bool enabled);
+  bool SetAmountShortcut(const std::string& letter);
 };
 
 #endif  // RUNNER_FLUTTER_WINDOW_H_

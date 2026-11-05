@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show setEquals;
+import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../platform/desktop/floating_window_controller.dart';
+import '../../../platform/desktop/desktop_placement.dart';
+import '../../../platform/desktop/desktop_window_bounds.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../application/sticker_group_view.dart';
 import '../application/sticker_metric_selection.dart';
@@ -40,7 +43,7 @@ class DesktopStickerPage extends StatefulWidget {
 }
 
 class _DesktopStickerPageState extends State<DesktopStickerPage>
-    with WindowListener {
+    with WindowListener, ScreenListener {
   /// 持久化分组。
   late final StickerLayout _layout;
 
@@ -63,6 +66,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   /// 多窗口启动异常时仍保留主窗及设置入口。
   bool _failed = false;
   Set<int> _activeSlots = <int>{};
+  DesktopPlacement? _placement;
 
   @override
   void initState() {
@@ -75,6 +79,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       resize: _resizeWindow,
       windowFailed: _windowFailed,
       changeMode: _changeMode,
+      window: widget.window,
     );
     _layout.addListener(_layoutChanged);
     widget.controller.addListener(_rebuild);
@@ -87,6 +92,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     if (!mounted || !widget.window.initialized) return;
     _syncTickerVisibility();
     windowManager.addListener(this);
+    screenRetriever.addListener(this);
     final StickerWindows windows = StickerWindows(
       layout: _layout,
       controller: widget.controller,
@@ -97,8 +103,10 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     windows.setVisible(widget.window.visible);
     widget.window.onGroupVisibility = windows.setVisible;
     widget.window.openSettings = _openSettings;
+    widget.window.setClickThrough = _settingsHost.setClickThrough;
     widget.window.closeGroups = _closeGroups;
     try {
+      await _loadScreens();
       await _applyMainBounds();
       await WidgetsBinding.instance.endOfFrame;
       await widget.window.applyInitialVisibility();
@@ -109,6 +117,37 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     } catch (_) {
       _reportFailure();
     }
+  }
+
+  Future<void> _loadScreens() async {
+    try {
+      final DesktopPlacement placement = await DesktopPlacement.read();
+      if (!mounted) return;
+      _placement = placement;
+      _windows?.placement = placement;
+    } catch (_) {
+      // 显示器服务不可用时保留最近的原生位置。
+    }
+  }
+
+  @override
+  void onScreenEvent(String eventName) => unawaited(_restoreScreens());
+
+  Future<void> _restoreScreens() async {
+    await _loadScreens();
+    if (!mounted) return;
+    final DesktopPlacement? placement = _placement;
+    if (placement == null) return;
+    for (final int group in _selection.activeGroups) {
+      if (group == _layout.mainGroup) continue;
+      final PlacedWindow result = placement.restore(
+        _view(group).initialBounds,
+        _layout.anchorOf(group),
+      );
+      _layout.saveBounds(group, result.bounds, anchor: result.anchor);
+      _windows?.applyBounds(group, result.bounds);
+    }
+    await _applyMainBounds();
   }
 
   void _reportFailure() {
@@ -160,7 +199,15 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
       while (_boundsPending && mounted) {
         _boundsPending = false;
         final int group = _layout.mainGroup;
-        await windowManager.setBounds(_view(group).initialBounds);
+        final Rect desired = _view(group).initialBounds;
+        final PlacedWindow? placed = _placement?.restore(
+          desired,
+          _layout.anchorOf(group),
+        );
+        await DesktopWindowBounds.write(placed?.bounds ?? desired);
+        if (placed != null && mounted) {
+          _layout.saveBounds(group, placed.bounds, anchor: placed.anchor);
+        }
         _appliedGroup = group;
       }
     } finally {
@@ -177,9 +224,20 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   Future<void> _captureBounds() async {
     final int? group = _appliedGroup;
     if (!mounted || group == null || _applyingBounds) return;
-    final Rect bounds = await windowManager.getBounds();
+    final Rect bounds = await DesktopWindowBounds.read();
     if (mounted && group == _appliedGroup && !_applyingBounds) {
-      _layout.saveBounds(group, bounds);
+      final PlacedWindow? placed = _placement?.capture(
+        bounds,
+        snap: _layout.desktop.snap,
+      );
+      _layout.saveBounds(
+        group,
+        placed?.bounds ?? bounds,
+        anchor: placed?.anchor,
+      );
+      if (placed != null && placed.bounds != bounds) {
+        await _applyMainBounds();
+      }
     }
   }
 
@@ -234,11 +292,18 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
 
   void _resizeWindow(int group, int step) {
     final Rect current = _view(group).initialBounds;
+    final double scale = _layout.anchorOf(group)?.scale ?? 1;
     final Rect bounds = StickerLayout.decodeBounds(<double>[
       current.left,
       current.top,
-      current.width + 120 * step,
-      current.height + 72 * step,
+      (current.width + 120 * step * scale).clamp(
+        StickerLayout.minimum.width * scale,
+        4096,
+      ),
+      (current.height + 72 * step * scale).clamp(
+        StickerLayout.minimum.height * scale,
+        4096,
+      ),
     ])!;
     _layout.saveBounds(group, bounds);
     if (group == _layout.mainGroup) {
@@ -263,9 +328,8 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   }
 
   void _resetBounds() {
-    _layout.reset();
-    unawaited(_applyMainBounds());
-    _windows?.resetBounds();
+    _layout.reset(groups: _selection.activeGroups);
+    unawaited(_restoreScreens());
   }
 
   Future<void> _closeGroups() async {
@@ -278,9 +342,11 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   void dispose() {
     _boundsTimer?.cancel();
     windowManager.removeListener(this);
+    screenRetriever.removeListener(this);
     widget.window.closeGroups = null;
     widget.window.openSettings = null;
     widget.window.onGroupVisibility = null;
+    widget.window.setClickThrough = null;
     widget.controller.setVisible(false);
     widget.controller.removeListener(_rebuild);
     _layout.removeListener(_layoutChanged);
