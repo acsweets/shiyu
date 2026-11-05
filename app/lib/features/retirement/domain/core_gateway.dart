@@ -3,7 +3,11 @@ import '../../../platform/rust/generated/api/snapshot.dart' as rust;
 abstract interface class CoreGateway {
   Future<String> defaults();
   Future<String> validate(String settings);
-  Future<String> compute(String settings, int nowMillis);
+  Future<String> compute(
+    String settings,
+    int nowMillis, {
+    String holidayJson = '{}',
+  });
 }
 
 class RustCoreGateway implements CoreGateway {
@@ -13,10 +17,13 @@ class RustCoreGateway implements CoreGateway {
   Future<String> validate(String settings) =>
       rust.validateSettings(settingsJson: settings);
   @override
-  Future<String> compute(String settings, int nowMillis) =>
-      rust.computeSnapshot(
-        settingsJson: settings,
-        holidayJson: '{}',
-        nowMillis: nowMillis,
-      );
+  Future<String> compute(
+    String settings,
+    int nowMillis, {
+    String holidayJson = '{}',
+  }) => rust.computeSnapshot(
+    settingsJson: settings,
+    holidayJson: holidayJson,
+    nowMillis: nowMillis,
+  );
 }

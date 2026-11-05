@@ -19,6 +19,8 @@ enum StickerSetting {
   main,
   enabled,
   retirement,
+  restoreBackup,
+  pause,
   openAssets,
   reloadAssets,
 }
@@ -47,6 +49,8 @@ class StickerSettingsState {
   String? get retirementDate => data['retirementDate'] as String?;
   String get timeZone => data['timeZone'] as String;
   bool get editingBlocked => data['editingBlocked'] as bool;
+  bool get canRestore => data['canRestore'] == true;
+  bool get paused => data['paused'] == true;
   bool get windowFailed => data['windowFailed'] as bool;
   bool get writeFailed => data['writeFailed'] as bool;
 

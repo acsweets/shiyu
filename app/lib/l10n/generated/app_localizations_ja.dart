@@ -10,6 +10,9 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get restoreSettingsBackup => '設定のバックアップを復元';
+
+  @override
   String get appName => '時余';
 
   @override

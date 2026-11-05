@@ -12,14 +12,15 @@ A local-first time and earnings tool for Windows, macOS, iOS, and Android. `work
 
 ## Current features
 
-The project is at node 04. The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust now exposes all six built-in metrics and custom countdowns. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
+The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust exposes all six built-in metrics and custom countdowns. Node 05 adds local settings backups, recovery, and wall-clock scheduling. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
 
 | Feature | Current behavior |
 | --- | --- |
 | Retirement countdown | User-selected retirement date and IANA time zone. Rust returns calendar days and remaining seconds. Reached dates show “Retired”; no target is fabricated on first launch |
 | Desktop floating window | Frameless, always-on-top Windows/macOS windows with countdown grouping, independent movement and resizing, per-window visibility and title controls, and an adjustable title font size. Choose Macaron, Cool, or Warm Sunset for the full card background. The tray or menu bar provides settings, show, and exit. Ctrl/Cmd+Shift+T hides or restores the enabled windows |
 | Mobile settings | The app opens directly to settings for the retirement date, time zone, and home screen widget appearance. Choose from three palettes, show or hide the title, and adjust its size |
-| Local settings | Desktop app support directory, Android private storage and iOS App Group. Validate before atomic replacement; reload after restart; invalid files are not automatically overwritten |
+| Local settings | Desktop app support directory, Android private storage, and iOS App Group. Settings are validated before saving. Legacy settings can migrate, and users can restore the last valid backup after archiving the damaged file |
+| Refresh | Active countdowns refresh on whole seconds. Desktop refresh pauses when all floating windows are hidden or when paused in Countdowns settings. It recalculates from the current system time when shown or resumed |
 | Android home screen widget | The cat sits above the card, with the title above a single-line retirement countdown. Tap the widget to open settings. It calls Rust via UniFFI independently of Flutter |
 | iOS home screen widget | Small and medium WidgetKit layouts show the cat retirement countdown. The extension reads App Group settings and calls Rust independently. Requires verification on a Mac |
 | Calculation core | Rust snapshots cover lifespan, work shifts, earnings, paydays, breaks, retirement, and custom countdowns. Supports fixed-clock snapshots, batched timelines, and in-memory countdown updates |
@@ -35,7 +36,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 - Complete settings and UI integration for earnings, lifespan, work status, paydays, and breaks.
 - Custom desktop countdowns; full three-mode window/metric ordering, edge snapping, click-through, multiple displays, full-screen behavior, skins and resource packs.
-- Bundled six-region holiday data and updates; import/export, migration/backup/recovery and onboarding.
+- Bundled six-region holiday data and updates, settings import/export, and onboarding.
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 
 These remain in the [node plan](docs/开发计划/README.md). Early retirement integration does not complete nodes 08–12. See the [frozen MVP scope](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md).

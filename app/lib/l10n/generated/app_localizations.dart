@@ -109,6 +109,12 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @restoreSettingsBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复设置备份'**
+  String get restoreSettingsBackup;
+
   /// No description provided for @appName.
   ///
   /// In zh, this message translates to:

@@ -10,6 +10,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get restoreSettingsBackup => 'Restore settings backup';
+
+  @override
   String get appName => 'Time Remaining';
 
   @override

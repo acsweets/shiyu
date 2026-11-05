@@ -60,6 +60,12 @@ class _CountdownSettingsState extends State<CountdownSettings> {
         ...StickerLayout.titles.keys.map(_toggle),
         const Divider(height: 25),
         PaperSettingRow(
+          title: '暂停刷新',
+          detail: '恢复时按当前时间重新计算倒计时',
+          control: Switch(value: state.paused, onChanged: _togglePause),
+        ),
+        const Divider(height: 25),
+        PaperSettingRow(
           title: '示例数据',
           detail: '开启后显示示例时间。关闭后，退休倒计时使用真实设置。',
           control: Switch(value: state.preview, onChanged: _togglePreview),
@@ -101,6 +107,12 @@ class _CountdownSettingsState extends State<CountdownSettings> {
           ),
         ),
         const SizedBox(height: 16),
+        if (state.editingBlocked) const Text('无法读取当前设置。原配置已保留，编辑暂不可用。'),
+        if (state.canRestore)
+          OutlinedButton(
+            onPressed: _saving ? null : _restoreBackup,
+            child: const Text('恢复备份'),
+          ),
         FilledButton(
           onPressed: editable ? _save : null,
           child: Text(_saving ? '正在保存…' : '保存退休设置'),
@@ -143,6 +155,9 @@ class _CountdownSettingsState extends State<CountdownSettings> {
     <String, Object?>{'value': value},
   );
 
+  void _togglePause(bool value) =>
+      _session.change(StickerSetting.pause, <String, Object?>{'value': value});
+
   Future<void> _chooseDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
@@ -157,13 +172,25 @@ class _CountdownSettingsState extends State<CountdownSettings> {
 
   void _clearDate() => setState(() => _date = null);
 
-  Future<void> _save() async {
+  Future<void> _save() => _submit(StickerSetting.retirement, <String, Object?>{
+    'date': _date,
+    'zone': _zone.text,
+  });
+
+  Future<void> _restoreBackup() =>
+      _submit(StickerSetting.restoreBackup, const <String, Object?>{});
+
+  Future<void> _submit(
+    StickerSetting action,
+    Map<String, Object?> arguments,
+  ) async {
     setState(() => _saving = true);
     try {
-      final StickerSettingsReply reply = await _session.send(
-        StickerSetting.retirement,
-        <String, Object?>{'date': _date, 'zone': _zone.text},
-      );
+      final StickerSettingsReply reply = await _session.send(action, arguments);
+      if (mounted && action == StickerSetting.restoreBackup) {
+        _date = reply.state.retirementDate;
+        _zone.text = reply.state.timeZone;
+      }
       if (mounted && reply.message != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

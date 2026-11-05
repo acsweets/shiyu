@@ -10,23 +10,53 @@ abstract interface class SettingsStore {
 }
 
 class LocalSettingsStore implements SettingsStore {
-  LocalSettingsStore(this.directory);
+  LocalSettingsStore(this.directory, {this.fileName = 'settings.json'});
 
   /// 仅保存在当前用户应用数据目录，测试可传入临时目录。
   final Directory directory;
-  File get _file => File('${directory.path}/settings.json');
+
+  /// 备份与原件使用同一套文件写入规则。
+  final String fileName;
+
+  File get _file => File('${directory.path}/$fileName');
 
   @override
-  Future<String?> read() async =>
-      await _file.exists() ? _file.readAsString() : null;
+  Future<String?> read() async {
+    final File file = _file;
+    if (!await file.exists()) return null;
+    if (await file.length() > 128 * 1024) {
+      throw const FileSystemException('settings_too_large');
+    }
+    return file.readAsString();
+  }
 
-  /// 同目录写临时文件后原子替换，失败时保留原文件。
+  /// 使用同卷独立暂存目录，避免不同实例共用临时文件。
   @override
   Future<void> write(String json) async {
     await directory.create(recursive: true);
-    final File temporary = File('${_file.path}.tmp');
-    await temporary.writeAsString(json, flush: true);
-    await temporary.rename(_file.path);
+    final Directory staging = await directory.createTemp('.settings-write-');
+    try {
+      final File temporary = await File('${staging.path}/data').create();
+      if (Platform.isMacOS || Platform.isLinux) {
+        final ProcessResult result = await Process.run('chmod', <String>[
+          '600',
+          temporary.path,
+        ]);
+        if (result.exitCode != 0) {
+          throw const FileSystemException('settings_permissions');
+        }
+      }
+      await temporary.writeAsString(json, flush: true);
+      await temporary.rename(_file.path);
+    } finally {
+      try {
+        final File temporary = File('${staging.path}/data');
+        if (await temporary.exists()) await temporary.delete();
+        await staging.delete();
+      } on FileSystemException {
+        // 清理失败不能把已经完成的原子写入报告为失败。
+      }
+    }
   }
 }
 

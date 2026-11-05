@@ -70,13 +70,14 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     );
     _layout.addListener(_layoutChanged);
     widget.controller.addListener(_rebuild);
-    widget.controller.setVisible(true);
+    _syncTickerVisibility();
     unawaited(_initialize());
   }
 
   Future<void> _initialize() async {
     if (!_layout.ready) await _layout.load();
     if (!mounted || !widget.window.initialized) return;
+    _syncTickerVisibility();
     windowManager.addListener(this);
     final StickerWindows windows = StickerWindows(
       layout: _layout,
@@ -110,10 +111,17 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   }
 
   void _layoutChanged() {
+    _syncTickerVisibility();
     _rebuild();
     _windows?.sync();
     unawaited(_syncMainVisibility());
     if (_appliedGroup != _layout.mainGroup) unawaited(_applyMainBounds());
+  }
+
+  void _syncTickerVisibility() {
+    widget.controller.setVisible(
+      widget.window.visible && _layout.hasVisibleGroups,
+    );
   }
 
   /// 显示开关只作用于主浮窗，设置窗有自己的生命周期。

@@ -61,6 +61,8 @@ class StickerSettingsHost {
     'retirementDate': controller.retirementDate,
     'timeZone': controller.timeZone,
     'editingBlocked': controller.editingBlocked,
+    'canRestore': controller.canRestoreBackup,
+    'paused': controller.paused,
     'windowFailed': windowFailed(),
     'writeFailed': layout.writeFailed,
     'windows': <Map<Object?, Object?>>[
@@ -174,6 +176,11 @@ class StickerSettingsHost {
           args['zone'] as String,
         );
         message = saved ? '已保存退休设置' : '保存失败，请检查日期、IANA 时区和存储状态';
+      case StickerSetting.restoreBackup:
+        final bool restored = await controller.restoreBackup();
+        message = restored ? '已恢复备份，原配置已另存' : '备份恢复失败';
+      case StickerSetting.pause:
+        controller.setPaused(args['value'] as bool);
       case StickerSetting.openAssets:
         message = await _openAssets();
       case StickerSetting.reloadAssets:

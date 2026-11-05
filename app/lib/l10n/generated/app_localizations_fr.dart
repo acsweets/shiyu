@@ -10,6 +10,9 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get restoreSettingsBackup => 'Restaurer la sauvegarde';
+
+  @override
   String get appName => 'Time Remaining';
 
   @override

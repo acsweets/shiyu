@@ -1,4 +1,5 @@
 {
+  "restoreSettingsBackup": "Restore settings backup",
   "@@locale": "en",
   "appName": "Time Remaining",
   "tagline": "Make time for life.",

@@ -22,7 +22,11 @@ class TestCore implements CoreGateway {
   Future<String> validate(String settings) async =>
       '{"ok":true,"settings":$settings,"errors":[]}';
   @override
-  Future<String> compute(String settings, int nowMillis) async =>
+  Future<String> compute(
+    String settings,
+    int nowMillis, {
+    String holidayJson = '{}',
+  }) async =>
       '{"ok":true,"snapshot":{"is_workday":true,"retirement":{"status":"unconfigured","remaining_days":0,"remaining_seconds":0}},"errors":[]}';
 }
 

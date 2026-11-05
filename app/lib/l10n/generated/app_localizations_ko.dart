@@ -10,6 +10,9 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get restoreSettingsBackup => '설정 백업 복원';
+
+  @override
   String get appName => '시여';
 
   @override

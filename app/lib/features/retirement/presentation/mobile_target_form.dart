@@ -115,6 +115,11 @@ class _MobileTargetFormState extends State<MobileTargetForm> {
           ),
         ],
         const SizedBox(height: 16),
+        if (widget.controller.canRestoreBackup)
+          OutlinedButton(
+            onPressed: widget.controller.saving ? null : _restoreBackup,
+            child: Text(strings.restoreSettingsBackup),
+          ),
         FilledButton(
           onPressed: editable ? _save : null,
           child: Text(strings.mobileSave),
@@ -134,6 +139,15 @@ class _MobileTargetFormState extends State<MobileTargetForm> {
   }
 
   void _clearDate() => setState(() => _date = null);
+
+  Future<void> _restoreBackup() async {
+    final bool restored = await widget.controller.restoreBackup();
+    if (!mounted || !restored) return;
+    _zone.text = widget.controller.timeZone;
+    setState(
+      () => _date = DateTime.tryParse(widget.controller.retirementDate ?? ''),
+    );
+  }
 
   Future<void> _save() async {
     FocusScope.of(context).unfocus();

@@ -1,6 +1,7 @@
 ﻿#include "flutter_window.h"
 
 #include <optional>
+#include <wtsapi32.h>
 
 #include "flutter/generated_plugin_registrant.h"
 #include "desktop_multi_window/desktop_multi_window_plugin.h"
@@ -18,6 +19,25 @@ void ApplyAppIcon(HWND window, WPARAM type, int width, int height) {
   if (icon != nullptr) {
     PostMessageW(window, WM_SETICON, type, reinterpret_cast<LPARAM>(icon));
   }
+}
+
+const char* RuntimeEvent(UINT message, WPARAM detail) {
+  switch (message) {
+    case WM_TIMECHANGE:
+    case WM_SETTINGCHANGE:
+      return "clockChanged";
+    case WM_POWERBROADCAST:
+      if (detail == PBT_APMSUSPEND) return "sleep";
+      if (detail == PBT_APMRESUMEAUTOMATIC || detail == PBT_APMRESUMESUSPEND) {
+        return "wake";
+      }
+      break;
+    case WM_WTSSESSION_CHANGE:
+      if (detail == WTS_SESSION_LOCK) return "lock";
+      if (detail == WTS_SESSION_UNLOCK) return "unlock";
+      break;
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -44,6 +64,13 @@ bool FlutterWindow::OnCreate() {
   }
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
   RegisterPlugins(flutter_controller_->engine());
+  runtime_channel_ =
+      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+          flutter_controller_->engine()->messenger(), "shiyu/runtime",
+          &flutter::StandardMethodCodec::GetInstance());
+  if (WTSRegisterSessionNotification(GetHandle(), NOTIFY_FOR_THIS_SESSION)) {
+    session_window_ = GetHandle();
+  }
   // 子窗只注册窗口控制，托盘、快捷键与业务仍由主引擎负责。
   DesktopMultiWindowSetWindowCreatedCallback([](void* controller) {
     auto* view = static_cast<flutter::FlutterViewController*>(controller);
@@ -73,6 +100,11 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  if (session_window_ != nullptr) {
+    WTSUnRegisterSessionNotification(session_window_);
+    session_window_ = nullptr;
+  }
+  runtime_channel_.reset();
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
@@ -84,6 +116,10 @@ LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
+  if (runtime_channel_) {
+    const char* event = RuntimeEvent(message, wparam);
+    if (event != nullptr) runtime_channel_->InvokeMethod(event, nullptr);
+  }
   // Give Flutter, including plugins, an opportunity to handle window messages.
   if (flutter_controller_) {
     std::optional<LRESULT> result =
@@ -96,7 +132,7 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
 
   switch (message) {
     case WM_FONTCHANGE:
-      flutter_controller_->engine()->ReloadSystemFonts();
+      if (flutter_controller_) flutter_controller_->engine()->ReloadSystemFonts();
       break;
   }
 

@@ -106,6 +106,8 @@ class StickerLayout extends ChangeNotifier {
 
   Set<int> get activeGroups => enabled.map(groupOf).toSet();
 
+  bool get hasVisibleGroups => activeGroups.any(showsGroup);
+
   static Map<String, int> _separateGroups() => <String, int>{
     for (int index = 0; index < titles.length; index++)
       titles.keys.elementAt(index): index,

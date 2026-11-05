@@ -3,17 +3,27 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import '../../../platform/widgets/widget_bridge.dart';
+import '../data/holiday_repository.dart';
+import '../data/settings_repository.dart';
 import '../data/settings_store.dart';
 import '../domain/core_gateway.dart';
 import '../domain/retirement_snapshot.dart';
-import '../../../platform/widgets/widget_bridge.dart';
+
+typedef RuntimeClock = DateTime Function();
+typedef PersistSettings = Future<SettingsValues?> Function();
 
 class RetirementController extends ChangeNotifier {
   RetirementController({
     required this.core,
     required this.store,
     required this.widgets,
-  });
+    SettingsRepository? repository,
+    this.holidays,
+    RuntimeClock? now,
+  }) : _repository =
+           repository ?? SettingsRepository(core: core, primary: store),
+       _now = now ?? DateTime.now;
 
   /// 可替换的共享核心调用入口。
   final CoreGateway core;
@@ -24,25 +34,48 @@ class RetirementController extends ChangeNotifier {
   /// 原生组件刷新适配器。
   final WidgetBridge widgets;
 
-  /// 已通过 Rust 校验的设置，未保存的表单不修改此值。
-  Map<String, dynamic> settings = <String, dynamic>{};
+  /// 只读的本地节假日入口。
+  final HolidayRepository? holidays;
 
-  /// 最近一次来自真实 Rust 的快照。
+  /// 版本化配置、备份和损坏恢复。
+  final SettingsRepository _repository;
+
+  /// 每次读取当前墙钟，测试可注入跳变时间。
+  final RuntimeClock _now;
+
+  /// 已通过 Rust 校验的设置。
+  SettingsValues settings = <String, dynamic>{};
+
+  /// 最近一次真实快照。
   RetirementSnapshot? snapshot;
 
-  /// 可本地化的错误类型，禁止放置配置原值。
+  /// 可本地化的错误类型。
   String? problem;
 
-  /// 写入期间禁用提交，防止临时文件相互覆盖。
+  /// 写入期间禁用提交。
   bool saving = false;
 
-  /// 损坏或未来版本的文件只读保留，避免用默认设置覆盖未知内容。
+  /// 损坏或未来版本的原件只读保留。
   bool editingBlocked = false;
 
-  /// 界面可见期间的刷新计时器。
+  /// 当前只读配置有可校验的备份。
+  bool canRestoreBackup = false;
+
+  /// 已加载的节假日 JSON，定时刷新不重复访问磁盘。
+  String _holidayJson = '{}';
+
+  /// 一次性整秒计时器。
   Timer? _timer;
 
-  /// 串行刷新链，保存操作可以等待自己的新快照，而不是读到旧 tick。
+  /// 当前界面、系统和用户暂停状态。
+  bool _visible = false;
+  bool _suspended = false;
+  bool _paused = false;
+
+  /// 使旧定时链退出，避免暂停或恢复后重复计时。
+  int _generation = 0;
+
+  /// 显式刷新按序，定时链每次等待上一帧。
   Future<void> _queuedRefresh = Future<void>.value();
 
   /// 已释放的控制器不再通知视图。
@@ -53,94 +86,116 @@ class RetirementController extends ChangeNotifier {
 
   String? get retirementDate => settings['retirement_date'] as String?;
   String get timeZone => settings['time_zone'] as String? ?? 'Asia/Shanghai';
+  bool get paused => _paused;
 
-  /// 读取已有设置并校验，失败时不静默覆盖用户文件。
+  /// 读入主配置或只读备份，再执行首次快照。
   Future<void> initialize() async {
-    settings = jsonDecode(await core.defaults()) as Map<String, dynamic>;
+    final LoadedSettings loaded = await _repository.load();
+    settings = loaded.values;
+    editingBlocked = loaded.problem != null;
+    canRestoreBackup = loaded.canRestore;
+    problem = loaded.problem;
+    await reloadHolidays();
+  }
+
+  /// 更新本地假日输入，供导入和地区变化后立即重算。
+  Future<void> reloadHolidays() async {
+    final int revision = _revision;
+    final String region = settings['region'] as String? ?? 'CN';
+    String loaded = '{}';
     try {
-      final String? stored = await store.read();
-      if (stored != null) {
-        final Map<String, dynamic> result =
-            jsonDecode(await core.validate(stored)) as Map<String, dynamic>;
-        if (result['ok'] != true) {
-          problem = 'invalid_settings';
-          editingBlocked = true;
-        } else {
-          settings = result['settings'] as Map<String, dynamic>;
-        }
-      }
+      loaded = await holidays?.read(region) ?? '{}';
     } catch (_) {
-      problem = 'storage';
-      editingBlocked = true;
+      // 文件缺失或无法读取时按核心周工作日规则降级。
     }
+    if (_disposed || revision != _revision) return;
+    _holidayJson = loaded;
     await refresh();
   }
 
-  /// 每次以当前绝对时间重算，而非累加过去的 tick。
-  Future<void> refresh() async {
-    if (_disposed) return;
-    final Future<void> previous = _queuedRefresh;
-    final Completer<void> completion = Completer<void>();
-    _queuedRefresh = completion.future;
-    await previous;
-    try {
-      await _refreshOnce();
-    } finally {
-      completion.complete();
-    }
+  /// 每次以当前绝对时间重算。
+  Future<void> refresh() => _enqueueRefresh();
+
+  Future<void> _enqueueRefresh([int? generation]) {
+    _queuedRefresh = _queuedRefresh.then((void _) => _refreshOnce(generation));
+    return _queuedRefresh;
   }
 
-  Future<void> _refreshOnce() async {
-    if (_disposed) return;
+  Future<void> _refreshOnce(int? generation) async {
+    if (!_canRefresh(generation)) return;
     final int revision = _revision;
     try {
-      final Map<String, dynamic> result = jsonDecode(
-        await core.compute(
-          jsonEncode(settings),
-          DateTime.now().millisecondsSinceEpoch,
-        ),
-      ) as Map<String, dynamic>;
-      if (!_disposed && revision == _revision) {
-        if (result['ok'] == true) {
-          snapshot = RetirementSnapshot.fromJson(
-            result['snapshot'] as Map<String, dynamic>,
-          );
-        } else {
-          problem = 'invalid_settings';
-        }
+      final int now = _now().millisecondsSinceEpoch;
+      final String rawSettings = jsonEncode(settings);
+      SettingsValues result = await _compute(rawSettings, now, _holidayJson);
+      if (result['ok'] != true && _holidayJson != '{}') {
+        result = await _compute(rawSettings, now, '{}');
+      }
+      if (!_canRefresh(generation) || revision != _revision) return;
+      if (result['ok'] == true) {
+        snapshot = RetirementSnapshot.fromJson(
+          result['snapshot'] as SettingsValues,
+        );
+        if (problem == 'core') problem = null;
+      } else if (!editingBlocked) {
+        problem = 'core';
       }
     } catch (_) {
-      if (!_disposed) problem = 'core';
+      if (_canRefresh(generation) && revision == _revision && !editingBlocked) {
+        problem = 'core';
+      }
     } finally {
-      if (!_disposed) notifyListeners();
+      if (_canRefresh(generation) && revision == _revision) notifyListeners();
     }
   }
 
-  /// 先校验，再落盘，最后请求系统组件刷新；失败不覆盖合法配置。
-  Future<bool> save(String? date, String zone) async {
-    if (saving || editingBlocked) return false;
+  bool _canRefresh(int? generation) =>
+      !_disposed && (generation == null || generation == _generation);
+
+  Future<SettingsValues> _compute(
+    String raw,
+    int now,
+    String holidayJson,
+  ) async =>
+      jsonDecode(await core.compute(raw, now, holidayJson: holidayJson))
+          as SettingsValues;
+
+  /// 退休表单只覆盖自己的字段，其余设置完整保留。
+  Future<bool> save(String? date, String zone) =>
+      saveSettings(<String, dynamic>{
+        ...settings,
+        'retirement_date': date,
+        'time_zone': zone.trim(),
+      });
+
+  /// 后续设置页通过同一校验与持久化入口提交完整候选。
+  Future<bool> saveSettings(SettingsValues candidate) async {
+    if (editingBlocked) return false;
+    return _persist(() => _repository.save(candidate));
+  }
+
+  /// 只有用户显式恢复时才替换主配置。
+  Future<bool> restoreBackup() async {
+    if (!canRestoreBackup) return false;
+    return _persist(_repository.restoreBackup);
+  }
+
+  Future<bool> _persist(PersistSettings action) async {
+    if (_disposed || saving) return false;
     saving = true;
     problem = null;
     notifyListeners();
     try {
-      final Map<String, dynamic> proposed = <String, dynamic>{
-        ...settings,
-        'retirement_date': date,
-        'time_zone': zone.trim(),
-      };
-      final Map<String, dynamic> result = jsonDecode(
-        await core.validate(jsonEncode(proposed)),
-      ) as Map<String, dynamic>;
-      if (result['ok'] != true) {
+      final SettingsValues? saved = await action();
+      if (saved == null) {
         problem = 'invalid_settings';
         return false;
       }
-      final Map<String, dynamic> validated =
-          result['settings'] as Map<String, dynamic>;
-      await store.write(jsonEncode(validated));
-      settings = validated;
+      settings = saved;
+      editingBlocked = false;
+      canRestoreBackup = false;
       _revision++;
-      await refresh();
+      await reloadHolidays();
       try {
         await widgets.refresh();
       } catch (_) {
@@ -156,20 +211,57 @@ class RetirementController extends ChangeNotifier {
     }
   }
 
-  void _tick(Timer timer) {
-    unawaited(refresh());
+  void setVisible(bool visible) {
+    if (_visible == visible) return;
+    _visible = visible;
+    _restartTicker();
   }
 
-  void setVisible(bool visible) {
+  void setPaused(bool paused) {
+    if (_paused == paused) return;
+    _paused = paused;
+    _restartTicker();
+    if (!_disposed) notifyListeners();
+  }
+
+  void setSystemSuspended(bool suspended) {
+    if (_suspended == suspended) return;
+    _suspended = suspended;
+    _restartTicker();
+  }
+
+  /// 时间跳变使旧计时器失效，按新墙钟重新对齐。
+  void clockChanged() => _restartTicker();
+
+  bool get _active => !_disposed && _visible && !_paused && !_suspended;
+
+  void _restartTicker() {
     _timer?.cancel();
-    if (visible && !_disposed) {
-      unawaited(refresh());
-      _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-    }
+    _generation++;
+    if (_active) unawaited(_tick(_generation));
+  }
+
+  Future<void> _tick(int generation) async {
+    await _enqueueRefresh(generation);
+    if (!_active || generation != _generation) return;
+    final int now = _now().millisecondsSinceEpoch;
+    final RetirementSnapshot? current = snapshot;
+    final int cap = current?.changesEverySecond == false
+        ? 60000
+        : 1000 - now % 1000;
+    final int? boundary = current?.nextChangeAtMillis;
+    final int delay = boundary == null || boundary <= now
+        ? cap
+        : (boundary - now).clamp(1, cap);
+    _timer = Timer(
+      Duration(milliseconds: delay),
+      () => unawaited(_tick(generation)),
+    );
   }
 
   @override
   void dispose() {
+    if (_disposed) return;
     _disposed = true;
     _timer?.cancel();
     super.dispose();

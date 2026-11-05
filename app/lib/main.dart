@@ -3,17 +3,21 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:path_provider/path_provider.dart';
 
-import 'app/shiyu_app.dart';
+import 'app/runtime_shiyu_app.dart';
 import 'features/desktop_stickers/data/sticker_layout.dart';
 import 'features/desktop_stickers/presentation/settings/sticker_settings_window.dart';
 import 'features/desktop_stickers/presentation/sticker_child.dart';
-import 'platform/rust/generated/frb_generated.dart';
 import 'features/retirement/application/retirement_controller.dart';
+import 'features/retirement/data/holiday_repository.dart';
+import 'features/retirement/data/settings_repository.dart';
 import 'features/retirement/data/settings_store.dart';
 import 'features/retirement/domain/core_gateway.dart';
-import 'platform/widgets/widget_bridge.dart';
 import 'platform/desktop/floating_window_controller.dart';
+import 'platform/rust/generated/frb_generated.dart';
+import 'platform/widgets/widget_bridge.dart';
 
 /// 启动应用并在根节点提供 Riverpod 容器。
 Future<void> main(List<String> arguments) async {
@@ -39,28 +43,55 @@ Future<RetirementController> runShiyu({
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
   final WidgetBridge widgets = WidgetBridge();
+  final SettingsStore store = storage ?? await createSettingsStore(widgets);
+  final Directory? directory = store is LocalSettingsStore
+      ? store.directory
+      : storage == null
+      ? Directory('${(await getApplicationSupportDirectory()).path}/shiyu')
+      : null;
+  final CoreGateway core = RustCoreGateway();
   final RetirementController controller = RetirementController(
-    core: RustCoreGateway(),
-    store: storage ?? await createSettingsStore(widgets),
+    core: core,
+    store: store,
     widgets: widgets,
+    repository: directory == null
+        ? null
+        : SettingsRepository(
+            core: core,
+            primary: store,
+            backup: LocalSettingsStore(
+              directory,
+              fileName: 'settings.json.bak',
+            ),
+            archive: LocalSettingsStore(
+              directory,
+              fileName: 'settings.json.damaged',
+            ),
+          ),
+    holidays: directory == null
+        ? null
+        : LocalHolidayRepository(Directory('${directory.path}/holidays')),
   );
   await controller.initialize();
   FloatingWindowController? window;
   if (floating && (Platform.isWindows || Platform.isMacOS)) {
     desktopLayout ??= StickerLayout();
     if (!desktopLayout.ready) await desktopLayout.load();
-    window = FloatingWindowController(controller.setVisible);
+    final StickerLayout layout = desktopLayout;
+    window = FloatingWindowController(
+      (bool visible) =>
+          controller.setVisible(visible && layout.hasVisibleGroups),
+    );
     await window.initialize(
       showMain: desktopLayout.showsGroup(desktopLayout.mainGroup),
     );
   }
   runApp(
     ProviderScope(
-      child: ShiyuApp(
-        controller: controller,
-        window: window,
-        desktopLayout: desktopLayout,
-      ),
+      overrides: <Override>[
+        runtimeControllerProvider.overrideWith((Ref ref) => controller),
+      ],
+      child: RuntimeShiyuApp(window: window, desktopLayout: desktopLayout),
     ),
   );
   return controller;
