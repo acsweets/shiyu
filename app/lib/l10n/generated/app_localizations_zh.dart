@@ -10,6 +10,33 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get holidayData => '节假日数据';
+
+  @override
+  String get holidayFallback => '缺少当前年份数据，按设置中的工作周计算。';
+
+  @override
+  String get holidayChecking => '正在检查节假日数据…';
+
+  @override
+  String get holidayCheck => '检查更新';
+
+  @override
+  String get holidayImport => '导入 JSON';
+
+  @override
+  String get holidayUpdated => '节假日数据已更新。';
+
+  @override
+  String get holidayLatest => '已使用最新数据。';
+
+  @override
+  String get holidayRejected => '节假日文件校验失败，请检查版本、地区、年份和校验值。';
+
+  @override
+  String get holidayFailed => '无法读取节假日更新，继续使用有效本地数据。';
+
+  @override
   String get restoreSettingsBackup => '恢复设置备份';
 
   @override
@@ -103,6 +130,33 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get holidayData => '節假日資料';
+
+  @override
+  String get holidayFallback => '缺少目前年份資料，依設定中的工作週計算。';
+
+  @override
+  String get holidayChecking => '正在檢查節假日資料…';
+
+  @override
+  String get holidayCheck => '檢查更新';
+
+  @override
+  String get holidayImport => '匯入 JSON';
+
+  @override
+  String get holidayUpdated => '節假日資料已更新。';
+
+  @override
+  String get holidayLatest => '已使用最新資料。';
+
+  @override
+  String get holidayRejected => '節假日檔案驗證失敗，請檢查版本、地區、年份和校驗值。';
+
+  @override
+  String get holidayFailed => '無法讀取節假日更新，繼續使用有效的本機資料。';
 
   @override
   String get restoreSettingsBackup => '還原設定備份';

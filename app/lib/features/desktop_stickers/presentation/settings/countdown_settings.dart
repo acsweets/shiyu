@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../../retirement/application/holiday_status.dart';
+import '../../../retirement/data/holiday_repository.dart';
+import '../../../retirement/presentation/holiday_panel.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
 import 'settings_controls.dart';
@@ -42,6 +46,7 @@ class _CountdownSettingsState extends State<CountdownSettings> {
   @override
   Widget build(BuildContext context) {
     final StickerSettingsState state = _session.state;
+    final HolidayStatus? holidayStatus = state.holidayStatus;
     final bool editable = !state.editingBlocked && !_saving;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,6 +122,19 @@ class _CountdownSettingsState extends State<CountdownSettings> {
           onPressed: editable ? _save : null,
           child: Text(_saving ? '正在保存…' : '保存退休设置'),
         ),
+        if (holidayStatus != null) ...<Widget>[
+          const Divider(height: 25),
+          Text(
+            AppLocalizations.of(context).holidayData,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          HolidayPanel(
+            status: holidayStatus,
+            check: _checkCalendar,
+            importPack: _importCalendar,
+          ),
+        ],
       ],
     );
   }
@@ -157,6 +175,21 @@ class _CountdownSettingsState extends State<CountdownSettings> {
 
   void _togglePause(bool value) =>
       _session.change(StickerSetting.pause, <String, Object?>{'value': value});
+
+  Future<HolidayUpdate> _checkCalendar() async {
+    final StickerSettingsReply reply = await _session.send(
+      StickerSetting.holidayCheck,
+    );
+    return HolidayUpdate.values.byName(reply.message!);
+  }
+
+  Future<HolidayUpdate> _importCalendar(String raw) async {
+    final StickerSettingsReply reply = await _session.send(
+      StickerSetting.holidayImport,
+      <String, Object?>{'raw': raw},
+    );
+    return HolidayUpdate.values.byName(reply.message!);
+  }
 
   Future<void> _chooseDate() async {
     final DateTime? date = await showDatePicker(

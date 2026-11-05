@@ -10,6 +10,36 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get holidayData => 'Feiertagsdaten';
+
+  @override
+  String get holidayFallback =>
+      'Daten für das aktuelle Jahr fehlen. Dein Wochenplan wird verwendet.';
+
+  @override
+  String get holidayChecking => 'Feiertagsdaten werden geprüft…';
+
+  @override
+  String get holidayCheck => 'Updates suchen';
+
+  @override
+  String get holidayImport => 'JSON importieren';
+
+  @override
+  String get holidayUpdated => 'Feiertagsdaten aktualisiert.';
+
+  @override
+  String get holidayLatest => 'Feiertagsdaten sind aktuell.';
+
+  @override
+  String get holidayRejected =>
+      'Die Datei ist ungültig. Prüfe Version, Region, Jahre und Prüfsumme.';
+
+  @override
+  String get holidayFailed =>
+      'Aktualisierung fehlgeschlagen. Gültige lokale Daten werden weiterverwendet.';
+
+  @override
   String get restoreSettingsBackup => 'Sicherung wiederherstellen';
 
   @override

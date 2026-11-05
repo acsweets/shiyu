@@ -10,6 +10,36 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get holidayData => 'Données des jours fériés';
+
+  @override
+  String get holidayFallback =>
+      'Les données de cette année manquent. Votre planning hebdomadaire est utilisé.';
+
+  @override
+  String get holidayChecking => 'Vérification des jours fériés…';
+
+  @override
+  String get holidayCheck => 'Rechercher une mise à jour';
+
+  @override
+  String get holidayImport => 'Importer un JSON';
+
+  @override
+  String get holidayUpdated => 'Jours fériés mis à jour.';
+
+  @override
+  String get holidayLatest => 'Les données sont à jour.';
+
+  @override
+  String get holidayRejected =>
+      'Fichier invalide. Vérifiez la version, la région, les années et la somme de contrôle.';
+
+  @override
+  String get holidayFailed =>
+      'Échec de la mise à jour. Les données locales valides restent utilisées.';
+
+  @override
   String get restoreSettingsBackup => 'Restaurer la sauvegarde';
 
   @override

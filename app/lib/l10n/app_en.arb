@@ -1,4 +1,13 @@
 {
+  "holidayData": "Holiday data",
+  "holidayFallback": "Data for the current year is missing. Your weekly schedule is used.",
+  "holidayChecking": "Checking holiday data…",
+  "holidayCheck": "Check for updates",
+  "holidayImport": "Import JSON",
+  "holidayUpdated": "Holiday data updated.",
+  "holidayLatest": "Holiday data is up to date.",
+  "holidayRejected": "The holiday file failed validation. Check its version, region, years, and checksum.",
+  "holidayFailed": "Could not check holiday updates. Valid local data is still used.",
   "restoreSettingsBackup": "Restore settings backup",
   "@@locale": "en",
   "appName": "Time Remaining",

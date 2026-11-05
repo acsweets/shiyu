@@ -61,8 +61,11 @@ class RetirementController extends ChangeNotifier {
   /// 当前只读配置有可校验的备份。
   bool canRestoreBackup = false;
 
-  /// 已加载的节假日 JSON，定时刷新不重复访问磁盘。
+  /// 已校验的地区数据和更新结果供设置窗显示。
+  HolidaySelection? holidayData;
+  HolidayUpdate holidayUpdate = HolidayUpdate.idle;
   String _holidayJson = '{}';
+  Future<HolidayUpdate>? _holidayTask;
 
   /// 一次性整秒计时器。
   Timer? _timer;
@@ -86,6 +89,7 @@ class RetirementController extends ChangeNotifier {
 
   String? get retirementDate => settings['retirement_date'] as String?;
   String get timeZone => settings['time_zone'] as String? ?? 'Asia/Shanghai';
+  String get holidayRegion => settings['region'] as String? ?? 'CN';
   bool get paused => _paused;
 
   /// 读入主配置或只读备份，再执行首次快照。
@@ -101,16 +105,66 @@ class RetirementController extends ChangeNotifier {
   /// 更新本地假日输入，供导入和地区变化后立即重算。
   Future<void> reloadHolidays() async {
     final int revision = _revision;
-    final String region = settings['region'] as String? ?? 'CN';
-    String loaded = '{}';
+    HolidaySelection? loaded;
     try {
-      loaded = await holidays?.read(region) ?? '{}';
+      loaded = await holidays?.read(holidayRegion);
     } catch (_) {
       // 文件缺失或无法读取时按核心周工作日规则降级。
     }
     if (_disposed || revision != _revision) return;
-    _holidayJson = loaded;
+    holidayData = loaded;
+    _holidayJson = loaded?.pack.coreJson ?? '{}';
     await refresh();
+  }
+
+  Future<HolidayUpdate> checkHolidayUpdates({bool silent = false}) =>
+      _holidayTask ?? _updateHolidays(holidays?.check, silent: silent);
+
+  Future<HolidayUpdate> importHolidayPack(String raw) async {
+    final HolidayRepository? repository = holidays;
+    final String region = holidayRegion;
+    while (_holidayTask != null) {
+      await _holidayTask;
+    }
+    return _updateHolidays(
+      repository == null ? null : () => repository.importPack(region, raw),
+    );
+  }
+
+  Future<HolidayUpdate> _updateHolidays(
+    Future<HolidayUpdate> Function()? action, {
+    bool silent = false,
+  }) {
+    if (action == null || _disposed) {
+      return Future<HolidayUpdate>.value(HolidayUpdate.failed);
+    }
+    return _holidayTask = _runHolidayUpdate(action, silent);
+  }
+
+  Future<HolidayUpdate> _runHolidayUpdate(
+    Future<HolidayUpdate> Function() action,
+    bool silent,
+  ) async {
+    if (!silent) {
+      holidayUpdate = HolidayUpdate.checking;
+      notifyListeners();
+    }
+    HolidayUpdate result = HolidayUpdate.failed;
+    try {
+      result = await action();
+      if (!_disposed && result == HolidayUpdate.updated) await reloadHolidays();
+    } catch (_) {
+      result = HolidayUpdate.failed;
+    } finally {
+      _holidayTask = null;
+      if (!_disposed) {
+        holidayUpdate = silent && result != HolidayUpdate.updated
+            ? HolidayUpdate.idle
+            : result;
+        notifyListeners();
+      }
+    }
+    return result;
   }
 
   /// 每次以当前绝对时间重算。

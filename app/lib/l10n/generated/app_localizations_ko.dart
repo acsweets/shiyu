@@ -10,6 +10,33 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get holidayData => '공휴일 데이터';
+
+  @override
+  String get holidayFallback => '올해 데이터가 없어 설정한 주간 근무 일정으로 계산합니다.';
+
+  @override
+  String get holidayChecking => '공휴일 데이터 확인 중…';
+
+  @override
+  String get holidayCheck => '업데이트 확인';
+
+  @override
+  String get holidayImport => 'JSON 가져오기';
+
+  @override
+  String get holidayUpdated => '공휴일 데이터가 업데이트되었습니다.';
+
+  @override
+  String get holidayLatest => '공휴일 데이터가 최신입니다.';
+
+  @override
+  String get holidayRejected => '파일 검증에 실패했습니다. 버전, 지역, 연도, 체크섬을 확인하세요.';
+
+  @override
+  String get holidayFailed => '업데이트를 확인할 수 없습니다. 유효한 로컬 데이터를 사용합니다.';
+
+  @override
   String get restoreSettingsBackup => '설정 백업 복원';
 
   @override

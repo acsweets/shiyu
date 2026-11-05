@@ -8,7 +8,9 @@ environment:
   flutter: '>=3.47.2'
 
 dependencies:
+  crypto: 3.0.8
   desktop_multi_window: 0.3.1
+  file_selector: 1.1.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -35,6 +37,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/holidays/calendar.json
     - assets/diagnostics/icon.ico
     - assets/diagnostics/icon.png
     - assets/brand/tray.ico

@@ -10,6 +10,36 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get holidayData => 'Datos festivos';
+
+  @override
+  String get holidayFallback =>
+      'Faltan los datos de este año. Se usará tu horario semanal.';
+
+  @override
+  String get holidayChecking => 'Comprobando los festivos…';
+
+  @override
+  String get holidayCheck => 'Buscar actualizaciones';
+
+  @override
+  String get holidayImport => 'Importar JSON';
+
+  @override
+  String get holidayUpdated => 'Datos festivos actualizados.';
+
+  @override
+  String get holidayLatest => 'Los datos festivos están al día.';
+
+  @override
+  String get holidayRejected =>
+      'El archivo no es válido. Comprueba la versión, región, años y suma de verificación.';
+
+  @override
+  String get holidayFailed =>
+      'No se pudo comprobar la actualización. Se mantienen los datos locales válidos.';
+
+  @override
   String get restoreSettingsBackup => 'Restaurar copia de seguridad';
 
   @override

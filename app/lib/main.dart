@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -39,6 +40,7 @@ Future<RetirementController> runShiyu({
   bool floating = true,
   SettingsStore? storage,
   StickerLayout? desktopLayout,
+  bool checkHolidays = true,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
@@ -94,5 +96,8 @@ Future<RetirementController> runShiyu({
       child: RuntimeShiyuApp(window: window, desktopLayout: desktopLayout),
     ),
   );
+  if (checkHolidays && storage == null) {
+    unawaited(controller.checkHolidayUpdates(silent: true));
+  }
   return controller;
 }

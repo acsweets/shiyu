@@ -5,6 +5,7 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include "desktop_multi_window/desktop_multi_window_plugin.h"
+#include "file_selector_windows/file_selector_windows.h"
 #include "resource.h"
 #include "window_manager/window_manager_plugin.h"
 #include "screen_retriever_windows/screen_retriever_windows_plugin_c_api.h"
@@ -76,6 +77,8 @@ bool FlutterWindow::OnCreate() {
     auto* view = static_cast<flutter::FlutterViewController*>(controller);
     WindowManagerPluginRegisterWithRegistrar(
         view->engine()->GetRegistrarForPlugin("WindowManagerPlugin"));
+    FileSelectorWindowsRegisterWithRegistrar(
+        view->engine()->GetRegistrarForPlugin("FileSelectorWindows"));
     ScreenRetrieverWindowsPluginCApiRegisterWithRegistrar(
         view->engine()->GetRegistrarForPlugin("ScreenRetrieverWindowsPluginCApi"));
     const HWND window = GetAncestor(view->view()->GetNativeWindow(), GA_ROOT);

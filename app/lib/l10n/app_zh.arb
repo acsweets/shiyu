@@ -1,4 +1,13 @@
 {
+  "holidayData": "节假日数据",
+  "holidayFallback": "缺少当前年份数据，按设置中的工作周计算。",
+  "holidayChecking": "正在检查节假日数据…",
+  "holidayCheck": "检查更新",
+  "holidayImport": "导入 JSON",
+  "holidayUpdated": "节假日数据已更新。",
+  "holidayLatest": "已使用最新数据。",
+  "holidayRejected": "节假日文件校验失败，请检查版本、地区、年份和校验值。",
+  "holidayFailed": "无法读取节假日更新，继续使用有效本地数据。",
   "restoreSettingsBackup": "恢复设置备份",
   "@@locale": "zh",
   "appName": "时余",

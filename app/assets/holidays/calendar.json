@@ -1,0 +1,394 @@
+{
+  "schema_version": 1,
+  "packs": {
+    "CN": {
+      "version": 2026110501,
+      "sha256": "e11b91001e1c2a3007e1033621f9775763a10c4152880716198da7e87c16b5fc",
+      "payload": {
+        "schema_version": 1,
+        "region": "CN",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://www.beijing.gov.cn/cs/gncs/zcwj/202603/t20260327_4568275.html"
+          ],
+          "2027": [
+            "https://www2.xinhuanet.com/politics/20261105/f90cd6ad4df94ab4833b141e52ccfc13/c.html"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-01-02": false,
+          "2026-01-03": false,
+          "2026-01-04": true,
+          "2026-02-14": true,
+          "2026-02-15": false,
+          "2026-02-16": false,
+          "2026-02-17": false,
+          "2026-02-18": false,
+          "2026-02-19": false,
+          "2026-02-20": false,
+          "2026-02-21": false,
+          "2026-02-22": false,
+          "2026-02-23": false,
+          "2026-02-28": true,
+          "2026-04-04": false,
+          "2026-04-05": false,
+          "2026-04-06": false,
+          "2026-05-01": false,
+          "2026-05-02": false,
+          "2026-05-03": false,
+          "2026-05-04": false,
+          "2026-05-05": false,
+          "2026-05-09": true,
+          "2026-06-19": false,
+          "2026-06-20": false,
+          "2026-06-21": false,
+          "2026-09-20": true,
+          "2026-09-25": false,
+          "2026-09-26": false,
+          "2026-09-27": false,
+          "2026-10-01": false,
+          "2026-10-02": false,
+          "2026-10-03": false,
+          "2026-10-04": false,
+          "2026-10-05": false,
+          "2026-10-06": false,
+          "2026-10-07": false,
+          "2026-10-10": true,
+          "2027-01-01": false,
+          "2027-01-02": false,
+          "2027-01-03": false,
+          "2027-01-31": true,
+          "2027-02-05": false,
+          "2027-02-06": false,
+          "2027-02-07": false,
+          "2027-02-08": false,
+          "2027-02-09": false,
+          "2027-02-10": false,
+          "2027-02-11": false,
+          "2027-02-12": false,
+          "2027-02-13": false,
+          "2027-02-14": true,
+          "2027-04-03": false,
+          "2027-04-04": false,
+          "2027-04-05": false,
+          "2027-05-01": false,
+          "2027-05-02": false,
+          "2027-05-03": false,
+          "2027-05-04": false,
+          "2027-05-05": false,
+          "2027-05-08": true,
+          "2027-06-09": false,
+          "2027-09-15": false,
+          "2027-09-26": true,
+          "2027-10-01": false,
+          "2027-10-02": false,
+          "2027-10-03": false,
+          "2027-10-04": false,
+          "2027-10-05": false,
+          "2027-10-06": false,
+          "2027-10-07": false,
+          "2027-10-09": true
+        }
+      }
+    },
+    "US": {
+      "version": 2026110501,
+      "sha256": "b3a9621894d39a790f660f47eb3f253613cbf26feeea7a43f51a97d84bf959d1",
+      "payload": {
+        "schema_version": 1,
+        "region": "US",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/"
+          ],
+          "2027": [
+            "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-01-19": false,
+          "2026-02-16": false,
+          "2026-05-25": false,
+          "2026-06-19": false,
+          "2026-07-03": false,
+          "2026-09-07": false,
+          "2026-10-12": false,
+          "2026-11-11": false,
+          "2026-11-26": false,
+          "2026-12-25": false,
+          "2027-01-01": false,
+          "2027-01-18": false,
+          "2027-02-15": false,
+          "2027-05-31": false,
+          "2027-06-18": false,
+          "2027-07-05": false,
+          "2027-09-06": false,
+          "2027-10-11": false,
+          "2027-11-11": false,
+          "2027-11-25": false,
+          "2027-12-24": false
+        }
+      }
+    },
+    "JP": {
+      "version": 2026110501,
+      "sha256": "adc3ecd04e755ec443f86f427d3db3da951685be88b52b34c64e72b8198c4d1c",
+      "payload": {
+        "schema_version": 1,
+        "region": "JP",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+          ],
+          "2027": [
+            "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-01-12": false,
+          "2026-02-11": false,
+          "2026-02-23": false,
+          "2026-03-20": false,
+          "2026-04-29": false,
+          "2026-05-03": false,
+          "2026-05-04": false,
+          "2026-05-05": false,
+          "2026-05-06": false,
+          "2026-07-20": false,
+          "2026-08-11": false,
+          "2026-09-21": false,
+          "2026-09-22": false,
+          "2026-09-23": false,
+          "2026-10-12": false,
+          "2026-11-03": false,
+          "2026-11-23": false,
+          "2027-01-01": false,
+          "2027-01-11": false,
+          "2027-02-11": false,
+          "2027-02-23": false,
+          "2027-03-21": false,
+          "2027-03-22": false,
+          "2027-04-29": false,
+          "2027-05-03": false,
+          "2027-05-04": false,
+          "2027-05-05": false,
+          "2027-07-19": false,
+          "2027-08-11": false,
+          "2027-09-20": false,
+          "2027-09-23": false,
+          "2027-10-11": false,
+          "2027-11-03": false,
+          "2027-11-23": false
+        }
+      }
+    },
+    "KR": {
+      "version": 2026110501,
+      "sha256": "23a7586dd2ce35168fe61e75e66709aaef7275bdf6028e8707de2c317e8324df",
+      "payload": {
+        "schema_version": 1,
+        "region": "KR",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://www.kasa.go.kr/prog/plcyBrf/brief/kor/sub01_01_04/view.do?plcyBrfNo=202",
+            "https://www.law.go.kr/lsInfoP.do?lsiSeq=285779&viewCls=lsRvsDocInfoR"
+          ],
+          "2027": [
+            "https://www.kasa.go.kr/prog/plcyBrf/brief/kor/sub01_01_04/view.do?plcyBrfNo=431"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-02-16": false,
+          "2026-02-17": false,
+          "2026-02-18": false,
+          "2026-03-01": false,
+          "2026-03-02": false,
+          "2026-05-01": false,
+          "2026-05-05": false,
+          "2026-05-24": false,
+          "2026-05-25": false,
+          "2026-06-03": false,
+          "2026-06-06": false,
+          "2026-07-17": false,
+          "2026-08-15": false,
+          "2026-08-17": false,
+          "2026-09-24": false,
+          "2026-09-25": false,
+          "2026-09-26": false,
+          "2026-10-03": false,
+          "2026-10-05": false,
+          "2026-10-09": false,
+          "2026-12-25": false,
+          "2027-01-01": false,
+          "2027-02-06": false,
+          "2027-02-07": false,
+          "2027-02-08": false,
+          "2027-02-09": false,
+          "2027-03-01": false,
+          "2027-05-01": false,
+          "2027-05-03": false,
+          "2027-05-05": false,
+          "2027-05-13": false,
+          "2027-06-06": false,
+          "2027-07-17": false,
+          "2027-07-19": false,
+          "2027-08-15": false,
+          "2027-08-16": false,
+          "2027-09-14": false,
+          "2027-09-15": false,
+          "2027-09-16": false,
+          "2027-10-03": false,
+          "2027-10-04": false,
+          "2027-10-09": false,
+          "2027-10-11": false,
+          "2027-12-25": false,
+          "2027-12-27": false
+        }
+      }
+    },
+    "HK": {
+      "version": 2026110501,
+      "sha256": "20d5f792cc9cdf0e7299ef6926a49e6b940e69370ebeb57a292698a2d0ebc44a",
+      "payload": {
+        "schema_version": 1,
+        "region": "HK",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://data.gov.hk/en-data/dataset/hk-dpo-statistic-cal"
+          ],
+          "2027": [
+            "https://data.gov.hk/en-data/dataset/hk-dpo-statistic-cal"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-02-17": false,
+          "2026-02-18": false,
+          "2026-02-19": false,
+          "2026-04-03": false,
+          "2026-04-04": false,
+          "2026-04-06": false,
+          "2026-04-07": false,
+          "2026-05-01": false,
+          "2026-05-25": false,
+          "2026-06-19": false,
+          "2026-07-01": false,
+          "2026-09-26": false,
+          "2026-10-01": false,
+          "2026-10-19": false,
+          "2026-12-25": false,
+          "2026-12-26": false,
+          "2027-01-01": false,
+          "2027-02-06": false,
+          "2027-02-08": false,
+          "2027-02-09": false,
+          "2027-03-26": false,
+          "2027-03-27": false,
+          "2027-03-29": false,
+          "2027-04-05": false,
+          "2027-05-01": false,
+          "2027-05-13": false,
+          "2027-06-09": false,
+          "2027-07-01": false,
+          "2027-09-16": false,
+          "2027-10-01": false,
+          "2027-10-08": false,
+          "2027-12-25": false,
+          "2027-12-27": false
+        }
+      }
+    },
+    "TW": {
+      "version": 2026110501,
+      "sha256": "5237567730bba972ea59ec67b92334fb32edb8a21651658526296f8c77055560",
+      "payload": {
+        "schema_version": 1,
+        "region": "TW",
+        "years": [
+          2026,
+          2027
+        ],
+        "sources": {
+          "2026": [
+            "https://data.gov.tw/dataset/14718"
+          ],
+          "2027": [
+            "https://data.gov.tw/dataset/14718"
+          ]
+        },
+        "date_overrides": {
+          "2026-01-01": false,
+          "2026-02-15": false,
+          "2026-02-16": false,
+          "2026-02-17": false,
+          "2026-02-18": false,
+          "2026-02-19": false,
+          "2026-02-20": false,
+          "2026-02-27": false,
+          "2026-02-28": false,
+          "2026-04-03": false,
+          "2026-04-04": false,
+          "2026-04-05": false,
+          "2026-04-06": false,
+          "2026-05-01": false,
+          "2026-06-19": false,
+          "2026-09-25": false,
+          "2026-09-28": false,
+          "2026-10-09": false,
+          "2026-10-10": false,
+          "2026-10-25": false,
+          "2026-10-26": false,
+          "2026-12-25": false,
+          "2027-01-01": false,
+          "2027-02-04": false,
+          "2027-02-05": false,
+          "2027-02-06": false,
+          "2027-02-07": false,
+          "2027-02-08": false,
+          "2027-02-09": false,
+          "2027-02-10": false,
+          "2027-02-28": false,
+          "2027-03-01": false,
+          "2027-04-04": false,
+          "2027-04-05": false,
+          "2027-04-06": false,
+          "2027-04-30": false,
+          "2027-05-01": false,
+          "2027-06-09": false,
+          "2027-09-15": false,
+          "2027-09-28": false,
+          "2027-10-10": false,
+          "2027-10-11": false,
+          "2027-10-25": false,
+          "2027-12-24": false,
+          "2027-12-25": false,
+          "2027-12-31": false
+        }
+      }
+    }
+  }
+}

@@ -109,6 +109,60 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @holidayData.
+  ///
+  /// In zh, this message translates to:
+  /// **'节假日数据'**
+  String get holidayData;
+
+  /// No description provided for @holidayFallback.
+  ///
+  /// In zh, this message translates to:
+  /// **'缺少当前年份数据，按设置中的工作周计算。'**
+  String get holidayFallback;
+
+  /// No description provided for @holidayChecking.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在检查节假日数据…'**
+  String get holidayChecking;
+
+  /// No description provided for @holidayCheck.
+  ///
+  /// In zh, this message translates to:
+  /// **'检查更新'**
+  String get holidayCheck;
+
+  /// No description provided for @holidayImport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入 JSON'**
+  String get holidayImport;
+
+  /// No description provided for @holidayUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'节假日数据已更新。'**
+  String get holidayUpdated;
+
+  /// No description provided for @holidayLatest.
+  ///
+  /// In zh, this message translates to:
+  /// **'已使用最新数据。'**
+  String get holidayLatest;
+
+  /// No description provided for @holidayRejected.
+  ///
+  /// In zh, this message translates to:
+  /// **'节假日文件校验失败，请检查版本、地区、年份和校验值。'**
+  String get holidayRejected;
+
+  /// No description provided for @holidayFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法读取节假日更新，继续使用有效本地数据。'**
+  String get holidayFailed;
+
   /// No description provided for @restoreSettingsBackup.
   ///
   /// In zh, this message translates to:

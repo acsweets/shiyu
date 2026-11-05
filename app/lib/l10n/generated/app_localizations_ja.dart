@@ -10,6 +10,33 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get holidayData => '祝日データ';
+
+  @override
+  String get holidayFallback => '今年のデータがないため、設定した勤務曜日を使用します。';
+
+  @override
+  String get holidayChecking => '祝日データを確認中…';
+
+  @override
+  String get holidayCheck => '更新を確認';
+
+  @override
+  String get holidayImport => 'JSONを読み込む';
+
+  @override
+  String get holidayUpdated => '祝日データを更新しました。';
+
+  @override
+  String get holidayLatest => '祝日データは最新です。';
+
+  @override
+  String get holidayRejected => 'ファイルを検証できませんでした。バージョン、地域、対象年、チェックサムを確認してください。';
+
+  @override
+  String get holidayFailed => '更新を確認できませんでした。有効なローカルデータを使います。';
+
+  @override
   String get restoreSettingsBackup => '設定のバックアップを復元';
 
   @override

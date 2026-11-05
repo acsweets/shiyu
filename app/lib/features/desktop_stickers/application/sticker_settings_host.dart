@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/services.dart';
 
+import '../../retirement/application/holiday_status.dart';
 import '../../retirement/application/retirement_controller.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_palette.dart';
@@ -63,6 +64,8 @@ class StickerSettingsHost {
     'editingBlocked': controller.editingBlocked,
     'canRestore': controller.canRestoreBackup,
     'paused': controller.paused,
+    if (controller.holidays != null)
+      'holidayStatus': HolidayStatus.fromController(controller).data,
     'windowFailed': windowFailed(),
     'writeFailed': layout.writeFailed,
     'windows': <Map<Object?, Object?>>[
@@ -181,6 +184,11 @@ class StickerSettingsHost {
         message = restored ? '已恢复备份，原配置已另存' : '备份恢复失败';
       case StickerSetting.pause:
         controller.setPaused(args['value'] as bool);
+      case StickerSetting.holidayCheck:
+        message = (await controller.checkHolidayUpdates()).name;
+      case StickerSetting.holidayImport:
+        message = (await controller.importHolidayPack(args['raw'] as String))
+            .name;
       case StickerSetting.openAssets:
         message = await _openAssets();
       case StickerSetting.reloadAssets:

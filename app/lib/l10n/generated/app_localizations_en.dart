@@ -10,6 +10,36 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get holidayData => 'Holiday data';
+
+  @override
+  String get holidayFallback =>
+      'Data for the current year is missing. Your weekly schedule is used.';
+
+  @override
+  String get holidayChecking => 'Checking holiday data…';
+
+  @override
+  String get holidayCheck => 'Check for updates';
+
+  @override
+  String get holidayImport => 'Import JSON';
+
+  @override
+  String get holidayUpdated => 'Holiday data updated.';
+
+  @override
+  String get holidayLatest => 'Holiday data is up to date.';
+
+  @override
+  String get holidayRejected =>
+      'The holiday file failed validation. Check its version, region, years, and checksum.';
+
+  @override
+  String get holidayFailed =>
+      'Could not check holiday updates. Valid local data is still used.';
+
+  @override
   String get restoreSettingsBackup => 'Restore settings backup';
 
   @override

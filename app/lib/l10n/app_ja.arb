@@ -1,4 +1,13 @@
 {
+  "holidayData": "祝日データ",
+  "holidayFallback": "今年のデータがないため、設定した勤務曜日を使用します。",
+  "holidayChecking": "祝日データを確認中…",
+  "holidayCheck": "更新を確認",
+  "holidayImport": "JSONを読み込む",
+  "holidayUpdated": "祝日データを更新しました。",
+  "holidayLatest": "祝日データは最新です。",
+  "holidayRejected": "ファイルを検証できませんでした。バージョン、地域、対象年、チェックサムを確認してください。",
+  "holidayFailed": "更新を確認できませんでした。有効なローカルデータを使います。",
   "restoreSettingsBackup": "設定のバックアップを復元",
   "@@locale": "ja",
   "appName": "時余",

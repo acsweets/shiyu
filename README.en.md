@@ -12,7 +12,7 @@ A local-first time and earnings tool for Windows, macOS, iOS, and Android. `work
 
 ## Current features
 
-The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust exposes all six built-in metrics and custom countdowns. Node 05 adds local settings backups, recovery, and wall-clock scheduling. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
+The retirement countdown is available in desktop floating windows and mobile home screen widgets. Rust exposes all six built-in metrics and custom countdowns. The app supports local settings backups, recovery, and offline holiday data for six regions. The [project record](docs/项目记录/README.md) captures the approved design and feature baseline.
 
 | Feature | Current behavior |
 | --- | --- |
@@ -26,6 +26,7 @@ The retirement countdown is available in desktop floating windows and mobile hom
 | Calculation core | Rust snapshots cover lifespan, work shifts, earnings, paydays, breaks, retirement, and custom countdowns. Supports fixed-clock snapshots, batched timelines, and in-memory countdown updates |
 | Earnings and privacy | Gross or net monthly pay accrues across scheduled workdays and actual working time. Amounts are truncated as decimal strings, and hidden snapshots expose only the mask |
 | Core contracts/calendar | Versioned JSON, field validation, explicit now and IANA zone. Personal date overrides precede custom holidays, regional date overrides and weekly workdays. Missing holiday data produces an explicit fallback status |
+| Regional holidays | Bundled 2026–2027 holiday data for mainland China, the US, Japan, South Korea, Hong Kong, and Taiwan. Settings can check for updates and import regional JSON. Missing data falls back to the weekly schedule. [Sources and format](docs/决策记录/0003-节假日来源与更新.md) |
 | Localization/probes | Existing mobile UI uses ARB for eight languages; the new desktop review UI is Chinese. Native widgets use Chinese/English. `lib/main_probe.dart` remains a separate engineering probe |
 
 On phones, the countdown lives on the system home screen. Android displays the most recent countdown snapshot as days and a clock. Settings changes trigger a refresh, and the OS schedules regular updates. iOS uses a WidgetKit timeline, with a system countdown during the final day on iOS 16 and later.
@@ -36,7 +37,7 @@ Node 01 Windows/Android runtime checks passed, and the user has reported Mac val
 
 - Complete settings and UI integration for earnings, lifespan, work status, paydays, and breaks.
 - Custom desktop countdowns; full three-mode window/metric ordering, edge snapping, click-through, multiple displays, full-screen behavior, skins and resource packs.
-- Bundled six-region holiday data and updates, settings import/export, and onboarding.
+- Settings import/export and onboarding.
 - All four countdown widget metrics and earnings widgets; physical Android and this node’s Apple checks; performance, endurance, signed releases.
 
 These remain in the [node plan](docs/开发计划/README.md). Early retirement integration does not complete nodes 08–12. See the [frozen MVP scope](doc/桌面悬浮计时器/需求/MVP-冻结需求-1.0.md).
@@ -82,7 +83,7 @@ workspace/
 └── <other-repositories>/
 ```
 
-Rust owns business calculations; views only present results. There are no accounts, telemetry or personal configuration uploads. The retirement slice makes no network requests. Both Git author and committer must be `star <1395723441@qq.com>`.
+Rust owns business calculations. Views present the results. The app uses the network only to download public holiday data and has no accounts, telemetry, or personal configuration uploads. Both Git author and committer must be `star <1395723441@qq.com>`.
 
 - [Node 02 plan and user checklist](docs/开发计划/02-数据契约与基础日历.md)
 - [Data contract v1](docs/技术说明/数据契约-v1.md)

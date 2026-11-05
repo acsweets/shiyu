@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../retirement/application/holiday_status.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_palette.dart';
 import 'sticker_group_view.dart';
@@ -21,6 +22,8 @@ enum StickerSetting {
   retirement,
   restoreBackup,
   pause,
+  holidayCheck,
+  holidayImport,
   openAssets,
   reloadAssets,
 }
@@ -51,6 +54,11 @@ class StickerSettingsState {
   bool get editingBlocked => data['editingBlocked'] as bool;
   bool get canRestore => data['canRestore'] == true;
   bool get paused => data['paused'] == true;
+  HolidayStatus? get holidayStatus {
+    final Object? raw = data['holidayStatus'];
+    return raw is Map<Object?, Object?> ? HolidayStatus(raw) : null;
+  }
+
   bool get windowFailed => data['windowFailed'] as bool;
   bool get writeFailed => data['writeFailed'] as bool;
 

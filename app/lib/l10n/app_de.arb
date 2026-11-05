@@ -1,4 +1,13 @@
 {
+  "holidayData": "Feiertagsdaten",
+  "holidayFallback": "Daten für das aktuelle Jahr fehlen. Dein Wochenplan wird verwendet.",
+  "holidayChecking": "Feiertagsdaten werden geprüft…",
+  "holidayCheck": "Updates suchen",
+  "holidayImport": "JSON importieren",
+  "holidayUpdated": "Feiertagsdaten aktualisiert.",
+  "holidayLatest": "Feiertagsdaten sind aktuell.",
+  "holidayRejected": "Die Datei ist ungültig. Prüfe Version, Region, Jahre und Prüfsumme.",
+  "holidayFailed": "Aktualisierung fehlgeschlagen. Gültige lokale Daten werden weiterverwendet.",
   "restoreSettingsBackup": "Sicherung wiederherstellen",
   "@@locale": "de",
   "appName": "Time Remaining",

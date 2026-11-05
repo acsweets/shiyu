@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../../../app/theme/settings_paper.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../application/holiday_status.dart';
 import '../application/retirement_controller.dart';
 import '../data/mobile_appearance.dart';
+import 'holiday_panel.dart';
 import 'mobile_appearance_panel.dart';
 import 'mobile_target_form.dart';
 
@@ -102,6 +104,17 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                           onChanged: _updateAppearance,
                         ),
                 ),
+                if (widget.controller.holidays != null) ...<Widget>[
+                  const SizedBox(height: 28),
+                  _SettingsSection(
+                    title: strings.holidayData,
+                    icon: Icons.event_available_outlined,
+                    child: ListenableBuilder(
+                      listenable: widget.controller,
+                      builder: _buildHolidayPanel,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -109,6 +122,13 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
       ),
     );
   }
+
+  Widget _buildHolidayPanel(BuildContext context, Widget? child) =>
+      HolidayPanel(
+        status: HolidayStatus.fromController(widget.controller),
+        check: widget.controller.checkHolidayUpdates,
+        importPack: widget.controller.importHolidayPack,
+      );
 
   Widget _buildWidgetControls(AppLocalizations strings) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,

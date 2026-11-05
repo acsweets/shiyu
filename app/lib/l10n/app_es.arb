@@ -1,4 +1,13 @@
 {
+  "holidayData": "Datos festivos",
+  "holidayFallback": "Faltan los datos de este año. Se usará tu horario semanal.",
+  "holidayChecking": "Comprobando los festivos…",
+  "holidayCheck": "Buscar actualizaciones",
+  "holidayImport": "Importar JSON",
+  "holidayUpdated": "Datos festivos actualizados.",
+  "holidayLatest": "Los datos festivos están al día.",
+  "holidayRejected": "El archivo no es válido. Comprueba la versión, región, años y suma de verificación.",
+  "holidayFailed": "No se pudo comprobar la actualización. Se mantienen los datos locales válidos.",
   "restoreSettingsBackup": "Restaurar copia de seguridad",
   "@@locale": "es",
   "appName": "Time Remaining",
