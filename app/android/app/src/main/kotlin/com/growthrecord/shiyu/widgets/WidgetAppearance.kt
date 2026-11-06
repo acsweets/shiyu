@@ -13,6 +13,7 @@ internal data class WidgetAppearance(
 ) {
     enum class Palette(val background: Int, val ink: Int) {
         MACARON(R.drawable.retirement_widget_background, Color.rgb(69, 54, 59)),
+        MACARON_GLASS(R.drawable.retirement_widget_macaron_glass, Color.rgb(56, 42, 54)),
         COOL(R.drawable.retirement_widget_cool, Color.rgb(240, 245, 255)),
         SUNSET(R.drawable.retirement_widget_sunset, Color.rgb(71, 43, 41)),
     }
@@ -23,6 +24,7 @@ internal data class WidgetAppearance(
                 val raw = WidgetSettings.readAppearance(context) ?: return WidgetAppearance()
                 val json = JSONObject(raw)
                 val palette = when (json.optString("palette")) {
+                    "macaronGlass" -> Palette.MACARON_GLASS
                     "cool" -> Palette.COOL
                     "sunset" -> Palette.SUNSET
                     else -> Palette.MACARON

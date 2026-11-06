@@ -16,12 +16,16 @@ class HolidayPanel extends StatefulWidget {
     required this.status,
     required this.check,
     required this.importPack,
+    this.enabled = true,
     super.key,
   });
 
   final HolidayStatus status;
   final HolidayCheck check;
   final HolidayImport importPack;
+
+  /// 手机选择新区前先保存，避免用错误地区检查或导入。
+  final bool enabled;
 
   @override
   State<HolidayPanel> createState() => _HolidayPanelState();
@@ -50,11 +54,11 @@ class _HolidayPanelState extends State<HolidayPanel> {
           runSpacing: 4,
           children: <Widget>[
             OutlinedButton(
-              onPressed: busy ? null : _check,
+              onPressed: busy || !widget.enabled ? null : _check,
               child: Text(strings.holidayCheck),
             ),
             OutlinedButton(
-              onPressed: busy ? null : _pick,
+              onPressed: busy || !widget.enabled ? null : _pick,
               child: Text(strings.holidayImport),
             ),
           ],

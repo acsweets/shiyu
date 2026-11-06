@@ -8,9 +8,16 @@ import 'salary_settings.dart';
 import 'settings_fields.dart';
 
 class WorkSettings extends StatelessWidget {
-  const WorkSettings({required this.editor, super.key});
+  const WorkSettings({
+    required this.editor,
+    this.useTimePickers = false,
+    super.key,
+  });
 
   final SettingsEditor editor;
+
+  /// 手机通过系统选择器输入时间。
+  final bool useTimePickers;
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +53,16 @@ class WorkSettings extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        SettingsInput(
+        _timeField(
           label: strings.workStart,
           value: schedule['start'] as String? ?? '09:00',
           changed: editor.blocked ? null : _start,
-          hint: 'HH:mm',
           error: timeError,
         ),
-        SettingsInput(
+        _timeField(
           label: strings.workEnd,
           value: schedule['end'] as String? ?? '18:00',
           changed: editor.blocked ? null : _end,
-          hint: 'HH:mm',
         ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
@@ -66,22 +71,20 @@ class WorkSettings extends StatelessWidget {
           onChanged: editor.blocked ? null : _lunch,
         ),
         if (lunch != null) ...<Widget>[
-          SettingsInput(
+          _timeField(
             label: strings.lunchStart,
             value: lunch[0] as String,
             changed: editor.blocked
                 ? null
                 : (String value) => _lunchTime(0, value),
-            hint: 'HH:mm',
             error: lunchError,
           ),
-          SettingsInput(
+          _timeField(
             label: strings.lunchEnd,
             value: lunch[1] as String,
             changed: editor.blocked
                 ? null
                 : (String value) => _lunchTime(1, value),
-            hint: 'HH:mm',
           ),
         ],
         const Divider(height: 30),
@@ -89,6 +92,21 @@ class WorkSettings extends StatelessWidget {
       ],
     );
   }
+
+  Widget _timeField({
+    required String label,
+    required String value,
+    required ValueChanged<String>? changed,
+    String? error,
+  }) => useTimePickers
+      ? SettingsTime(label: label, value: value, changed: changed, error: error)
+      : SettingsInput(
+          label: label,
+          value: value,
+          changed: changed,
+          error: error,
+          hint: 'HH:mm',
+        );
 
   void _workday(int day, bool enabled, List<Object?> current) {
     final Set<int> days = current.cast<int>().toSet();

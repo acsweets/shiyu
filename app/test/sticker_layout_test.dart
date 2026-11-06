@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shiyu/app/settings_locale.dart';
 import 'package:shiyu/features/desktop_stickers/application/sticker_group_view.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_cat_pose.dart';
 import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
@@ -10,6 +11,7 @@ import 'package:shiyu/features/desktop_stickers/data/sticker_palette.dart';
 import 'package:shiyu/features/desktop_stickers/presentation/countdown_sticker.dart';
 import 'package:shiyu/features/desktop_stickers/presentation/desktop_sticker_page.dart';
 import 'package:shiyu/features/retirement/application/retirement_controller.dart';
+import 'package:shiyu/l10n/generated/app_localizations.dart';
 import 'package:shiyu/platform/desktop/floating_window_controller.dart';
 
 import 'support/test_controller.dart';
@@ -91,8 +93,16 @@ Future<void> _groupView(WidgetTester tester) async {
   final RetirementController controller = await createTestController();
   final FloatingWindowController window = FloatingWindowController(_visibility);
   await tester.pumpWidget(
-    MaterialApp(
-      home: DesktopStickerPage(
+    ListenableBuilder(
+      listenable: controller,
+      builder: (BuildContext context, Widget? child) => MaterialApp(
+        locale:
+            settingsLocale(controller.preferredLocale) ?? const Locale('zh'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: child,
+      ),
+      child: DesktopStickerPage(
         controller: controller,
         window: window,
         layout: layout,
@@ -114,9 +124,20 @@ Future<void> _groupView(WidgetTester tester) async {
     StickerPalette.macaron.backgroundFor(layout.mainGroup),
   );
   _expectCatOnCard(tester, StickerCatPose.sitting, 'work');
+  await controller.saveSettings(<String, dynamic>{
+    ...controller.settings,
+    'display': <String, dynamic>{
+      'hidden_metric_titles': <String>['holiday'],
+    },
+  });
+  await tester.pumpAndSettle();
+  expect(find.text('距离放假'), findsNothing);
+  expect(find.text('距离下班'), findsOneWidget);
+  expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
   layout.setTitleVisible(layout.mainGroup, false);
   await tester.pumpAndSettle();
   expect(find.text('距离放假'), findsNothing);
+  expect(find.text('距离下班'), findsNothing);
   expect(find.text(StickerLayout.examples['holiday']!), findsOneWidget);
   expect(tester.takeException(), isNull);
 
@@ -125,6 +146,27 @@ Future<void> _groupView(WidgetTester tester) async {
   await tester.tap(find.byIcon(Icons.tune_rounded));
   await tester.pumpAndSettle();
   _expectSettingsStyle(tester);
+  await _setDesktopLanguage(tester, 'English');
+  expect(controller.preferredLocale, 'en');
+  expect(find.widgetWithText(TextButton, 'Appearance'), findsOneWidget);
+  await _setDesktopLanguage(tester, '简体中文');
+  expect(controller.preferredLocale, 'zh');
+  await _verifyMetricSwitches(tester, layout, controller);
+  await tester.tap(find.widgetWithText(OutlinedButton, '马卡龙玻璃'));
+  await tester.pumpAndSettle();
+  expect(layout.palette, StickerPalette.macaronGlass);
+  final Finder preview = find.byWidgetPredicate(_isSettingsPreview);
+  final DecoratedBox background = tester.widget<DecoratedBox>(
+    find.descendant(
+      of: preview,
+      matching: find.byKey(const ValueKey<String>('sticker-window-background')),
+    ),
+  );
+  final BoxDecoration glass = background.decoration as BoxDecoration;
+  final LinearGradient gradient = glass.gradient! as LinearGradient;
+  expect(glass.color, isNull);
+  expect(gradient.colors.first.a, closeTo(0.94, 0.01));
+  expect(gradient.colors.last.a, closeTo(0.74, 0.01));
   final Finder coolSwatch = find.byWidgetPredicate(_isCoolSwatch);
   expect(tester.getSize(coolSwatch).height, greaterThan(0));
   await tester.tap(find.widgetWithText(OutlinedButton, '冷酷色系'));
@@ -133,6 +175,7 @@ Future<void> _groupView(WidgetTester tester) async {
   final Finder slider = find.byKey(
     const ValueKey<String>('sticker-title-size'),
   );
+  await tester.ensureVisible(slider);
   await tester.drag(slider, const Offset(300, 0));
   await tester.pumpAndSettle();
   expect(layout.titleSize, StickerLayout.maxTitleSize);
@@ -213,6 +256,54 @@ Future<void> _groupView(WidgetTester tester) async {
   tester.view.resetDevicePixelRatio();
 }
 
+Future<void> _setDesktopLanguage(WidgetTester tester, String label) async {
+  await tester.tap(find.byKey(const ValueKey<String>('app-language-picker')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(label).last);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _verifyMetricSwitches(
+  WidgetTester tester,
+  StickerLayout layout,
+  RetirementController controller,
+) async {
+  await tester.tap(find.widgetWithText(TextButton, '倒计时'));
+  await tester.pumpAndSettle();
+  final Map<String, String> before = StickerGroupView.fromLayout(
+    layout,
+    controller,
+    layout.mainGroup,
+    true,
+  ).values;
+  expect(before['today_salary'], '****');
+  expect(before['life'], isNotNull);
+  expect(find.text('静待百岁，好好生活'), findsOneWidget);
+  for (final String id in <String>['today_salary', 'life']) {
+    final Finder toggle = find.byKey(ValueKey<String>('metric-visibility-$id'));
+    await tester.ensureVisible(toggle);
+    expect(tester.widget<Switch>(toggle).value, isTrue);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(toggle).value, isFalse);
+    expect(controller.displaySettings['enabled_metrics'], isNot(contains(id)));
+    final Map<String, String> hidden = StickerGroupView.fromLayout(
+      layout,
+      controller,
+      layout.mainGroup,
+      true,
+    ).values;
+    expect(hidden, <String, String>{...before}..remove(id));
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(toggle).value, isTrue);
+    expect(controller.displaySettings['enabled_metrics'], contains(id));
+  }
+  expect(controller.preferredLocale, 'zh');
+  await tester.tap(find.widgetWithText(TextButton, '外观'));
+  await tester.pumpAndSettle();
+}
+
 void _expectSettingsStyle(WidgetTester tester) {
   for (final String label in <String>['浮窗配色', '为桌面上的浮窗选择一套颜色。', '冷酷色系']) {
     final BuildContext context = tester.element(find.text(label));
@@ -222,13 +313,18 @@ void _expectSettingsStyle(WidgetTester tester) {
   final Rect macaron = tester.getRect(
     find.widgetWithText(OutlinedButton, '马卡龙色系'),
   );
+  final Rect glass = tester.getRect(
+    find.widgetWithText(OutlinedButton, '马卡龙玻璃'),
+  );
   final Rect cool = tester.getRect(find.widgetWithText(OutlinedButton, '冷酷色系'));
   final Rect sunset = tester.getRect(
     find.widgetWithText(OutlinedButton, '日落暖调'),
   );
   expect(macaron.width, closeTo(cool.width, 0.01));
+  expect(macaron.width, closeTo(glass.width, 0.01));
   expect(cool.width, closeTo(sunset.width, 0.01));
-  expect(cool.left - macaron.right, closeTo(14, 0.01));
+  expect(glass.left - macaron.right, closeTo(14, 0.01));
+  expect(cool.top - macaron.bottom, closeTo(14, 0.01));
   expect(sunset.left - cool.right, closeTo(14, 0.01));
 }
 
@@ -268,11 +364,17 @@ bool _isCoolSwatch(Widget widget) =>
     widget is ColoredBox &&
     widget.color == StickerPalette.cool.backgroundFor(0);
 
-Color? _windowBackground(WidgetTester tester) {
+bool _isSettingsPreview(Widget widget) =>
+    widget is StickerGroupSurface && !widget.interactive;
+
+Color? _windowBackground(WidgetTester tester) =>
+    _windowDecoration(tester).color;
+
+BoxDecoration _windowDecoration(WidgetTester tester) {
   final DecoratedBox background = tester.widget<DecoratedBox>(
     find.byKey(const ValueKey<String>('sticker-window-background')),
   );
-  return (background.decoration as BoxDecoration).color;
+  return background.decoration as BoxDecoration;
 }
 
 void _visibility(bool visible) {}

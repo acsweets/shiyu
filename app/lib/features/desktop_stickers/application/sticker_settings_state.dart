@@ -33,6 +33,7 @@ enum StickerSetting {
   holidayImport,
   businessRead,
   businessSave,
+  language,
   businessImport,
   businessCountdown,
   businessPeek,
@@ -84,6 +85,7 @@ class StickerSettingsState {
 
   bool get windowFailed => data['windowFailed'] as bool;
   bool get writeFailed => data['writeFailed'] as bool;
+  String? get preferredLocale => data['locale'] as String?;
   SettingsView? get business {
     final Object? raw = data['business'];
     return raw is Map<Object?, Object?> ? SettingsView(raw) : null;

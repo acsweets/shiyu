@@ -10,6 +10,84 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => 'マカロンガラス';
+
+  @override
+  String get mobileCountdownSummary => '退職日、誕生日、人生の表示方法';
+
+  @override
+  String get mobileWorkSummary => '勤務日、勤務時間、昼休み、給与';
+
+  @override
+  String get mobileCalendarSummary => '給料日、祝日の地域、例外日';
+
+  @override
+  String get mobileTitlesSummary => '項目ごとにタイトルの表示を切り替え';
+
+  @override
+  String get mobileWidgetSummary => 'ウィジェットの追加、配色、文字サイズ';
+
+  @override
+  String get mobileGeneralSummary => 'タイムゾーン、金額の表示、バックアップ';
+
+  @override
+  String get mobileSaving => '保存中…';
+
+  @override
+  String get mobileDiscardChanges => '未保存の変更を破棄しますか？';
+
+  @override
+  String get mobileDiscard => '変更を破棄';
+
+  @override
+  String get metricTitleVisibility => '項目ごとのタイトル表示';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      'タイトルを非表示にしても数値は表示されます。フローティングウィンドウとウィジェットにもタイトルの一括設定があります。';
+
+  @override
+  String get lifeDisplayMode => '人生の表示モード';
+
+  @override
+  String get lifeElapsedTitle => '生まれてからの日数';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 日';
+  }
+
+  @override
+  String get desktopAppearance => '外観';
+
+  @override
+  String get desktopWindows => 'ウィンドウ管理';
+
+  @override
+  String get desktopCountdowns => 'カウントダウン';
+
+  @override
+  String get desktopCatAssets => '猫のステッカー';
+
+  @override
+  String get desktopAppearanceDescription =>
+      '言語、配色、文字サイズを変更し、フローティングウィンドウを確認します。';
+
+  @override
+  String get desktopWindowsDescription => '各ウィンドウの内容を確認し、結合、分割、表示調整ができます。';
+
+  @override
+  String get desktopCountdownsDescription => 'デスクトップのカウントダウンを選び、退職日を設定します。';
+
+  @override
+  String get desktopCatAssetsDescription => 'ウィンドウごとに猫のステッカーを変更できます。';
+
+  @override
   String get floatingMode => 'ウィンドウモード';
 
   @override
@@ -386,7 +464,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'ホーム画面を長押しして時余のカウントダウンまたは給与ウィジェットを追加します。指標は編集画面で選択します。更新はシステムが管理します。';
+      'ホーム画面を長押しして時余のウィジェットを追加します。編集できる場合は、カウントダウンを最大4件まとめられます。給与はウィジェットまたはアプリのホーム画面から更新できます。';
+
+  @override
+  String get refreshEarnings => '給与を更新';
 
   @override
   String get settingsError => '日付、タイムゾーン、共有ストレージを確認して再試行してください。';

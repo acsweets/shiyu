@@ -57,6 +57,8 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
     final Map<String, dynamic> stored =
         jsonDecode((await controller.store.read())!) as Map<String, dynamic>;
     expect(stored['retirement_date'], '2050-01-01');
+    // 原生存储必须保留校验后的原文，连续保存不能被误判为外部修改。
+    expect(await controller.save('2050-01-01', 'Asia/Shanghai'), isTrue);
     expect(await controller.save('2050-01-01', 'Invalid/Zone'), isFalse);
     expect(controller.timeZone, 'Asia/Shanghai');
     await _verifyTimeMetrics();
@@ -105,6 +107,7 @@ Future<void> _verifyRetirement(WidgetTester tester) async {
       await _verifyMainWindowVisibility(tester, window!, layout);
       await verifyDesktopBehavior(tester, window);
       await verifyDesktopSkin(tester, layout, temporary);
+      await verifyModeCycles(tester, layout);
     }
   } finally {
     await controller.save(originalDate, originalZone);

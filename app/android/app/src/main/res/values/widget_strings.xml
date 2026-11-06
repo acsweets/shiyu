@@ -1,6 +1,13 @@
 <resources>
     <string name="widget_title">Shiyu · Countdown</string>
     <string name="widget_heading">Retirement countdown</string>
+    <string name="widget_life">Life countdown</string>
+    <string name="widget_life_elapsed">Days lived</string>
+    <string name="widget_expired">Ended</string>
+    <plurals name="widget_days_lived">
+        <item quantity="one">%1$s day</item>
+        <item quantity="other">%1$s days</item>
+    </plurals>
     <string name="widget_duration">%1$sd %2$s</string>
     <string name="widget_retired">Retired</string>
     <string name="widget_setup">Set a retirement date</string>
@@ -16,9 +23,11 @@
     <string name="widget_salary_title">Shiyu · Earnings</string>
     <string name="widget_today_earned">Earned today</string>
     <string name="widget_month_earned">Earned this month</string>
-    <string name="widget_updated" formatted="false">Updated %s ago</string>
     <string name="widget_not_configured">Not set</string>
     <string name="widget_unavailable">Unavailable</string>
-    <string name="widget_choose_metric">Choose a countdown</string>
+    <string name="widget_choose_metric">Choose countdowns</string>
+    <string name="widget_choose_metric_limit">Choose one to four countdowns for this widget.</string>
+    <string name="widget_refresh_earnings">Refresh earnings</string>
+    <string name="widget_refresh_symbol" translatable="false">↻</string>
     <string name="widget_save_metric">Save widget</string>
 </resources>

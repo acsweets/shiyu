@@ -66,6 +66,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   /// 正在恢复窗口尺寸。
   bool _applyingBounds = false;
   bool _boundsPending = false;
+  int _boundsRevision = 0;
 
   /// 多窗口启动异常时仍保留主窗及设置入口。
   bool _failed = false;
@@ -214,6 +215,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
 
   Future<void> _applyMainBounds() async {
     if (!widget.window.initialized) return;
+    _boundsRevision++;
     _boundsPending = true;
     if (_applyingBounds) return;
     _applyingBounds = true;
@@ -221,6 +223,7 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
     try {
       while (_boundsPending && mounted) {
         _boundsPending = false;
+        final int revision = _boundsRevision;
         final int group = _layout.mainGroup;
         final Rect desired = _view(group).initialBounds;
         final PlacedWindow? placed = _placement?.restore(
@@ -228,7 +231,8 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
           _layout.anchorOf(group),
         );
         await DesktopWindowBounds.write(placed?.bounds ?? desired);
-        if (placed != null && mounted) {
+        // 旧的原生操作可能晚于下一次形态切换完成。
+        if (placed != null && mounted && revision == _boundsRevision) {
           _layout.saveBounds(group, placed.bounds, anchor: placed.anchor);
         }
         _appliedGroup = group;
@@ -247,8 +251,12 @@ class _DesktopStickerPageState extends State<DesktopStickerPage>
   Future<void> _captureBounds() async {
     final int? group = _appliedGroup;
     if (!mounted || group == null || _applyingBounds) return;
+    final int revision = _boundsRevision;
     final Rect bounds = await DesktopWindowBounds.read();
-    if (mounted && group == _appliedGroup && !_applyingBounds) {
+    if (mounted &&
+        group == _appliedGroup &&
+        !_applyingBounds &&
+        revision == _boundsRevision) {
       final PlacedWindow? placed = _placement?.capture(
         bounds,
         snap: _layout.desktop.snap,

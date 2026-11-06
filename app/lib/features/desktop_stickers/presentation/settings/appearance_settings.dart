@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
 import '../../data/sticker_palette.dart';
@@ -84,7 +85,7 @@ class AppearanceSettings extends StatelessWidget {
   Widget _paletteGrid(BuildContext context, BoxConstraints constraints) {
     const double gap = 14;
     final int columns = switch (constraints.maxWidth) {
-      >= 372 => 3,
+      >= 520 => 4,
       >= 242 => 2,
       _ => 1,
     };
@@ -94,12 +95,12 @@ class AppearanceSettings extends StatelessWidget {
       runSpacing: gap,
       children: <Widget>[
         for (final StickerPalette palette in StickerPalette.values)
-          SizedBox(width: width, child: _colorCard(palette)),
+          SizedBox(width: width, child: _colorCard(context, palette)),
       ],
     );
   }
 
-  Widget _colorCard(StickerPalette palette) {
+  Widget _colorCard(BuildContext context, StickerPalette palette) {
     final bool selected = session.state.palette == palette;
     return Semantics(
       selected: selected,
@@ -124,7 +125,9 @@ class AppearanceSettings extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    palette.label,
+                    palette.isGlass
+                        ? AppLocalizations.of(context).mobileMacaronGlass
+                        : palette.label,
                     style: const TextStyle(fontSize: 13),
                   ),
                 ),
@@ -147,7 +150,16 @@ class AppearanceSettings extends StatelessWidget {
                 height: 22,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: palette.swatches.map(_swatch).toList(),
+                  children: <Widget>[
+                    for (final Color color in palette.swatches)
+                      Expanded(
+                        child: palette.isGlass
+                            ? DecoratedBox(
+                                decoration: palette.swatchDecoration(color),
+                              )
+                            : ColoredBox(color: color),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -164,8 +176,6 @@ class AppearanceSettings extends StatelessWidget {
       width: focused ? 2 : 1,
     );
   }
-
-  Widget _swatch(Color color) => Expanded(child: ColoredBox(color: color));
 
   void _setSize(double size) => session.change(
     StickerSetting.titleSize,

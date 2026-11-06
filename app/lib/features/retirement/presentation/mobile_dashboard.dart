@@ -21,6 +21,11 @@ class MobileDashboard extends StatelessWidget {
         titleSpacing: 24,
         actions: <Widget>[
           IconButton(
+            tooltip: strings.refreshEarnings,
+            onPressed: _refreshEarnings,
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+          IconButton(
             tooltip: strings.mobileSettings,
             onPressed: () => _openSettings(context),
             icon: const Icon(Icons.settings_outlined),
@@ -38,6 +43,12 @@ class MobileDashboard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// 立即重算首页金额，并请求系统更新已添加的小组件。
+  Future<void> _refreshEarnings() async {
+    await controller.refresh();
+    await controller.synchronizeWidgets();
   }
 
   void _openSettings(BuildContext context) {
@@ -120,13 +131,14 @@ class MobileDashboard extends StatelessWidget {
   }) {
     final MetricFields item = metrics.read(
       id,
-      coreFailed: controller.problem == 'core' || controller.editingBlocked,
+      coreFailed: controller.problem == 'core',
     );
     return _MobileMetricCard(
       key: ValueKey<String>('mobile-metric-$id'),
       item: item,
       icon: icon,
       emphasized: emphasized,
+      showTitle: metrics.showsTitle(id),
     );
   }
 }
@@ -136,12 +148,16 @@ class _MobileMetricCard extends StatelessWidget {
     required this.item,
     required this.icon,
     required this.emphasized,
+    required this.showTitle,
     super.key,
   });
 
   final MetricFields item;
   final IconData icon;
   final bool emphasized;
+
+  /// 当前指标独立的标题显隐。
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -157,16 +173,21 @@ class _MobileMetricCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(icon, size: 18, color: SettingsPaper.accent),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(item['title'] as String, style: text.labelLarge),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            if (showTitle) ...<Widget>[
+              Row(
+                children: <Widget>[
+                  Icon(icon, size: 18, color: SettingsPaper.accent),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      item['title'] as String,
+                      style: text.labelLarge,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
             Text(
               item['value'] as String,
               style: (emphasized ? text.headlineMedium : text.titleLarge)

@@ -91,6 +91,7 @@ class _MobileAppearancePanelState extends State<MobileAppearancePanel> {
   String _paletteLabel(AppLocalizations strings, StickerPalette palette) =>
       switch (palette) {
         StickerPalette.macaron => strings.mobileMacaron,
+        StickerPalette.macaronGlass => strings.mobileMacaronGlass,
         StickerPalette.cool => strings.mobileCool,
         StickerPalette.sunset => strings.mobileSunset,
       };
@@ -163,9 +164,9 @@ class _PaletteChoice extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: Container(
                             height: 13,
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: BorderRadius.circular(5),
+                            decoration: palette.swatchDecoration(
+                              color,
+                              radius: BorderRadius.circular(5),
                             ),
                           ),
                         ),

@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shiyu/features/desktop_stickers/data/sticker_layout.dart';
+import 'package:shiyu/features/desktop_stickers/data/sticker_mode.dart';
+import 'package:shiyu/features/desktop_stickers/presentation/countdown_sticker.dart';
 import 'package:shiyu/platform/desktop/desktop_bridge.dart';
 import 'package:shiyu/platform/desktop/desktop_options.dart';
 import 'package:shiyu/platform/desktop/floating_window_controller.dart';
@@ -60,6 +63,30 @@ Future<void> verifyDesktopBehavior(
     await window.show();
   }
   expect(await windowManager.isVisible(), isTrue);
+}
+
+Future<void> verifyModeCycles(WidgetTester tester, StickerLayout layout) async {
+  final Finder surface = find.byType(StickerGroupSurface);
+  for (int index = 0; index < 100; index++) {
+    final StickerMode expected = layout.mode == StickerMode.mini
+        ? StickerMode.standard
+        : StickerMode.mini;
+    tester.widget<StickerGroupSurface>(surface).onToggleMode!.call();
+    await tester.pumpAndSettle();
+    expect(layout.mode, expected);
+    final double width = expected == StickerMode.mini ? 280 : 520;
+    // Flutter 完成一帧后，原生尺寸消息可能仍在 Windows 队列中。
+    double applied = (await windowManager.getSize()).width;
+    for (
+      int attempt = 0;
+      attempt < 30 && (applied - width).abs() > 2;
+      attempt++
+    ) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      applied = (await windowManager.getSize()).width;
+    }
+    expect(applied, closeTo(width, 2), reason: '第 ${index + 1} 次切换');
+  }
 }
 
 Future<void> _verifyShortcutConflict() async {

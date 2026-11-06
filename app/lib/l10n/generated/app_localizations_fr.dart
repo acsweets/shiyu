@@ -10,6 +10,99 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => 'Verre macaron';
+
+  @override
+  String get mobileCountdownSummary =>
+      'Retraite, naissance et affichage de la durée de vie';
+
+  @override
+  String get mobileWorkSummary => 'Jours ouvrés, horaires, pause et salaire';
+
+  @override
+  String get mobileCalendarSummary =>
+      'Dates de paie, jours fériés et exceptions';
+
+  @override
+  String get mobileTitlesSummary =>
+      'Afficher ou masquer chaque titre de compte à rebours';
+
+  @override
+  String get mobileWidgetSummary =>
+      'Ajouter des widgets et ajuster couleurs et texte';
+
+  @override
+  String get mobileGeneralSummary =>
+      'Fuseau horaire, visibilité des montants et sauvegardes';
+
+  @override
+  String get mobileSaving => 'Enregistrement…';
+
+  @override
+  String get mobileDiscardChanges =>
+      'Abandonner les modifications non enregistrées ?';
+
+  @override
+  String get mobileDiscard => 'Abandonner les modifications';
+
+  @override
+  String get metricTitleVisibility => 'Titres par indicateur';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      'La valeur reste visible si le titre est masqué. Les fenêtres flottantes et les widgets ont aussi un réglage général pour les titres.';
+
+  @override
+  String get lifeDisplayMode => 'Affichage de la durée de vie';
+
+  @override
+  String get lifeElapsedTitle => 'Jours vécus';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString jours',
+      one: '$daysString jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get desktopAppearance => 'Apparence';
+
+  @override
+  String get desktopWindows => 'Fenêtres';
+
+  @override
+  String get desktopCountdowns => 'Comptes à rebours';
+
+  @override
+  String get desktopCatAssets => 'Autocollants de chat';
+
+  @override
+  String get desktopAppearanceDescription =>
+      'Changez la langue, les couleurs ou la taille du texte et prévisualisez la fenêtre flottante.';
+
+  @override
+  String get desktopWindowsDescription =>
+      'Consultez le contenu des fenêtres pour le regrouper, le séparer ou l’ajuster.';
+
+  @override
+  String get desktopCountdownsDescription =>
+      'Choisissez les comptes à rebours du bureau et définissez la date de départ à la retraite.';
+
+  @override
+  String get desktopCatAssetsDescription =>
+      'Remplacez l’autocollant de chat de chaque fenêtre.';
+
+  @override
   String get floatingMode => 'Mode de fenêtre';
 
   @override
@@ -399,7 +492,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Appuyez longuement sur l’écran d’accueil pour ajouter le compte à rebours ou les gains de Shiyu. Modifiez le widget pour choisir un indicateur. Le système planifie les mises à jour.';
+      'Appuyez longuement sur l’écran d’accueil pour ajouter un widget Shiyu. Si le widget est modifiable, combinez jusqu’à quatre comptes à rebours. Actualisez les gains depuis le widget ou l’accueil de l’application.';
+
+  @override
+  String get refreshEarnings => 'Actualiser les gains';
 
   @override
   String get settingsError =>

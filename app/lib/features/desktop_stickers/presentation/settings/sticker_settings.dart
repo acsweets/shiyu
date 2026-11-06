@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../../retirement/presentation/settings/app_language_setting.dart';
 import '../../application/sticker_settings_state.dart';
 import 'appearance_settings.dart';
 import 'asset_settings.dart';
@@ -8,21 +10,29 @@ import 'settings_controls.dart';
 import 'window_settings.dart';
 
 enum _SettingsPane {
-  appearance('外观', '选择底色和字号，实时查看浮窗效果。', Icons.palette_outlined),
-  windows('窗口管理', '查看每个窗口的内容，合并、拆分或调整显示。', Icons.dashboard_outlined),
-  countdown('倒计时', '选择桌面上要显示的倒计时，配置退休日期。', Icons.timer_outlined),
-  assets('猫猫素材', '每个窗口有自己的猫猫，可以分别替换。', Icons.pets_outlined);
+  appearance(Icons.palette_outlined),
+  windows(Icons.dashboard_outlined),
+  countdown(Icons.timer_outlined),
+  assets(Icons.pets_outlined);
 
-  const _SettingsPane(this.label, this.detail, this.icon);
-
-  /// 导航名称。
-  final String label;
-
-  /// 页面说明。
-  final String detail;
+  const _SettingsPane(this.icon);
 
   /// 与名称并列显示的线性图标。
   final IconData icon;
+
+  String label(AppLocalizations strings) => switch (this) {
+    appearance => strings.desktopAppearance,
+    windows => strings.desktopWindows,
+    countdown => strings.desktopCountdowns,
+    assets => strings.desktopCatAssets,
+  };
+
+  String detail(AppLocalizations strings) => switch (this) {
+    appearance => strings.desktopAppearanceDescription,
+    windows => strings.desktopWindowsDescription,
+    countdown => strings.desktopCountdownsDescription,
+    assets => strings.desktopCatAssetsDescription,
+  };
 }
 
 class StickerSettings extends StatefulWidget {
@@ -53,34 +63,35 @@ class _StickerSettingsState extends State<StickerSettings> {
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _sidebar(),
+            _sidebar(AppLocalizations.of(context)),
             const VerticalDivider(width: 1),
-            Expanded(child: _content()),
+            Expanded(child: _content(AppLocalizations.of(context))),
           ],
         ),
       ),
     ),
   );
 
-  Widget _sidebar() => Container(
+  Widget _sidebar(AppLocalizations strings) => Container(
     width: 164,
     padding: const EdgeInsets.fromLTRB(14, 28, 14, 16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.fromLTRB(12, 0, 0, 24),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 0, 24),
           child: Text(
-            '设置',
-            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
+            strings.mobileSettings,
+            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
           ),
         ),
-        ..._SettingsPane.values.map(_navigation),
+        for (final _SettingsPane pane in _SettingsPane.values)
+          _navigation(pane, strings),
       ],
     ),
   );
 
-  Widget _navigation(_SettingsPane pane) {
+  Widget _navigation(_SettingsPane pane, AppLocalizations strings) {
     final bool selected = pane == _pane;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -101,7 +112,13 @@ class _StickerSettingsState extends State<StickerSettings> {
             children: <Widget>[
               Icon(pane.icon, size: 19),
               const SizedBox(width: 9),
-              Text(pane.label),
+              Expanded(
+                child: Text(
+                  pane.label(strings),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -109,7 +126,7 @@ class _StickerSettingsState extends State<StickerSettings> {
     );
   }
 
-  Widget _content() => Column(
+  Widget _content(AppLocalizations strings) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
       Padding(
@@ -126,7 +143,7 @@ class _StickerSettingsState extends State<StickerSettings> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    _pane.label,
+                    _pane.label(strings),
                     style: const TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w700,
@@ -134,7 +151,7 @@ class _StickerSettingsState extends State<StickerSettings> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _pane.detail,
+                    _pane.detail(strings),
                     style: const TextStyle(color: SettingsPaper.muted),
                   ),
                 ],
@@ -178,6 +195,13 @@ class _StickerSettingsState extends State<StickerSettings> {
                 style: const TextStyle(color: SettingsPaper.accent),
               ),
             ),
+          if (_pane == _SettingsPane.appearance) ...<Widget>[
+            AppLanguageSetting(
+              locale: state.preferredLocale,
+              save: state.editingBlocked ? null : _saveLanguage,
+            ),
+            const SizedBox(height: 24),
+          ],
           switch (_pane) {
             _SettingsPane.appearance => AppearanceSettings(session: session),
             _SettingsPane.windows => WindowSettings(session: session),
@@ -187,5 +211,13 @@ class _StickerSettingsState extends State<StickerSettings> {
         ],
       ),
     );
+  }
+
+  Future<bool> _saveLanguage(String? locale) async {
+    final StickerSettingsReply reply = await widget.session.send(
+      StickerSetting.language,
+      <String, Object?>{'value': locale},
+    );
+    return reply.state.business?.saved == true;
   }
 }

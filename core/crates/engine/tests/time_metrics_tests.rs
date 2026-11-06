@@ -43,6 +43,40 @@ fn golden_time_metrics_cover_state_and_target_boundaries() {
 }
 
 #[test]
+fn days_lived_changes_at_local_midnight_and_keeps_countdown_optional() {
+    let mut settings = json!({
+        "time_zone": "America/New_York",
+        "birth": {"date": "2024-02-28", "time": "17:00"},
+        "display": {"life_mode": "elapsed_days", "hidden_metric_titles": ["life", "custom/reading"]}
+    });
+    let before = snapshot(&settings.to_string(), "{}", millis("2024-03-01T04:59:59Z"));
+    let after = snapshot(&settings.to_string(), "{}", millis("2024-03-01T05:00:00Z"));
+    assert_eq!(before["life"]["elapsed_days"], 1);
+    assert_eq!(
+        before["next_change_at_millis"],
+        millis("2024-03-01T05:00:00Z")
+    );
+    assert_eq!(after["life"]["elapsed_days"], 2);
+    assert_eq!(after["life"]["status"], "elapsed");
+    assert!(after["life"]["target_millis"].is_null());
+    assert_eq!(
+        after["hidden_metric_titles"],
+        json!(["life", "custom/reading"])
+    );
+    let before_birth = snapshot(&settings.to_string(), "{}", millis("2024-02-01T12:00:00Z"));
+    assert_eq!(before_birth["life"]["elapsed_days"], 0);
+    settings["display"]["life_mode"] = json!("countdown");
+    let countdown = snapshot(&settings.to_string(), "{}", millis("2024-03-01T05:00:00Z"));
+    assert_eq!(countdown["life"]["status"], "active");
+    assert!(countdown["life"].get("elapsed_days").is_none());
+    settings["birth"] = Value::Null;
+    settings["display"]["life_mode"] = json!("elapsed_days");
+    let missing = snapshot(&settings.to_string(), "{}", millis("2024-03-01T05:00:00Z"));
+    assert_eq!(missing["life"]["status"], "elapsed");
+    assert!(missing["life"].get("elapsed_days").is_none());
+}
+
+#[test]
 fn snapshots_are_deterministic_and_have_a_future_transition() {
     let calendars = [
         json!({}),

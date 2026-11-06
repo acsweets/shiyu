@@ -8,17 +8,23 @@ import 'settings_access.dart';
 
 /// 表单草稿独立于已保存配置。输入无效时保留草稿与字段错误。
 class SettingsEditor extends ChangeNotifier {
-  SettingsEditor(this.access, SettingsView initial)
+  SettingsEditor(this.access, SettingsView initial, {this.autosave = true})
     : _view = initial,
       draft = initial.values;
 
   final SettingsAccess access;
+
+  /// 手机详情页在用户明确保存后提交草稿。
+  final bool autosave;
   SettingsView _view;
   SettingsValues draft;
   Timer? _delay;
   Future<void> _pending = Future<void>.value();
   int _revision = 0;
   int _submitted = 0;
+
+  /// 最近一次成功保存的草稿版本。
+  int _savedRevision = 0;
   bool _disposed = false;
   bool saving = false;
   bool _replacing = false;
@@ -27,6 +33,7 @@ class SettingsEditor extends ChangeNotifier {
   SettingsView get view => _view;
   bool get blocked => _view.blocked;
   bool get hasErrors => !_view.saved;
+  bool get dirty => _revision != _savedRevision;
 
   SettingsValues group(String key) => object(draft[key]);
 
@@ -52,7 +59,7 @@ class SettingsEditor extends ChangeNotifier {
     }
     _revision++;
     _delay?.cancel();
-    _delay = Timer(const Duration(milliseconds: 450), _submit);
+    if (autosave) _delay = Timer(const Duration(milliseconds: 450), _submit);
     notifyListeners();
   }
 
@@ -61,6 +68,7 @@ class SettingsEditor extends ChangeNotifier {
 
   Future<bool> flush() async {
     _delay?.cancel();
+    if (!autosave && hasErrors && !saving) _submitted = _savedRevision;
     _submit();
     await _pending;
     return _view.saved;
@@ -80,7 +88,10 @@ class SettingsEditor extends ChangeNotifier {
     notifyListeners();
     try {
       _view = await access.commit(candidate);
-      if (_view.saved && _revision == revision) draft = _view.values;
+      if (_view.saved) {
+        _savedRevision = revision;
+        if (_revision == revision) draft = _view.values;
+      }
     } catch (_) {
       _view = SettingsView(<Object?, Object?>{..._view.data, 'saved': false});
     } finally {
@@ -138,6 +149,8 @@ class SettingsEditor extends ChangeNotifier {
       if (!_disposed && result.saved) {
         _view = result;
         draft = result.values;
+        _savedRevision = _revision;
+        _submitted = _revision;
         generation++;
       }
       return result.saved;

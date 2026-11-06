@@ -10,6 +10,96 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => 'Macaron Glass';
+
+  @override
+  String get mobileCountdownSummary =>
+      'Retirement, date of birth, and life display';
+
+  @override
+  String get mobileWorkSummary => 'Workdays, shifts, lunch, and pay';
+
+  @override
+  String get mobileCalendarSummary => 'Paydays, holiday region, and exceptions';
+
+  @override
+  String get mobileTitlesSummary => 'Show or hide each countdown title';
+
+  @override
+  String get mobileWidgetSummary =>
+      'Add widgets and change colors or text size';
+
+  @override
+  String get mobileGeneralSummary =>
+      'Time zone, amount visibility, and backups';
+
+  @override
+  String get mobileSaving => 'Saving…';
+
+  @override
+  String get mobileDiscardChanges => 'Discard unsaved changes?';
+
+  @override
+  String get mobileDiscard => 'Discard changes';
+
+  @override
+  String get metricTitleVisibility => 'Titles by metric';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      'Turning off a title keeps the value visible. Floating windows and widgets also have a master title switch.';
+
+  @override
+  String get lifeDisplayMode => 'Life display mode';
+
+  @override
+  String get lifeElapsedTitle => 'Days lived';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString days',
+      one: '$daysString day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get desktopAppearance => 'Appearance';
+
+  @override
+  String get desktopWindows => 'Windows';
+
+  @override
+  String get desktopCountdowns => 'Countdowns';
+
+  @override
+  String get desktopCatAssets => 'Cat stickers';
+
+  @override
+  String get desktopAppearanceDescription =>
+      'Change the language, colors, or text size and preview the floating window.';
+
+  @override
+  String get desktopWindowsDescription =>
+      'See what each window shows, then group, split, or adjust it.';
+
+  @override
+  String get desktopCountdownsDescription =>
+      'Choose desktop countdowns and set a retirement date.';
+
+  @override
+  String get desktopCatAssetsDescription =>
+      'Replace the cat sticker for each window.';
+
+  @override
   String get floatingMode => 'Window mode';
 
   @override
@@ -133,7 +223,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidDraft =>
-      'Check the fields below. Your previous valid settings are still saved.';
+      'Check the highlighted fields. Your previous valid settings are still saved.';
 
   @override
   String get invalidHoliday => 'Enter a name, type, and an ordered date range.';
@@ -396,7 +486,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Touch and hold the home screen, then add a Shiyu countdown or earnings widget. Edit the countdown widget to choose a metric. The system schedules updates.';
+      'Touch and hold the home screen to add a Shiyu widget. Where editing is supported, combine up to four countdowns. Refresh earnings from the widget or the app home screen.';
+
+  @override
+  String get refreshEarnings => 'Refresh earnings';
 
   @override
   String get settingsError =>

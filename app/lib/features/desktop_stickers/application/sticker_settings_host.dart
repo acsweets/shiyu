@@ -118,10 +118,14 @@ class StickerSettingsHost {
       'amountShortcutOk': window.amountShortcutOk,
       'startupSupported': window.startupSupported,
       'startupEnabled': window.startupEnabled,
-      'enabled': layout.enabled.toList(),
+      'enabled': <String>[
+        ...layout.enabled,
+        ...StickerMetricSelection(layout, controller).enabledSharedMetrics,
+      ],
       'retirementDate': controller.retirementDate,
       'timeZone': controller.timeZone,
       'editingBlocked': controller.editingBlocked,
+      'locale': controller.preferredLocale,
       'canRestore': controller.canRestoreBackup,
       'paused': controller.paused,
       'business': SettingsView.fromController(controller, saved: saved).data,
@@ -244,7 +248,14 @@ class StickerSettingsHost {
       case StickerSetting.main:
         layout.setMain(args['value'] as String);
       case StickerSetting.enabled:
-        layout.toggle(args['id'] as String, args['value'] as bool);
+        final String id = args['id'] as String;
+        final bool visible = args['value'] as bool;
+        if (StickerMetricSelection.sharedVisibilityIds.contains(id)) {
+          saved = await _setSharedMetricVisible(id, visible);
+          if (!saved) message = '无法保存指标显示设置';
+        } else {
+          layout.toggle(id, visible);
+        }
       case StickerSetting.retirement:
         final bool saved = await controller.save(
           args['date'] as String?,
@@ -280,6 +291,8 @@ class StickerSettingsHost {
         saved = await controller.saveSettings(
           SettingsEditor.object(args['value']),
         );
+      case StickerSetting.language:
+        saved = await controller.setPreferredLocale(args['value'] as String?);
       case StickerSetting.businessImport:
         saved = await controller.importSettings(args['raw'] as String);
       case StickerSetting.businessCountdown:
@@ -322,6 +335,23 @@ class StickerSettingsHost {
       privateSalary: privateSalary,
       assetBundle: assetBundle,
     );
+  }
+
+  /// 与完整设置共用启用项，保留排序和其他显示偏好。
+  Future<bool> _setSharedMetricVisible(String id, bool visible) {
+    final Set<String> enabled = StickerMetricSelection(
+      layout,
+      controller,
+    ).enabledMetrics.toSet();
+    final bool changed = visible ? enabled.add(id) : enabled.remove(id);
+    if (!changed) return Future<bool>.value(true);
+    return controller.saveSettings(<String, dynamic>{
+      ...controller.settings,
+      'display': <String, dynamic>{
+        ...controller.displaySettings,
+        'enabled_metrics': enabled.toList(),
+      },
+    });
   }
 
   Future<String> installSkin(Object? source) async {

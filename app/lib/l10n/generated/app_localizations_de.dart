@@ -10,6 +10,97 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => 'Macaron-Glas';
+
+  @override
+  String get mobileCountdownSummary =>
+      'Ruhestand, Geburtsdatum und Lebensanzeige';
+
+  @override
+  String get mobileWorkSummary =>
+      'Arbeitstage, Arbeitszeiten, Pause und Gehalt';
+
+  @override
+  String get mobileCalendarSummary => 'Zahltage, Feiertagsregion und Ausnahmen';
+
+  @override
+  String get mobileTitlesSummary =>
+      'Titel einzelner Countdowns ein- oder ausblenden';
+
+  @override
+  String get mobileWidgetSummary =>
+      'Widgets hinzufügen, Farben und Schrift ändern';
+
+  @override
+  String get mobileGeneralSummary => 'Zeitzone, Betragsanzeige und Sicherungen';
+
+  @override
+  String get mobileSaving => 'Wird gespeichert…';
+
+  @override
+  String get mobileDiscardChanges => 'Ungespeicherte Änderungen verwerfen?';
+
+  @override
+  String get mobileDiscard => 'Änderungen verwerfen';
+
+  @override
+  String get metricTitleVisibility => 'Titel je Anzeige';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      'Wenn du einen Titel ausblendest, bleibt der Wert sichtbar. Schwebefenster und Widgets haben auch einen zentralen Titelschalter.';
+
+  @override
+  String get lifeDisplayMode => 'Anzeige der Lebenszeit';
+
+  @override
+  String get lifeElapsedTitle => 'Gelebte Tage';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString Tage',
+      one: '$daysString Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get desktopAppearance => 'Erscheinungsbild';
+
+  @override
+  String get desktopWindows => 'Fenster';
+
+  @override
+  String get desktopCountdowns => 'Countdowns';
+
+  @override
+  String get desktopCatAssets => 'Katzensticker';
+
+  @override
+  String get desktopAppearanceDescription =>
+      'Ändere Sprache, Farben oder Schriftgröße und prüfe die Vorschau des schwebenden Fensters.';
+
+  @override
+  String get desktopWindowsDescription =>
+      'Sieh dir die Fensterinhalte an und gruppiere, trenne oder passe sie an.';
+
+  @override
+  String get desktopCountdownsDescription =>
+      'Wähle die Desktop-Countdowns und lege den Rentenbeginn fest.';
+
+  @override
+  String get desktopCatAssetsDescription =>
+      'Tausche den Katzensticker für jedes Fenster aus.';
+
+  @override
   String get floatingMode => 'Fenstermodus';
 
   @override
@@ -396,7 +487,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Halte den Startbildschirm gedrückt und füge ein Countdown- oder Verdienst-Widget von Shiyu hinzu. Beim Bearbeiten kannst du den Countdown auswählen. Das System plant die Aktualisierung.';
+      'Halte den Startbildschirm gedrückt, um ein Shiyu-Widget hinzuzufügen. Beim Bearbeiten kannst du bis zu vier Countdowns kombinieren. Den Verdienst kannst du im Widget oder auf der App-Startseite aktualisieren.';
+
+  @override
+  String get refreshEarnings => 'Verdienst aktualisieren';
 
   @override
   String get settingsError =>

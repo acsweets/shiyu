@@ -5,7 +5,9 @@ import '../../../retirement/application/holiday_status.dart';
 import '../../../retirement/data/holiday_repository.dart';
 import '../../../retirement/presentation/holiday_panel.dart';
 import '../../../retirement/presentation/settings/business_settings_page.dart';
+import '../../../retirement/presentation/settings/display_settings.dart';
 import '../../application/sticker_business_access.dart';
+import '../../application/sticker_metric_selection.dart';
 import '../../application/sticker_settings_state.dart';
 import '../../data/sticker_layout.dart';
 import '../../data/sticker_mode.dart';
@@ -74,6 +76,12 @@ class _CountdownSettingsState extends State<CountdownSettings> {
         const Divider(height: 24),
         const Text('启用倒计时', style: TextStyle(fontWeight: FontWeight.w700)),
         ...StickerLayout.titles.keys.map(_toggle),
+        for (final String id in StickerMetricSelection.sharedVisibilityIds)
+          _sharedMetricToggle(
+            id,
+            metricLabel(AppLocalizations.of(context), id),
+            editable,
+          ),
         const Divider(height: 25),
         _modeSettings(context),
         const Divider(height: 25),
@@ -227,6 +235,26 @@ class _CountdownSettingsState extends State<CountdownSettings> {
       ),
     );
   }
+
+  Widget _sharedMetricToggle(String id, String title, bool editable) =>
+      PaperSettingRow(
+        title: title,
+        control: Semantics(
+          label: title,
+          child: Switch(
+            key: ValueKey<String>('metric-visibility-$id'),
+            value: _session.state.enabled.contains(id),
+            onChanged: editable
+                ? (bool visible) => _toggleSharedMetric(id, visible)
+                : null,
+          ),
+        ),
+      );
+
+  Future<void> _toggleSharedMetric(String id, bool visible) => _submit(
+    StickerSetting.enabled,
+    <String, Object?>{'id': id, 'value': visible},
+  );
 
   void _togglePreview(bool value) => _session.change(
     StickerSetting.preview,

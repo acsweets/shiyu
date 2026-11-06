@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../application/settings_editor.dart';
 import '../../data/settings_repository.dart';
-import 'settings_fields.dart';
+import 'app_language_setting.dart';
 import 'settings_files.dart';
+import 'settings_fields.dart';
 
 class GeneralSettings extends StatefulWidget {
-  const GeneralSettings({required this.editor, super.key});
+  const GeneralSettings({required this.editor, this.mobile = false, super.key});
 
   final SettingsEditor editor;
+
+  /// 手机在设置首页选择语言，此处提供时区和存储操作。
+  final bool mobile;
 
   @override
   State<GeneralSettings> createState() => _GeneralSettingsState();
@@ -23,25 +27,25 @@ class _GeneralSettingsState extends State<GeneralSettings> {
   Widget build(BuildContext context) {
     final AppLocalizations strings = AppLocalizations.of(context);
     final bool hide = _editor.draft['hide_amount'] != false;
+    final bool canRun = !_busy && (!widget.mobile || !_editor.dirty);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        SettingsChoice(
-          label: strings.appLanguage,
-          selected: _editor.group('display')['locale'] as String? ?? '',
-          options: <String, String>{
-            '': strings.systemLanguage,
-            'zh': '简体中文',
-            'zh-Hant': '繁體中文',
-            'en': 'English',
-            'ja': '日本語',
-            'ko': '한국어',
-            'es': 'Español',
-            'de': 'Deutsch',
-            'fr': 'Français',
-          },
-          changed: _editor.blocked ? null : _locale,
-        ),
+        if (widget.mobile)
+          SettingsInput(
+            label: strings.timeZoneLabel,
+            value: _editor.draft['time_zone'] as String? ?? 'Asia/Shanghai',
+            hint: 'Asia/Shanghai',
+            changed: _editor.blocked ? null : _timeZone,
+            error: _editor.issue('time_zone') == null
+                ? null
+                : strings.invalidValue,
+          )
+        else
+          AppLanguageChoice(
+            locale: _editor.group('display')['locale'] as String?,
+            changed: _editor.blocked ? null : _locale,
+          ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(strings.hideSalary),
@@ -49,7 +53,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           onChanged: _editor.blocked ? null : _hideSalary,
         ),
         OutlinedButton(
-          onPressed: _busy ? null : _peek,
+          onPressed: canRun ? _peek : null,
           child: Text(strings.peekSalary),
         ),
         const Divider(height: 28),
@@ -60,11 +64,11 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           runSpacing: 6,
           children: <Widget>[
             OutlinedButton(
-              onPressed: _busy || _editor.blocked ? null : _import,
+              onPressed: canRun && !_editor.blocked ? _import : null,
               child: Text(strings.settingsImport),
             ),
             OutlinedButton(
-              onPressed: _busy ? null : _export,
+              onPressed: canRun ? _export : null,
               child: Text(strings.settingsExport),
             ),
           ],
@@ -73,10 +77,11 @@ class _GeneralSettingsState extends State<GeneralSettings> {
     );
   }
 
-  void _locale(String value) =>
-      _editor.changeGroup('display', 'locale', value.isEmpty ? null : value);
+  void _locale(String? value) =>
+      _editor.changeGroup('display', 'locale', value);
 
   void _hideSalary(bool value) => _editor.change('hide_amount', value);
+  void _timeZone(String value) => _editor.change('time_zone', value.trim());
 
   Future<void> _peek() async {
     if (!await _editor.flush() || !mounted) return;

@@ -13,30 +13,58 @@ class StickerMetricSelection {
   final StickerLayout layout;
   final RetirementController controller;
 
+  /// 今日已赚和生命指标的稳定标识。
+  static const String todaySalaryId = 'today_salary';
+  static const String lifeId = 'life';
+
+  /// 在倒计时和完整设置中共用同一开关的指标。
+  static const List<String> sharedVisibilityIds = <String>[
+    todaySalaryId,
+    lifeId,
+  ];
+
   static const List<String> _standardOrder = <String>[
     'work',
-    'today_salary',
+    todaySalaryId,
     'month_salary',
     'payday',
     'holiday',
     'retirement',
-    'life',
+    lifeId,
   ];
 
+  /// 完整设置保存的启用项，旧设置使用迷你浮窗默认项。
+  List<String> get enabledMetrics =>
+      _list(controller.displaySettings['enabled_metrics']) ??
+      defaultMetricOrder.take(5).toList();
+
+  Iterable<String> get enabledSharedMetrics =>
+      sharedVisibilityIds.where(enabledMetrics.contains);
+
   List<String> get ids {
-    if (layout.preview) return layout.enabled.toList();
+    final List<String> enabled = enabledMetrics;
+    if (layout.preview) {
+      return <String>[
+        ...layout.enabled,
+        ...sharedVisibilityIds.where(enabled.contains),
+      ];
+    }
     final Map<String, dynamic> display = controller.displaySettings;
     final List<String> order =
         _list(display['metric_order']) ?? defaultMetricOrder;
-    final List<String> enabled =
-        _list(display['enabled_metrics']) ??
-        defaultMetricOrder.take(5).toList();
+    // 单独切换共用开关时，标准和展开保留其余默认指标。
     final bool custom =
         display['metrics_customized'] == true ||
         !listEquals(order, defaultMetricOrder) ||
-        !listEquals(enabled, defaultMetricOrder.take(5).toList());
+        !listEquals(
+          enabled.where(_otherMetric).toList(),
+          defaultMetricOrder.take(5).where(_otherMetric).toList(),
+        );
     final List<String> defaults = !custom && layout.mode != StickerMode.mini
-        ? _standardOrder
+        ? <String>[
+            for (final String id in _standardOrder)
+              if (_otherMetric(id) || enabled.contains(id)) id,
+          ]
         : order.where(enabled.contains).toList();
     final List<Object?> raw =
         controller.snapshot?.data['custom_countdowns'] as List<Object?>? ??
@@ -61,6 +89,8 @@ class StickerMetricSelection {
 
   bool get hasVisibleMetrics =>
       ids.any((String id) => layout.showsGroup(layout.groupOf(id)));
+
+  static bool _otherMetric(String id) => !sharedVisibilityIds.contains(id);
 
   List<String>? _list(Object? value) =>
       (value as List<Object?>?)?.cast<String>();

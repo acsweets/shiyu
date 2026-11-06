@@ -24,7 +24,8 @@ object WidgetChannel {
                         val raw = call.arguments as String
                         val checked = JSONObject(validateSettings(raw))
                         check(checked.getBoolean("ok"))
-                        WidgetSettings.write(context, checked.getJSONObject("settings").toString())
+                        // Flutter 已校验并保存原始字节，用于后续写入前的并发检查。
+                        WidgetSettings.write(context, raw)
                         result.success(null)
                     }
                     "readAppearance" -> result.success(WidgetSettings.readAppearance(context))

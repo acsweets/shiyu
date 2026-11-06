@@ -33,23 +33,22 @@ internal object WidgetUpdates {
             reply?.optJSONObject("snapshot").takeIf { reply?.optBoolean("ok") == true }
         }.getOrNull()
         val metrics = WidgetMetrics(context, input?.locale, snapshot)
-        val renderer = WidgetRenderer(context, metrics, WidgetAppearance.read(context))
-        val computedAt = elapsed.takeIf { snapshot != null }
+        val renderer = WidgetRenderer(context, metrics, WidgetAppearance.read(context), now, elapsed)
         for (id in countdowns) {
             val options = manager.getAppWidgetOptions(id)
-            val small = renderer.countdown(id, false, computedAt)
-            val large = renderer.countdown(id, true, computedAt)
+            val small = renderer.countdown(id, false)
+            val large = renderer.countdown(id, true)
             manager.updateAppWidget(id, responsive(options, small, large, 290, 128))
         }
         for (id in salaries) {
             val options = manager.getAppWidgetOptions(id)
-            val small = renderer.salary(false, computedAt)
-            val large = renderer.salary(true, computedAt)
+            val small = renderer.salary(false)
+            val large = renderer.salary(true)
             manager.updateAppWidget(id, responsive(options, small, large, 260, 105))
         }
         val interval = if (salaries.isNotEmpty()) 60_000L else 900_000L
         val boundary = snapshot?.optLong("next_change_at_millis", now + interval) ?: now + interval
-        schedule(context, (boundary - now).coerceIn(15_000L, interval))
+        schedule(context, (boundary - now).coerceIn(1_000L, interval))
     }
 
     private fun responsive(

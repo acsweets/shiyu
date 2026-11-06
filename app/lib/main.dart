@@ -71,7 +71,10 @@ Future<RetirementController> runShiyu({
             primary: store,
             backup: LocalSettingsStore(
               directory,
-              fileName: 'settings.json.bak',
+              // Android AtomicFile 会把 .bak 当作自身的崩溃恢复文件。
+              fileName: Platform.isAndroid
+                  ? 'settings.recovery.json'
+                  : 'settings.json.bak',
             ),
             archive: LocalSettingsStore(
               directory,
@@ -112,6 +115,12 @@ Future<RetirementController> runShiyu({
       ),
     ),
   );
+  if (widgets.supported) {
+    // 原生组件可在 Flutter 首帧后独立刷新，避免冷启动同时加载两条 Rust 绑定。
+    WidgetsBinding.instance.addPostFrameCallback(
+      (Duration _) => unawaited(controller.synchronizeWidgets()),
+    );
+  }
   if (checkHolidays && storage == null) {
     unawaited(controller.checkHolidayUpdates(silent: true));
   }

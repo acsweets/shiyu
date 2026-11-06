@@ -112,11 +112,14 @@ class RetirementController extends ChangeNotifier {
     editingBlocked = loaded.problem != null;
     canRestoreBackup = loaded.canRestore;
     problem = loaded.problem;
-    await reloadHolidays(refreshWidgets: widgets.supported);
+    await reloadHolidays(syncWidgets: false);
   }
 
   /// 更新本地假日输入，供导入和地区变化后立即重算。
-  Future<void> reloadHolidays({bool refreshWidgets = false}) async {
+  Future<void> reloadHolidays({
+    bool refreshWidgets = false,
+    bool syncWidgets = true,
+  }) async {
     final int revision = _revision;
     HolidaySelection? loaded;
     try {
@@ -128,12 +131,19 @@ class RetirementController extends ChangeNotifier {
     holidayData = loaded;
     _holidayJson = loaded?.pack.coreJson ?? '{}';
     await refresh();
-    if (widgets.supported && !_disposed && revision == _revision) {
-      _widgetQueue = _widgetQueue.then(
-        (void _) => _publishWidgets(revision, refreshWidgets),
-      );
-      await _widgetQueue;
+    if (_active && revision == _revision) _restartTicker(refreshed: true);
+    if (syncWidgets && revision == _revision) {
+      await synchronizeWidgets(refresh: refreshWidgets);
     }
+  }
+
+  Future<void> synchronizeWidgets({bool refresh = true}) {
+    if (!widgets.supported || _disposed) return Future<void>.value();
+    final int revision = _revision;
+    _widgetQueue = _widgetQueue.then(
+      (void _) => _publishWidgets(revision, refresh),
+    );
+    return _widgetQueue;
   }
 
   Future<void> _publishWidgets(int revision, bool refreshWidgets) async {
@@ -218,7 +228,12 @@ class RetirementController extends ChangeNotifier {
     final int revision = _revision;
     try {
       final int now = _now().millisecondsSinceEpoch;
-      final String rawSettings = jsonEncode(settings);
+      // 主文件异常时，旧备份的金额可见性可能落后于当前用户偏好。
+      final String rawSettings = jsonEncode(
+        editingBlocked
+            ? <String, dynamic>{...settings, 'hide_amount': true}
+            : settings,
+      );
       SettingsValues result = await _compute(rawSettings, now, _holidayJson);
       if (result['ok'] != true && _holidayJson != '{}') {
         result = await _compute(rawSettings, now, '{}');
@@ -260,6 +275,13 @@ class RetirementController extends ChangeNotifier {
         'time_zone': zone.trim(),
       });
 
+  /// 顶层设置只更新应用语言，其余显示偏好保持原样。
+  Future<bool> setPreferredLocale(String? locale) =>
+      saveSettings(<String, dynamic>{
+        ...settings,
+        'display': <String, dynamic>{...displaySettings, 'locale': locale},
+      });
+
   /// 后续设置页通过同一校验与持久化入口提交完整候选。
   Future<bool> saveSettings(SettingsValues candidate) async {
     if (editingBlocked) return false;
@@ -284,6 +306,7 @@ class RetirementController extends ChangeNotifier {
 
   /// 临时查看单独计算，原快照和共享设置始终保持原金额遮蔽。
   Future<SettingsValues?> peekSalary() async {
+    if (editingBlocked) return null;
     final int revision = _revision;
     final SettingsValues reply = await _compute(
       jsonEncode(<String, dynamic>{...settings, 'hide_amount': false}),
@@ -351,15 +374,25 @@ class RetirementController extends ChangeNotifier {
 
   bool get _active => !_disposed && _visible && !_paused && !_suspended;
 
-  void _restartTicker() {
+  void _restartTicker({bool refreshed = false}) {
     _timer?.cancel();
     _generation++;
-    if (_active) unawaited(_tick(_generation));
+    if (!_active) return;
+    if (refreshed) {
+      _scheduleNextTick(_generation);
+    } else {
+      unawaited(_tick(_generation));
+    }
   }
 
   Future<void> _tick(int generation) async {
     await _enqueueRefresh(generation);
     if (!_active || generation != _generation) return;
+    _scheduleNextTick(generation);
+  }
+
+  /// 刚保存的活动目标需要立即切回逐秒节奏。
+  void _scheduleNextTick(int generation) {
     final int now = _now().millisecondsSinceEpoch;
     final RetirementSnapshot? current = snapshot;
     final int cap = current?.changesEverySecond == false

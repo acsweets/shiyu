@@ -2,16 +2,38 @@ package com.growthrecord.shiyu.widgets
 
 import android.content.Context
 
-/** 主指标按系统分配的组件 ID 保存，删除和备份恢复时同步更新。 */
+/** 未编辑过的组件沿用原有宽窄布局，保存后固定使用所选组合。 */
+internal data class WidgetCountdownGroup(val metrics: List<WidgetMetric>, val automatic: Boolean) {
+    fun displayed(wide: Boolean): List<WidgetMetric> {
+        if (!automatic || !wide) return metrics
+        val last = if (metrics.first() == WidgetMetric.LIFE) WidgetMetric.LIFE else WidgetMetric.RETIREMENT
+        return listOf(WidgetMetric.WORK, WidgetMetric.HOLIDAY, WidgetMetric.PAYDAY, last)
+    }
+}
+
+/** 组合按系统分配的组件 ID 保存，删除和备份恢复时同步更新。 */
 internal object WidgetSelection {
+    const val limit = 4
+    private const val prefix = "group:"
+
     private fun preferences(context: Context) =
         context.getSharedPreferences("widget_selection", Context.MODE_PRIVATE)
 
-    fun read(context: Context, id: Int): WidgetMetric =
-        WidgetMetric.read(preferences(context).getString(id.toString(), null))
+    fun read(context: Context, id: Int): WidgetCountdownGroup {
+        val value = preferences(context).getString(id.toString(), null)
+        if (value?.startsWith(prefix) == true) {
+            val fields = value.removePrefix(prefix).split(",").toSet()
+            val metrics = WidgetMetric.entries.filter { it.field in fields }.take(limit)
+            if (metrics.isNotEmpty()) return WidgetCountdownGroup(metrics, automatic = false)
+        }
+        return WidgetCountdownGroup(listOf(WidgetMetric.read(value)), automatic = true)
+    }
 
-    fun write(context: Context, id: Int, metric: WidgetMetric): Boolean =
-        preferences(context).edit().putString(id.toString(), metric.field).commit()
+    fun write(context: Context, id: Int, metrics: List<WidgetMetric>): Boolean {
+        if (metrics.size !in 1..limit || metrics.distinct().size != metrics.size) return false
+        val value = metrics.joinToString(separator = ",", prefix = prefix) { it.field }
+        return preferences(context).edit().putString(id.toString(), value).commit()
+    }
 
     fun remove(context: Context, ids: IntArray) {
         val edit = preferences(context).edit()
@@ -20,11 +42,12 @@ internal object WidgetSelection {
     }
 
     fun restore(context: Context, oldIds: IntArray, newIds: IntArray) {
-        val previous = oldIds.map { read(context, it) }
-        val edit = preferences(context).edit()
+        val prefs = preferences(context)
+        val previous = oldIds.map { prefs.getString(it.toString(), null) }
+        val edit = prefs.edit()
         for (id in oldIds) edit.remove(id.toString())
         for ((index, id) in newIds.withIndex()) {
-            if (index < previous.size) edit.putString(id.toString(), previous[index].field)
+            edit.putString(id.toString(), previous.getOrNull(index))
         }
         edit.apply()
     }

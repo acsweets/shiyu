@@ -142,3 +142,57 @@ class SettingsDate extends StatelessWidget {
     }
   }
 }
+
+/// 手机作息直接选时间，存储格式与现有文本表单一致。
+class SettingsTime extends StatelessWidget {
+  const SettingsTime({
+    required this.label,
+    required this.value,
+    required this.changed,
+    this.error,
+    super.key,
+  });
+
+  /// 时间字段的用途。
+  final String label;
+
+  /// 共享设置使用的 24 小时时间。
+  final String value;
+
+  /// 选择后交给编辑器保存草稿。
+  final ValueChanged<String>? changed;
+
+  /// 共享核心返回的校验提示。
+  final String? error;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: InputDecorator(
+      decoration: InputDecoration(labelText: label, errorText: error),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: TextButton.icon(
+          onPressed: changed == null ? null : () => _pick(context),
+          icon: const Icon(Icons.schedule_rounded, size: 18),
+          label: Text(value),
+        ),
+      ),
+    ),
+  );
+
+  Future<void> _pick(BuildContext context) async {
+    final DateTime? parsed = DateTime.tryParse('2000-01-01T$value');
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: parsed == null
+          ? TimeOfDay.now()
+          : TimeOfDay.fromDateTime(parsed),
+    );
+    if (time != null && context.mounted) {
+      changed?.call('${_twoDigits(time.hour)}:${_twoDigits(time.minute)}');
+    }
+  }
+
+  String _twoDigits(int value) => value.toString().padLeft(2, '0');
+}

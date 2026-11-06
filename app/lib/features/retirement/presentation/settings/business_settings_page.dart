@@ -127,8 +127,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     runSpacing: 6,
     children: <Widget>[
       for (final _Section section in _Section.values)
-        if (section != _Section.preview &&
-            (widget.desktop || section != _Section.display))
+        if (section != _Section.preview)
           ChoiceChip(
             label: Text(_label(strings, section)),
             selected: _section == section,
@@ -142,7 +141,10 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
         _Section.personal => strings.personalSection,
         _Section.work => strings.workSection,
         _Section.calendar => strings.calendarSection,
-        _Section.display => strings.displaySection,
+        _Section.display =>
+          widget.desktop
+              ? strings.displaySection
+              : strings.metricTitleVisibility,
         _Section.general => strings.generalSection,
         _Section.preview => strings.previewLive,
       };
@@ -151,7 +153,10 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     _Section.personal => PersonalSettings(editor: _editor),
     _Section.work => WorkSettings(editor: _editor),
     _Section.calendar => CalendarSettings(editor: _editor),
-    _Section.display => DisplaySettingsForm(editor: _editor),
+    _Section.display => DisplaySettingsForm(
+      editor: _editor,
+      desktop: widget.desktop,
+    ),
     _Section.general => GeneralSettings(editor: _editor),
     _Section.preview => SettingsSnapshotPreview(
       snapshot: (_preview ?? _editor.view).snapshot,

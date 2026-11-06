@@ -87,7 +87,12 @@ class CalendarSettings extends StatelessWidget {
             strings.holidayData,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          HolidayPanel(status: holiday, check: _check, importPack: _import),
+          HolidayPanel(
+            status: holiday,
+            check: _check,
+            importPack: _import,
+            enabled: editor.autosave || !editor.dirty,
+          ),
           const Divider(height: 24),
         ],
         CalendarOverrides(editor: editor),

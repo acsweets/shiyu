@@ -27,6 +27,13 @@ class SnapshotMetrics {
               const <Object?>[])
           .whereType<MetricFields>();
 
+  /// 未保存单项设置的倒计时沿用默认显示。
+  bool showsTitle(String id) =>
+      (snapshot?.data['hidden_metric_titles'] as List<Object?>?)?.contains(
+        id,
+      ) !=
+      true;
+
   MetricFields read(String id, {bool coreFailed = false}) {
     final String title = metricLabel(strings, id);
     if (coreFailed || snapshot == null) {
@@ -46,6 +53,13 @@ class SnapshotMetrics {
       }
     }
     final MetricFields metric = _object(snapshot?.data[id]);
+    if (id == 'life' && metric['status'] == 'elapsed') {
+      final int? days = metric['elapsed_days'] as int?;
+      return _metric(
+        strings.lifeElapsedTitle,
+        days == null ? strings.mobileNotSet : strings.lifeElapsedValue(days),
+      );
+    }
     final String resolved = switch (id) {
       'work' => _workTitle(metric['target_kind']),
       'holiday' when metric['status'] == 'on_holiday' => strings.holidayOngoing,

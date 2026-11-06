@@ -38,6 +38,11 @@ fn update(
                 return Err(("custom_countdown.id", "invalid_countdown"));
             }
             settings.custom_countdowns.retain(|item| item.id != id);
+            let metric_id = format!("custom/{id}");
+            settings
+                .display
+                .hidden_metric_titles
+                .retain(|item| item != &metric_id);
         }
         Change::Upsert { item } => {
             if !valid_countdown(&item) {

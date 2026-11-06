@@ -9,6 +9,7 @@ import '../data/sticker_cat_pose.dart';
 import '../data/sticker_character.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_mode.dart';
+import '../data/sticker_palette.dart';
 import 'sticker_metric_selection.dart';
 
 /// 跨窗口只传输可见文本与外观信息，子窗无需加载 Rust。
@@ -38,10 +39,7 @@ class StickerGroupView {
       'metrics': <String, MetricFields>{
         for (final String id in ids)
           id: layout.preview
-              ? <Object?, Object?>{
-                  'title': StickerLayout.titles[id],
-                  'value': StickerLayout.examples[id],
-                }
+              ? _previewMetric(id, metrics, controller)
               : metrics.read(id, coreFailed: controller.problem == 'core'),
       },
       'mode': layout.mode.name,
@@ -55,9 +53,14 @@ class StickerGroupView {
           ? metrics.strings.holidayFallback
           : null,
       'titles': layout.showsTitle(group),
+      'hiddenTitles': <String>[
+        for (final String id in ids)
+          if (!metrics.showsTitle(id)) id,
+      ],
       'titleSize': layout.titleSize,
       'preview': layout.preview,
       'visible': visible,
+      'palette': layout.palette.name,
       'background': layout.palette.backgroundFor(group).toARGB32(),
       'foreground': layout.palette.foreground.toARGB32(),
       'catAsset': pose.asset,
@@ -72,6 +75,39 @@ class StickerGroupView {
                 : layout.modeBounds(group, ids.length)),
       ),
     });
+  }
+
+  /// 示例数值固定，标题与显示方式遵循当前设置。
+  static MetricFields _previewMetric(
+    String id,
+    SnapshotMetrics metrics,
+    RetirementController controller,
+  ) {
+    if (id == StickerMetricSelection.todaySalaryId) {
+      final bool showAmount =
+          controller.settings['hide_amount'] == false &&
+          !controller.editingBlocked;
+      return <Object?, Object?>{
+        'title': metrics.strings.metricTodaySalary,
+        'value': showAmount ? '128.00 CNY' : '****',
+      };
+    }
+    if (id == StickerMetricSelection.lifeId) {
+      final bool elapsed =
+          controller.displaySettings['life_mode'] == 'elapsed_days';
+      return <Object?, Object?>{
+        'title': elapsed
+            ? metrics.strings.lifeElapsedTitle
+            : metrics.strings.metricLife,
+        'value': elapsed
+            ? metrics.strings.lifeElapsedValue(10000)
+            : metrics.duration(const Duration(days: 26000).inSeconds),
+      };
+    }
+    return <Object?, Object?>{
+      'title': StickerLayout.titles[id],
+      'value': StickerLayout.examples[id],
+    };
   }
 
   Map<String, MetricFields> get metrics =>
@@ -92,9 +128,16 @@ class StickerGroupView {
   bool get coverFullscreen => data['coverFullscreen'] == true;
 
   bool get showsTitle => data['titles'] as bool;
+
+  /// 窗口总开关与指标开关同时开启才显示标题。
+  bool showsMetricTitle(String id) =>
+      showsTitle &&
+      (data['hiddenTitles'] as List<Object?>?)?.contains(id) != true;
+
   double get titleSize => (data['titleSize'] as int).toDouble();
   bool get preview => data['preview'] as bool;
   bool get visible => data['visible'] as bool;
+  StickerPalette get palette => StickerPalette.fromId(data['palette']);
   Color get background => Color(data['background'] as int);
   Color get foreground => Color(data['foreground'] as int);
   String get catAsset => data['catAsset'] as String;

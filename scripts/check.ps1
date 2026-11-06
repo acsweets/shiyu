@@ -17,7 +17,7 @@ try {
     Invoke-Checked 'flutter' @('pub', 'get', '--enforce-lockfile')
     Invoke-Checked 'flutter' @('gen-l10n')
     Invoke-Checked 'dart' @('format', 'lib/l10n/generated')
-    Invoke-Checked 'dart' @('format', '--output=none', '--set-exit-if-changed', 'lib/app', 'lib/features', 'lib/platform/desktop', 'lib/platform/widgets', 'lib/main.dart', 'lib/main_probe.dart', 'test', 'integration_test')
+    Invoke-Checked 'dart' @('format', '--output=none', '--set-exit-if-changed', 'lib/app', 'lib/features', 'lib/platform/desktop', 'lib/platform/widgets', 'lib/main.dart', 'lib/main_probe.dart', 'test', 'integration_test', 'tool')
     Invoke-Checked 'flutter' @('analyze', '--fatal-infos')
     Invoke-Checked 'flutter' @('test')
     if ($BuildWindows) {

@@ -41,6 +41,9 @@ pub fn parse_settings(json: &str) -> Result<Settings, Vec<FieldError>> {
     if !settings.display.valid_metrics() {
         errors.push(error("display.metric_order", "invalid_metrics"));
     }
+    if !settings.display.valid_hidden_titles() {
+        errors.push(error("display.hidden_metric_titles", "invalid_metrics"));
+    }
     if let Some(date) = &settings.retirement_date {
         match Date::from_str(date) {
             Err(_) => errors.push(error("retirement_date", "invalid_date")),

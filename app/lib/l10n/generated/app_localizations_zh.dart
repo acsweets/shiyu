@@ -10,6 +10,82 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => '马卡龙玻璃';
+
+  @override
+  String get mobileCountdownSummary => '退休日期、出生日期和生命显示方式';
+
+  @override
+  String get mobileWorkSummary => '工作日、上下班、午休和薪资';
+
+  @override
+  String get mobileCalendarSummary => '发薪日、节假日地区和调休';
+
+  @override
+  String get mobileTitlesSummary => '为每个倒计时单独显示或隐藏标题';
+
+  @override
+  String get mobileWidgetSummary => '添加组件、选配色和调整字号';
+
+  @override
+  String get mobileGeneralSummary => '时区、金额遮蔽和设置备份';
+
+  @override
+  String get mobileSaving => '正在保存…';
+
+  @override
+  String get mobileDiscardChanges => '放弃未保存的修改？';
+
+  @override
+  String get mobileDiscard => '放弃修改';
+
+  @override
+  String get metricTitleVisibility => '逐项显示标题';
+
+  @override
+  String get metricTitleVisibilityDetail => '关闭后仍显示数值。浮窗或小组件的标题总开关也需要开启。';
+
+  @override
+  String get lifeDisplayMode => '生命指标显示方式';
+
+  @override
+  String get lifeElapsedTitle => '已存在世界';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 天';
+  }
+
+  @override
+  String get desktopAppearance => '外观';
+
+  @override
+  String get desktopWindows => '窗口管理';
+
+  @override
+  String get desktopCountdowns => '倒计时';
+
+  @override
+  String get desktopCatAssets => '猫猫素材';
+
+  @override
+  String get desktopAppearanceDescription => '调整语言、配色和字号，并查看浮窗预览。';
+
+  @override
+  String get desktopWindowsDescription => '查看各窗口的内容，合并、拆分或调整显示。';
+
+  @override
+  String get desktopCountdownsDescription => '选择桌面倒计时并配置退休日期。';
+
+  @override
+  String get desktopCatAssetsDescription => '替换每个窗口的猫猫贴纸。';
+
+  @override
   String get floatingMode => '窗口形态';
 
   @override
@@ -130,7 +206,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalidCountdown => '检查名称与时间，新倒计时的目标必须在未来。';
 
   @override
-  String get invalidDraft => '请检查下方字段，上次有效设置仍然保留。';
+  String get invalidDraft => '请检查标出的字段，上次有效设置仍然保留。';
 
   @override
   String get invalidHoliday => '填写名称和类型，结束日期须等于或晚于开始日期。';
@@ -175,7 +251,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get metricHoliday => '距离放假';
 
   @override
-  String get metricLife => '生命倒计时';
+  String get metricLife => '静待百岁，好好生活';
 
   @override
   String get metricMonthSalary => '本月已赚';
@@ -386,7 +462,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      '长按手机桌面，添加时余的倒计时或薪资小组件。编辑倒计时组件可选择主指标，刷新时间由系统调度。';
+      '长按手机桌面添加时余小组件。在支持编辑的系统上，可合并最多 4 项倒计时。薪资可在组件或应用首页手动刷新。';
+
+  @override
+  String get refreshEarnings => '刷新已赚';
 
   @override
   String get settingsError => '设置或共享数据操作失败，请检查日期、时区和存储权限后重试。';
@@ -437,6 +516,82 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get mobileMacaronGlass => '馬卡龍玻璃';
+
+  @override
+  String get mobileCountdownSummary => '退休日期、出生日期和生命顯示方式';
+
+  @override
+  String get mobileWorkSummary => '工作日、上下班、午休和薪資';
+
+  @override
+  String get mobileCalendarSummary => '發薪日、節假日地區和調休';
+
+  @override
+  String get mobileTitlesSummary => '為每個倒計時單獨顯示或隱藏標題';
+
+  @override
+  String get mobileWidgetSummary => '新增小工具、選擇配色和調整字級';
+
+  @override
+  String get mobileGeneralSummary => '時區、金額遮蔽和設定備份';
+
+  @override
+  String get mobileSaving => '正在儲存…';
+
+  @override
+  String get mobileDiscardChanges => '放棄未儲存的變更？';
+
+  @override
+  String get mobileDiscard => '放棄變更';
+
+  @override
+  String get metricTitleVisibility => '逐項顯示標題';
+
+  @override
+  String get metricTitleVisibilityDetail => '關閉後仍顯示數值。浮窗或小工具的標題總開關也需要開啟。';
+
+  @override
+  String get lifeDisplayMode => '生命指標顯示方式';
+
+  @override
+  String get lifeElapsedTitle => '已存在世界';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString 天';
+  }
+
+  @override
+  String get desktopAppearance => '外觀';
+
+  @override
+  String get desktopWindows => '視窗管理';
+
+  @override
+  String get desktopCountdowns => '倒數計時';
+
+  @override
+  String get desktopCatAssets => '貓咪素材';
+
+  @override
+  String get desktopAppearanceDescription => '調整語言、配色和字級，並查看浮動視窗預覽。';
+
+  @override
+  String get desktopWindowsDescription => '查看各視窗的內容，合併、拆分或調整顯示。';
+
+  @override
+  String get desktopCountdownsDescription => '選擇桌面倒數計時並設定退休日期。';
+
+  @override
+  String get desktopCatAssetsDescription => '替換每個視窗的貓咪貼紙。';
 
   @override
   String get floatingMode => '視窗模式';
@@ -559,7 +714,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get invalidCountdown => '請檢查名稱與時間。新倒數計時的目標必須在未來。';
 
   @override
-  String get invalidDraft => '請檢查下方欄位，先前有效的設定仍保留。';
+  String get invalidDraft => '請檢查標出的欄位，先前有效的設定仍保留。';
 
   @override
   String get invalidHoliday => '填寫名稱和類型，結束日期須等於或晚於開始日期。';
@@ -604,7 +759,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get metricHoliday => '距離放假';
 
   @override
-  String get metricLife => '生命倒數計時';
+  String get metricLife => '靜待百歲，好好生活';
 
   @override
   String get metricMonthSalary => '本月已賺';
@@ -815,7 +970,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get widgetInstructions =>
-      '長按主畫面，加入時余的倒數或薪資小工具。編輯倒數小工具可選擇主要指標，更新由系統排程。';
+      '長按主畫面加入時余小工具。在支援編輯的系統上，最多可合併 4 項倒數。薪資可在小工具或應用程式首頁手動重新整理。';
+
+  @override
+  String get refreshEarnings => '重新整理已賺金額';
 
   @override
   String get settingsError => '操作失敗，請檢查日期、時區及共用儲存空間後重試。';

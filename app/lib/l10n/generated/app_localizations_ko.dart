@@ -10,6 +10,84 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => '마카롱 글라스';
+
+  @override
+  String get mobileCountdownSummary => '은퇴 날짜, 생년월일, 생애 표시 방식';
+
+  @override
+  String get mobileWorkSummary => '근무일, 근무 시간, 점심시간, 급여';
+
+  @override
+  String get mobileCalendarSummary => '급여일, 공휴일 지역, 예외 날짜';
+
+  @override
+  String get mobileTitlesSummary => '카운트다운별 제목 표시 설정';
+
+  @override
+  String get mobileWidgetSummary => '위젯 추가, 색상 및 글자 크기 변경';
+
+  @override
+  String get mobileGeneralSummary => '시간대, 금액 표시, 설정 백업';
+
+  @override
+  String get mobileSaving => '저장 중…';
+
+  @override
+  String get mobileDiscardChanges => '저장하지 않은 변경 사항을 버릴까요?';
+
+  @override
+  String get mobileDiscard => '변경 사항 버리기';
+
+  @override
+  String get metricTitleVisibility => '항목별 제목 표시';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      '제목을 꺼도 값은 표시됩니다. 플로팅 창과 위젯에는 제목을 한꺼번에 끄는 설정도 있습니다.';
+
+  @override
+  String get lifeDisplayMode => '생애 표시 방식';
+
+  @override
+  String get lifeElapsedTitle => '살아온 날 수';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString일';
+  }
+
+  @override
+  String get desktopAppearance => '모양';
+
+  @override
+  String get desktopWindows => '창 관리';
+
+  @override
+  String get desktopCountdowns => '카운트다운';
+
+  @override
+  String get desktopCatAssets => '고양이 스티커';
+
+  @override
+  String get desktopAppearanceDescription =>
+      '언어, 색상, 글자 크기를 바꾸고 떠 있는 창을 미리 봅니다.';
+
+  @override
+  String get desktopWindowsDescription => '각 창의 내용을 확인하고 합치거나 나누고 표시를 조정합니다.';
+
+  @override
+  String get desktopCountdownsDescription => '바탕 화면에 표시할 카운트다운과 은퇴 날짜를 설정합니다.';
+
+  @override
+  String get desktopCatAssetsDescription => '창마다 고양이 스티커를 바꿉니다.';
+
+  @override
   String get floatingMode => '창 모드';
 
   @override
@@ -130,7 +208,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get invalidCountdown => '이름과 시각을 확인하세요. 새 목표는 미래여야 합니다.';
 
   @override
-  String get invalidDraft => '아래 항목을 확인하세요. 기존의 유효한 설정은 유지됩니다.';
+  String get invalidDraft => '표시된 항목을 확인하세요. 기존의 유효한 설정은 유지됩니다.';
 
   @override
   String get invalidHoliday => '이름과 유형을 입력하고 날짜 범위를 확인하세요.';
@@ -386,7 +464,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      '홈 화면을 길게 눌러 시유의 카운트다운 또는 급여 위젯을 추가하세요. 편집에서 지표를 선택할 수 있으며 시스템이 새로고침을 관리합니다.';
+      '홈 화면을 길게 눌러 시유 위젯을 추가하세요. 편집을 지원하는 경우 카운트다운을 최대 4개까지 합칠 수 있습니다. 위젯 또는 앱 홈에서 급여를 새로고침할 수 있습니다.';
+
+  @override
+  String get refreshEarnings => '급여 새로고침';
 
   @override
   String get settingsError => '날짜, 시간대, 공유 저장소를 확인하고 다시 시도하세요.';

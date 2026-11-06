@@ -36,4 +36,10 @@ final ThemeData mobilePaperTheme = SettingsPaper.theme.copyWith(
   snackBarTheme: SettingsPaper.theme.snackBarTheme.copyWith(
     behavior: SnackBarBehavior.floating,
   ),
+  timePickerTheme: TimePickerThemeData(
+    dayPeriodTextColor: WidgetStateColor.resolveWith(_dayPeriodInk),
+  ),
 );
+
+Color _dayPeriodInk(Set<WidgetState> states) =>
+    states.contains(WidgetState.selected) ? Colors.white : SettingsPaper.ink;

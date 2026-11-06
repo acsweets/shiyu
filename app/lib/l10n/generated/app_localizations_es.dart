@@ -10,6 +10,97 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get mobileMacaronGlass => 'Cristal macaron';
+
+  @override
+  String get mobileCountdownSummary => 'Jubilación, nacimiento y modo de vida';
+
+  @override
+  String get mobileWorkSummary =>
+      'Días laborables, horarios, descanso y sueldo';
+
+  @override
+  String get mobileCalendarSummary => 'Días de pago, festivos y excepciones';
+
+  @override
+  String get mobileTitlesSummary =>
+      'Muestra u oculta el título de cada cuenta atrás';
+
+  @override
+  String get mobileWidgetSummary =>
+      'Añade widgets y cambia los colores o el texto';
+
+  @override
+  String get mobileGeneralSummary =>
+      'Zona horaria, visibilidad de importes y copias';
+
+  @override
+  String get mobileSaving => 'Guardando…';
+
+  @override
+  String get mobileDiscardChanges => '¿Descartar los cambios sin guardar?';
+
+  @override
+  String get mobileDiscard => 'Descartar cambios';
+
+  @override
+  String get metricTitleVisibility => 'Títulos por indicador';
+
+  @override
+  String get metricTitleVisibilityDetail =>
+      'Si ocultas un título, el valor sigue visible. Las ventanas flotantes y los widgets también tienen un interruptor general de títulos.';
+
+  @override
+  String get lifeDisplayMode => 'Modo de visualización de vida';
+
+  @override
+  String get lifeElapsedTitle => 'Días vividos';
+
+  @override
+  String lifeElapsedValue(num days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString días',
+      one: '$daysString día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get desktopAppearance => 'Apariencia';
+
+  @override
+  String get desktopWindows => 'Ventanas';
+
+  @override
+  String get desktopCountdowns => 'Cuentas regresivas';
+
+  @override
+  String get desktopCatAssets => 'Pegatinas de gato';
+
+  @override
+  String get desktopAppearanceDescription =>
+      'Cambia el idioma, los colores o el tamaño del texto y previsualiza la ventana flotante.';
+
+  @override
+  String get desktopWindowsDescription =>
+      'Revisa el contenido de cada ventana y agrúpalo, sepáralo o ajusta su vista.';
+
+  @override
+  String get desktopCountdownsDescription =>
+      'Elige las cuentas regresivas del escritorio y fija la fecha de jubilación.';
+
+  @override
+  String get desktopCatAssetsDescription =>
+      'Cambia la pegatina de gato de cada ventana.';
+
+  @override
   String get floatingMode => 'Modo de ventana';
 
   @override
@@ -398,7 +489,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Mantén pulsada la pantalla de inicio para añadir la cuenta regresiva o los ingresos de Shiyu. Edita el widget para elegir un indicador. El sistema programa las actualizaciones.';
+      'Mantén pulsada la pantalla de inicio para añadir un widget de Shiyu. Si puedes editarlo, combina hasta cuatro cuentas regresivas. Actualiza los ingresos desde el widget o la pantalla principal de la app.';
+
+  @override
+  String get refreshEarnings => 'Actualizar ingresos';
 
   @override
   String get settingsError =>

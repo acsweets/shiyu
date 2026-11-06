@@ -41,8 +41,9 @@ class StickerGroupSurface extends StatelessWidget {
   static const double _gridSpacing = 8;
   static const double _cellPadding = 4;
 
-  double get _titleHeight =>
-      view.showsTitle ? math.max(18, view.titleSize * 1.25) : 0;
+  double get _titleHeight => view.metrics.keys.any(view.showsMetricTitle)
+      ? math.max(18, view.titleSize * 1.25)
+      : 0;
 
   double get _minimumRowHeight =>
       math.max(56, _titleHeight + _timeHeight + 2 * _cellPadding) +
@@ -159,11 +160,7 @@ class StickerGroupSurface extends StatelessWidget {
 
   Widget _paper(StickerSurfaceStyle style) => DecoratedBox(
     key: const ValueKey<String>('sticker-window-background'),
-    decoration: BoxDecoration(
-      color: style.background,
-      border: Border.all(color: style.border),
-      borderRadius: BorderRadius.circular(style.radius),
-    ),
+    decoration: style.decoration,
     child: Column(
       children: <Widget>[
         Expanded(
@@ -236,7 +233,7 @@ class StickerGroupSurface extends StatelessWidget {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        if (view.showsTitle)
+        if (view.showsMetricTitle(id))
           SizedBox(
             height: _titleHeight,
             child: FittedBox(

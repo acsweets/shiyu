@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 enum WidgetMetric: String, CaseIterable {
-    case work, holiday, payday, retirement
+    case work, holiday, payday, retirement, life
 
     func title(chinese: Bool) -> String {
         switch self {
@@ -10,10 +10,14 @@ enum WidgetMetric: String, CaseIterable {
         case .holiday: return chinese ? "距离放假" : "Until the next break"
         case .payday: return chinese ? "距离发薪" : "Until payday"
         case .retirement: return chinese ? "退休倒计时" : "Retirement countdown"
+        case .life: return chinese ? "静待百岁，好好生活" : "Life countdown"
         }
     }
 
     func title(_ value: WidgetSnapshot.Countdown?, chinese: Bool) -> String {
+        if value?.status == "elapsed" {
+            return chinese ? "已存在世界" : "Days lived"
+        }
         switch value?.target_kind {
         case "work_start": return chinese ? "距离上班" : "Until work starts"
         case "work_end": return chinese ? "距离下班" : "Until work ends"
@@ -33,6 +37,8 @@ struct ShiyuWidgetEntry: TimelineEntry {
     let appearance: WidgetAppearance
     let locale: String?
     let metric: WidgetMetric
+    /// 用户为当前实例追加的倒计时，空列表沿用旧版布局。
+    let additionalMetrics: [WidgetMetric]
 
     var chinese: Bool {
         (locale ?? Locale.preferredLanguages.first)?.hasPrefix("zh") == true
@@ -45,13 +51,16 @@ struct WidgetSnapshot: Decodable {
     let holiday: Countdown
     let payday: Countdown
     let retirement: Countdown
+    let life: Countdown?
     let salary: Salary
+    let hidden_metric_titles: [String]?
 
     struct Countdown: Decodable {
         let status: String
         let remaining_seconds: Int64
         let target_millis: Int64?
         let target_kind: String?
+        let elapsed_days: Int?
 
         var target: Date? {
             target_millis.map { Date(timeIntervalSince1970: Double($0) / 1000) }
@@ -73,12 +82,13 @@ struct WidgetSnapshot: Decodable {
         }
     }
 
-    func countdown(_ metric: WidgetMetric) -> Countdown {
+    func countdown(_ metric: WidgetMetric) -> Countdown? {
         switch metric {
         case .work: return work
         case .holiday: return holiday
         case .payday: return payday
         case .retirement: return retirement
+        case .life: return life
         }
     }
 }
@@ -156,10 +166,24 @@ struct WidgetAppearance: Decodable {
 
     var colors: (surface: Color, ink: Color) {
         switch palette {
+        case "macaronGlass": return (color(0xFFE9B2), color(0x382A36))
         case "cool": return (color(0x242A3A), color(0xF0F5FF))
         case "sunset": return (color(0xF4D0A3), color(0x472B29))
         default: return (color(0xFFEBB4), color(0x45363B))
         }
+    }
+
+    /// 玻璃色板的亮面从左上过渡到底色。
+    var glassGradient: LinearGradient? {
+        guard palette == "macaronGlass" else { return nil }
+        return LinearGradient(
+            stops: [
+                .init(color: color(0xFFF7E2).opacity(0.94), location: 0),
+                .init(color: colors.surface.opacity(0.86), location: 0.42),
+                .init(color: colors.surface.opacity(0.74), location: 1),
+            ],
+            startPoint: .topLeading, endPoint: .bottomTrailing
+        )
     }
 
     private func color(_ rgb: UInt32) -> Color {

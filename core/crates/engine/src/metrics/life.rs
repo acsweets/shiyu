@@ -1,12 +1,40 @@
 use super::{Clock, Countdown};
-use crate::contract::Birth;
+use crate::{contract::Birth, display::LifeMode};
 use jiff::{
     Span,
     civil::{Date, Time},
 };
 use rust_decimal::{Decimal, prelude::ToPrimitive};
+use serde::Serialize;
 
-pub(super) fn compute(clock: &Clock, birth: Option<&Birth>) -> Countdown {
+#[derive(Serialize)]
+pub(super) struct LifeMetric {
+    #[serde(flatten)]
+    pub(super) countdown: Countdown,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    elapsed_days: Option<i32>,
+}
+
+pub(super) fn compute(clock: &Clock, birth: Option<&Birth>, mode: LifeMode) -> LifeMetric {
+    match mode {
+        LifeMode::Countdown => LifeMetric {
+            countdown: countdown(clock, birth),
+            elapsed_days: None,
+        },
+        LifeMode::ElapsedDays => LifeMetric {
+            countdown: clock.countdown("elapsed", None),
+            elapsed_days: birth.map(|birth| {
+                let date: Date = birth.date.parse().expect("出生日期已校验");
+                date.until(clock.date())
+                    .expect("日历日期有效")
+                    .get_days()
+                    .max(0)
+            }),
+        },
+    }
+}
+
+fn countdown(clock: &Clock, birth: Option<&Birth>) -> Countdown {
     let Some(birth) = birth else {
         return clock.countdown("unconfigured", None);
     };

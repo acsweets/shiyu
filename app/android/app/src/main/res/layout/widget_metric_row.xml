@@ -23,7 +23,7 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <TextView
+        <Chronometer
             android:id="@+id/widget_first_value"
             android:layout_width="match_parent"
             android:layout_height="21dp"
@@ -58,7 +58,7 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <TextView
+        <Chronometer
             android:id="@+id/widget_second_value"
             android:layout_width="match_parent"
             android:layout_height="21dp"

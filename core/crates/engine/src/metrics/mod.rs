@@ -17,7 +17,7 @@ use clock::{CalendarRemaining, Countdown};
 
 #[derive(Serialize)]
 pub(crate) struct Metrics<'a> {
-    life: Countdown,
+    life: life::LifeMetric,
     work: work::Work,
     retirement: Countdown,
     payday: payday::PaydayMetric,
@@ -25,6 +25,8 @@ pub(crate) struct Metrics<'a> {
     calendar_remaining: CalendarBreakdown,
     salary: salary::SalaryMetric<'a>,
     custom_countdowns: Vec<custom::CustomMetric<'a>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    hidden_metric_titles: &'a Vec<String>,
 }
 
 #[derive(Serialize)]
@@ -40,7 +42,7 @@ pub(crate) fn compute<'a>(
     clock: &Clock,
     next_midnight: i64,
 ) -> (Metrics<'a>, i64) {
-    let life = life::compute(clock, settings.birth.as_ref());
+    let life = life::compute(clock, settings.birth.as_ref(), settings.display.life_mode);
     let schedule = WorkSchedule::new(&settings.schedule);
     let work = work::compute(clock, calendar, &schedule);
     let retirement = retirement(clock, settings.retirement_date.as_deref());
@@ -54,7 +56,7 @@ pub(crate) fn compute<'a>(
     let salary = salary::compute(clock, calendar, &schedule, settings);
     let custom_countdowns = custom::compute(clock, &settings.custom_countdowns);
     let next_change = [
-        life.target_millis,
+        life.countdown.target_millis,
         work.next_boundary,
         retirement.target_millis,
         payday.countdown.target_millis,
@@ -70,7 +72,7 @@ pub(crate) fn compute<'a>(
     .filter(|target| *target > clock.millis())
     .fold(next_midnight, i64::min);
     let calendar_remaining = CalendarBreakdown {
-        life: clock.calendar_remaining(life.target_millis, false),
+        life: clock.calendar_remaining(life.countdown.target_millis, false),
         retirement: clock.calendar_remaining(retirement.target_millis, true),
     };
     (
@@ -83,6 +85,7 @@ pub(crate) fn compute<'a>(
             calendar_remaining,
             salary,
             custom_countdowns,
+            hidden_metric_titles: &settings.display.hidden_metric_titles,
         },
         next_change,
     )

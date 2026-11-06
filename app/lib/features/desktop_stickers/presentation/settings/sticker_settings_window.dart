@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../../../app/settings_locale.dart';
 import '../../../../l10n/generated/app_localizations.dart';
-import '../../../retirement/application/settings_editor.dart';
 import '../../../retirement/presentation/settings/business_settings_page.dart';
 import '../../application/sticker_business_access.dart';
 import '../../application/sticker_settings_state.dart';
@@ -21,12 +21,13 @@ Future<void> runStickerSettingsWindow(String ownerId) async {
   final _SettingsConnection connection = _SettingsConnection(owner);
   await windowManager.ensureInitialized();
   await windowManager.waitUntilReadyToShow(
-    const WindowOptions(
-      size: Size(940, 660),
-      minimumSize: Size(680, 490),
+    WindowOptions(
+      size: const Size(940, 660),
+      minimumSize: const Size(680, 490),
       center: true,
       title: '时余 · 设置',
-      backgroundColor: SettingsPaper.surface,
+      // Windows 的原生标题栏与按钮由系统配色，白底由 Flutter 内容绘制。
+      backgroundColor: Platform.isWindows ? null : SettingsPaper.surface,
       alwaysOnTop: true,
     ),
   );
@@ -128,11 +129,7 @@ class _SettingsAppState extends State<_SettingsApp> with WindowListener {
     windowManager.addListener(this);
   }
 
-  String? _readLocale() =>
-      SettingsEditor.object(
-            _session.state.business?.values['display'],
-          )['locale']
-          as String?;
+  String? _readLocale() => _session.state.preferredLocale;
 
   void _applyLocale() {
     final String? next = _readLocale();

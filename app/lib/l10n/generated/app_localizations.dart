@@ -109,6 +109,144 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @mobileMacaronGlass.
+  ///
+  /// In zh, this message translates to:
+  /// **'马卡龙玻璃'**
+  String get mobileMacaronGlass;
+
+  /// No description provided for @mobileCountdownSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'退休日期、出生日期和生命显示方式'**
+  String get mobileCountdownSummary;
+
+  /// No description provided for @mobileWorkSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作日、上下班、午休和薪资'**
+  String get mobileWorkSummary;
+
+  /// No description provided for @mobileCalendarSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'发薪日、节假日地区和调休'**
+  String get mobileCalendarSummary;
+
+  /// No description provided for @mobileTitlesSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'为每个倒计时单独显示或隐藏标题'**
+  String get mobileTitlesSummary;
+
+  /// No description provided for @mobileWidgetSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加组件、选配色和调整字号'**
+  String get mobileWidgetSummary;
+
+  /// No description provided for @mobileGeneralSummary.
+  ///
+  /// In zh, this message translates to:
+  /// **'时区、金额遮蔽和设置备份'**
+  String get mobileGeneralSummary;
+
+  /// No description provided for @mobileSaving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在保存…'**
+  String get mobileSaving;
+
+  /// No description provided for @mobileDiscardChanges.
+  ///
+  /// In zh, this message translates to:
+  /// **'放弃未保存的修改？'**
+  String get mobileDiscardChanges;
+
+  /// No description provided for @mobileDiscard.
+  ///
+  /// In zh, this message translates to:
+  /// **'放弃修改'**
+  String get mobileDiscard;
+
+  /// No description provided for @metricTitleVisibility.
+  ///
+  /// In zh, this message translates to:
+  /// **'逐项显示标题'**
+  String get metricTitleVisibility;
+
+  /// No description provided for @metricTitleVisibilityDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭后仍显示数值。浮窗或小组件的标题总开关也需要开启。'**
+  String get metricTitleVisibilityDetail;
+
+  /// No description provided for @lifeDisplayMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'生命指标显示方式'**
+  String get lifeDisplayMode;
+
+  /// No description provided for @lifeElapsedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'已存在世界'**
+  String get lifeElapsedTitle;
+
+  /// No description provided for @lifeElapsedValue.
+  ///
+  /// In zh, this message translates to:
+  /// **'{days} 天'**
+  String lifeElapsedValue(num days);
+
+  /// No description provided for @desktopAppearance.
+  ///
+  /// In zh, this message translates to:
+  /// **'外观'**
+  String get desktopAppearance;
+
+  /// No description provided for @desktopWindows.
+  ///
+  /// In zh, this message translates to:
+  /// **'窗口管理'**
+  String get desktopWindows;
+
+  /// No description provided for @desktopCountdowns.
+  ///
+  /// In zh, this message translates to:
+  /// **'倒计时'**
+  String get desktopCountdowns;
+
+  /// No description provided for @desktopCatAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'猫猫素材'**
+  String get desktopCatAssets;
+
+  /// No description provided for @desktopAppearanceDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'调整语言、配色和字号，并查看浮窗预览。'**
+  String get desktopAppearanceDescription;
+
+  /// No description provided for @desktopWindowsDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看各窗口的内容，合并、拆分或调整显示。'**
+  String get desktopWindowsDescription;
+
+  /// No description provided for @desktopCountdownsDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择桌面倒计时并配置退休日期。'**
+  String get desktopCountdownsDescription;
+
+  /// No description provided for @desktopCatAssetsDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'替换每个窗口的猫猫贴纸。'**
+  String get desktopCatAssetsDescription;
+
   /// No description provided for @floatingMode.
   ///
   /// In zh, this message translates to:
@@ -352,7 +490,7 @@ abstract class AppLocalizations {
   /// No description provided for @invalidDraft.
   ///
   /// In zh, this message translates to:
-  /// **'请检查下方字段，上次有效设置仍然保留。'**
+  /// **'请检查标出的字段，上次有效设置仍然保留。'**
   String get invalidDraft;
 
   /// No description provided for @invalidHoliday.
@@ -442,7 +580,7 @@ abstract class AppLocalizations {
   /// No description provided for @metricLife.
   ///
   /// In zh, this message translates to:
-  /// **'生命倒计时'**
+  /// **'静待百岁，好好生活'**
   String get metricLife;
 
   /// No description provided for @metricMonthSalary.
@@ -862,8 +1000,14 @@ abstract class AppLocalizations {
   /// No description provided for @widgetInstructions.
   ///
   /// In zh, this message translates to:
-  /// **'长按手机桌面，添加时余的倒计时或薪资小组件。编辑倒计时组件可选择主指标，刷新时间由系统调度。'**
+  /// **'长按手机桌面添加时余小组件。在支持编辑的系统上，可合并最多 4 项倒计时。薪资可在组件或应用首页手动刷新。'**
   String get widgetInstructions;
+
+  /// No description provided for @refreshEarnings.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新已赚'**
+  String get refreshEarnings;
 
   /// No description provided for @settingsError.
   ///

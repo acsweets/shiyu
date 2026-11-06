@@ -25,6 +25,11 @@ Future<void> _verifyModes(WidgetTester tester) async {
   controller.snapshot = RetirementSnapshot.fromJson(<String, dynamic>{
     'calendar_status': 'available',
     'is_workday': true,
+    'life': <String, dynamic>{
+      'status': 'active',
+      'remaining_seconds': 86401,
+      'target_millis': 120000000,
+    },
     'retirement': <String, dynamic>{
       'status': 'active',
       'remaining_days': 1,
@@ -71,6 +76,7 @@ Future<void> _verifyModes(WidgetTester tester) async {
   final StickerGroupView mini = _view(layout, controller);
   expect(mini.label('holiday'), 'On break');
   expect(mini.values['holiday'], '01:00:00');
+  expect(mini.values['life'], '1 d · 00:00:01');
   expect(mini.values.keys, <String>[
     'work',
     'today_salary',
@@ -101,6 +107,42 @@ Future<void> _verifyModes(WidgetTester tester) async {
   expect(find.byType(LinearProgressIndicator), findsOneWidget);
   expect(find.text('****'), findsNWidgets(2));
   expect(tester.takeException(), isNull);
+
+  controller.settings['display'] = <String, dynamic>{
+    'locale': 'en',
+    'enabled_metrics': <String>['work', 'holiday', 'life', 'retirement'],
+  };
+  for (final StickerMode mode in StickerMode.values) {
+    layout.setMode(mode);
+    final Map<String, String> visible = _view(layout, controller).values;
+    final Map<String, String> baseline = mode == StickerMode.mini
+        ? mini.values
+        : standard.values;
+    expect(visible, <String, String>{...baseline}..remove('today_salary'));
+  }
+
+  controller.snapshot = RetirementSnapshot.fromJson(<String, dynamic>{
+    ...controller.snapshot!.data,
+    'life': <String, dynamic>{'status': 'elapsed', 'elapsed_days': 1234},
+  });
+  expect(_view(layout, controller).values['life'], '1,234 days');
+  controller.settings['display'] = <String, dynamic>{
+    'locale': 'en',
+    'enabled_metrics': <String>[
+      'work',
+      'today_salary',
+      'holiday',
+      'retirement',
+    ],
+  };
+  for (final StickerMode mode in StickerMode.values) {
+    layout.setMode(mode);
+    final Map<String, String> visible = _view(layout, controller).values;
+    final Map<String, String> baseline = mode == StickerMode.mini
+        ? mini.values
+        : standard.values;
+    expect(visible, <String, String>{...baseline}..remove('life'));
+  }
 
   controller.settings['display'] = <String, dynamic>{
     'locale': 'en',

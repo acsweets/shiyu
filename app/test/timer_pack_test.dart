@@ -100,12 +100,13 @@ Future<void> _roundTrip() async {
   final Uint8List png = await File(StickerCatPose.sitting.asset).readAsBytes();
   final Uint8List raw = TimerPack(
     _theme,
-    StickerPalette.cool,
+    StickerPalette.macaronGlass,
     <StickerCatPose, Uint8List>{StickerCatPose.sitting: png},
   ).encode();
   final StickerSkinActions actions = StickerSkinActions(layout);
   await actions.install(raw);
   expect(layout.skin.data, _theme.data);
+  expect(layout.palette, StickerPalette.macaronGlass);
   final String? oldPath = layout.characterOf(0)?.file.path;
   expect(oldPath, isNotNull);
   expect(
@@ -118,6 +119,7 @@ Future<void> _roundTrip() async {
   addTearDown(restored.dispose);
   await restored.load();
   expect(restored.skin.data, _theme.data);
+  expect(restored.palette, StickerPalette.macaronGlass);
   expect(
     await FileSystemEntity.identical(
       restored.characterOf(0)!.file.path,

@@ -75,10 +75,63 @@ Future<void> verifyBusinessSettingsFlow(Directory directory) async {
     } finally {
       restarted.dispose();
     }
+    await _verifyPrivateRecovery(directory, exported);
   } finally {
     controller.dispose();
     final File file = File('${directory.path}/business-test-settings.json');
     if (await file.exists()) await file.delete();
+  }
+}
+
+Future<void> _verifyPrivateRecovery(
+  Directory directory,
+  String exported,
+) async {
+  final LocalSettingsStore primary = LocalSettingsStore(
+    directory,
+    fileName: 'recovery-primary.json',
+  );
+  final LocalSettingsStore backup = LocalSettingsStore(
+    directory,
+    fileName: 'recovery-backup.json',
+  );
+  final LocalSettingsStore archive = LocalSettingsStore(
+    directory,
+    fileName: 'recovery-archive.json',
+  );
+  final RustCoreGateway core = RustCoreGateway();
+  final SettingsValues previouslyVisible =
+      jsonDecode(exported) as SettingsValues;
+  previouslyVisible['hide_amount'] = false;
+  await backup.write(jsonEncode(previouslyVisible));
+  await primary.write('{');
+  final RetirementController restored = RetirementController(
+    core: core,
+    store: primary,
+    widgets: TestWidgets(),
+    repository: SettingsRepository(
+      core: core,
+      primary: primary,
+      backup: backup,
+      archive: archive,
+    ),
+  );
+  try {
+    await restored.initialize();
+    expect(restored.editingBlocked, isTrue);
+    expect(restored.canRestoreBackup, isTrue);
+    expect(
+      restored.snapshot!.data['salary'],
+      containsPair('today_earned', '****'),
+    );
+    expect(
+      restored.snapshot!.data['salary'],
+      containsPair('month_earned', '****'),
+    );
+    expect(await restored.peekSalary(), isNull);
+    expect(await primary.read(), '{');
+  } finally {
+    restored.dispose();
   }
 }
 

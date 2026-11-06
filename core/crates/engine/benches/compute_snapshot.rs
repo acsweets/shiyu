@@ -55,25 +55,28 @@ fn main() {
             })
         })
         .collect();
-    let settings = json!({
+    let mut settings = json!({
         "time_zone": "Asia/Shanghai",
         "birth": {"date": "1996-02-29", "life_expectancy_years": "100.5"},
         "retirement_date": "2065-05-01",
         "hide_amount": false,
         "salary": {"gross_monthly":"22000", "precision": 4},
         "payday": {"rule":"twice_monthly", "days":[15,31]},
-        "date_overrides": {"2026-11-07":true},
-        "custom_countdowns": custom
+        "date_overrides": {"2026-11-07":true}
     });
+    let catalog: Value = serde_json::from_str(include_str!(
+        "../../../../app/assets/holidays/calendar.json"
+    ))
+    .expect("内置日历 JSON 合法");
+    let payload = &catalog["packs"]["CN"]["payload"];
     let holidays = json!({
-        "schema_version":1, "region":"CN", "years":[2026],
-        "date_overrides":{"2026-11-06":false,"2026-11-09":false}
+        "schema_version": 1, "region": "CN", "years": payload["years"],
+        "date_overrides": payload["date_overrides"]
     });
-    measure(
-        "salary_and_20_countdowns",
-        &settings.to_string(),
-        &holidays.to_string(),
-    );
+    let holidays = holidays.to_string();
+    measure("all_builtin_metrics", &settings.to_string(), &holidays);
+    settings["custom_countdowns"] = json!(custom);
+    measure("salary_and_20_countdowns", &settings.to_string(), &holidays);
 }
 
 /// 单线程固定输入，报告完整 JSON 计算和序列化的延迟。
