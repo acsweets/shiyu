@@ -16,6 +16,8 @@ flutter test integration_test/retirement_test.dart -d macos
 flutter run -d macos
 ```
 
+macOS Release 构建若在加载 `futures_macro` 或 `thiserror_impl` 时报告 `E0463`，更新仓库后从 `app/` 重新执行 `flutter build macos --release`。Rust 工作区的 Release 配置会为过程宏和构建脚本禁用符号剥离，以避开 macOS 27 的动态库加载问题。参见 [Rust 上游问题](https://github.com/rust-lang/rust/issues/157750)。
+
 iOS 在 Xcode 启动模拟器后，从 `app/` 执行以下命令。`DEVICE_ID` 使用 `flutter devices` 的输出。
 
 ```sh

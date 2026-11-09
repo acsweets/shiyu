@@ -7,3 +7,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.95"
 publish = false
+
+# macOS 27 可能拒绝加载被剥离调试信息的过程宏动态库。
+[profile.release.build-override]
+strip = "none"
