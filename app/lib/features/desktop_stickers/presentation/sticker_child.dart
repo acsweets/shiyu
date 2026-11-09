@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../platform/desktop/desktop_window_bounds.dart';
+import '../../../platform/desktop/sticker_window_chrome.dart';
 import '../application/sticker_group_view.dart';
 import '../data/sticker_layout.dart';
 import 'countdown_sticker.dart';
@@ -39,8 +40,7 @@ Future<void> runStickerChild(Map<String, dynamic> options) async {
   }
   final StickerGroupView view = StickerGroupView(data);
   await windowManager.setTitle('时余 · 倒计时');
-  await windowManager.setAsFrameless();
-  await windowManager.setBackgroundColor(Colors.transparent);
+  await configureStickerWindowChrome();
   await windowManager.setAlwaysOnTop(true);
   await _applyDesktopBehavior(view);
   await windowManager.setSkipTaskbar(true);

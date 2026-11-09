@@ -4,6 +4,7 @@ import FlutterMacOS
 import ServiceManagement
 import desktop_multi_window
 import file_selector_macos
+import screen_retriever_macos
 import window_manager
 
 class MainFlutterWindow: NSWindow {
@@ -14,6 +15,9 @@ class MainFlutterWindow: NSWindow {
 
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
+    flutterViewController.backgroundColor = .clear
+    self.isOpaque = false
+    self.backgroundColor = .clear
     let windowFrame = self.frame
     self.contentViewController = flutterViewController
     self.setFrame(windowFrame, display: true)
@@ -28,7 +32,11 @@ class MainFlutterWindow: NSWindow {
 
     // 子窗仅控制自己的窗口，业务状态与全局入口由主窗管理。
     FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
+      controller.backgroundColor = .clear
       WindowManagerPlugin.register(with: controller.registrar(forPlugin: "WindowManagerPlugin"))
+      ScreenRetrieverMacosPlugin.register(
+        with: controller.registrar(forPlugin: "ScreenRetrieverMacosPlugin")
+      )
       FileSelectorPlugin.register(with: controller.registrar(forPlugin: "FileSelectorPlugin"))
     }
 

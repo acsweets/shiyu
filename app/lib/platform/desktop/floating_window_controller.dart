@@ -12,6 +12,7 @@ import '../../features/retirement/data/holiday_repository.dart';
 import 'desktop_bridge.dart';
 import 'desktop_options.dart';
 import 'desktop_window_bounds.dart';
+import 'sticker_window_chrome.dart';
 
 typedef WindowVisibilityChanged = void Function(bool visible);
 
@@ -70,8 +71,7 @@ class FloatingWindowController with TrayListener, WindowListener {
     _fullscreen = Platform.isWindows && await desktopFlag('desktopFullscreen');
     windowManager.addListener(this);
     await windowManager.setPreventClose(true);
-    await windowManager.setAsFrameless();
-    await windowManager.setBackgroundColor(Colors.transparent);
+    await configureStickerWindowChrome();
     await windowManager.setAlwaysOnTop(true);
     await windowManager.setMinimumSize(StickerLayout.minimum);
     await windowManager.setSize(const Size(280, 172));
