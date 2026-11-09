@@ -299,6 +299,20 @@ Future<void> _verifyMetricSwitches(
     expect(tester.widget<Switch>(toggle).value, isTrue);
     expect(controller.displaySettings['enabled_metrics'], contains(id));
   }
+  final Finder amount = find.byKey(const ValueKey<String>('amount-privacy'));
+  await tester.ensureVisible(amount);
+  expect(tester.widget<Switch>(amount).value, isTrue);
+  await tester.tap(amount);
+  await tester.pumpAndSettle();
+  expect(controller.settings['hide_amount'], isFalse);
+  expect(
+    controller.displaySettings['enabled_metrics'],
+    contains('today_salary'),
+  );
+  expect(tester.widget<Switch>(amount).value, isFalse);
+  await tester.tap(amount);
+  await tester.pumpAndSettle();
+  expect(controller.settings['hide_amount'], isTrue);
   expect(controller.preferredLocale, 'zh');
   await tester.tap(find.widgetWithText(TextButton, '外观'));
   await tester.pumpAndSettle();

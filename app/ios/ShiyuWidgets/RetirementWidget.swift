@@ -6,11 +6,13 @@ private struct WidgetTimeline {
     let metric: WidgetMetric
     /// 由组件的 App Intent 配置传入。
     var additionalMetrics: [WidgetMetric] = []
-    var salary = false
+    /// 既有中尺寸组件的默认布局开关。
+    var useMediumPreset = true
 
     func placeholder() -> ShiyuWidgetEntry {
         ShiyuWidgetEntry(date: Date(), snapshot: nil, appearance: WidgetAppearance(),
-                         locale: nil, metric: metric, additionalMetrics: additionalMetrics)
+                         locale: nil, metric: metric, additionalMetrics: additionalMetrics,
+                         useMediumPreset: useMediumPreset)
     }
 
     func snapshot() -> ShiyuWidgetEntry {
@@ -22,12 +24,13 @@ private struct WidgetTimeline {
         let appearance = WidgetAppearance.load()
         let input = WidgetInputs.load()
         let first = entry(now, input, appearance)
-        let horizon = now.addingTimeInterval(salary ? 60 : 900)
+        let horizon = now.addingTimeInterval(first.hasEarnings ? 60 : 900)
         let boundary = first.snapshot.map {
             Date(timeIntervalSince1970: Double($0.next_change_at_millis) / 1000)
         }
         // 薪资只保留当前样本，隐藏金额变更后无需等预先生成的金额条目过期。
-        if !salary, let boundary, boundary > now, boundary <= horizon {
+        if let boundary, boundary > now, boundary <= horizon {
+            if first.hasEarnings { return Timeline(entries: [first], policy: .after(boundary)) }
             let changed = entry(boundary, input, appearance)
             let refresh = max(now.addingTimeInterval(60), boundary.addingTimeInterval(1))
             return Timeline(entries: [first, changed], policy: .after(refresh))
@@ -38,7 +41,8 @@ private struct WidgetTimeline {
     private func entry(_ date: Date, _ input: WidgetInputs, _ appearance: WidgetAppearance) -> ShiyuWidgetEntry {
         ShiyuWidgetEntry(date: date, snapshot: input.snapshot(at: date),
                          appearance: appearance, locale: input.locale,
-                         metric: metric, additionalMetrics: additionalMetrics)
+                         metric: metric, additionalMetrics: additionalMetrics,
+                         useMediumPreset: useMediumPreset)
     }
 }
 
@@ -59,10 +63,13 @@ private struct ShiyuStaticProvider: TimelineProvider {
 @available(iOS 17.0, *)
 enum CountdownOption: String, AppEnum {
     case work, holiday, payday, retirement, life
+    case todaySalary = "today_salary"
+    case monthSalary = "month_salary"
 
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Countdown"
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Widget metric"
     static var caseDisplayRepresentations: [Self: DisplayRepresentation] = [
         .work: "Work", .holiday: "Holiday", .payday: "Payday", .retirement: "Retirement", .life: "Life",
+        .todaySalary: "Earned today", .monthSalary: "Earned this month",
     ]
 
     var metric: WidgetMetric { WidgetMetric(rawValue: rawValue) ?? .retirement }
@@ -70,24 +77,23 @@ enum CountdownOption: String, AppEnum {
 
 @available(iOS 17.0, *)
 struct CountdownConfiguration: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Choose a countdown"
-    static var description: IntentDescription = "Choose a main countdown and up to three additional countdowns."
+    static var title: LocalizedStringResource = "Choose what to display"
+    static var description: IntentDescription = "Combine up to four countdown or earnings metrics."
 
-    @Parameter(title: "Countdown", default: .retirement)
+    @Parameter(title: "Main metric", default: .retirement)
     var option: CountdownOption
 
-    @Parameter(title: "Second countdown")
+    @Parameter(title: "Second metric")
     var second: CountdownOption?
 
-    @Parameter(title: "Third countdown")
+    @Parameter(title: "Third metric")
     var third: CountdownOption?
 
-    @Parameter(title: "Fourth countdown")
+    @Parameter(title: "Fourth metric")
     var fourth: CountdownOption?
 
-    fileprivate var timeline: WidgetTimeline {
-        WidgetTimeline(metric: option.metric, additionalMetrics: [second, third, fourth].compactMap { $0?.metric })
-    }
+    @Parameter(title: "Use medium preset for one countdown", default: true)
+    var useMediumPreset: Bool
 }
 
 /// 用户交互完成后，WidgetKit 重新生成时间线并从 Rust 读取当前金额。
@@ -107,11 +113,20 @@ private struct CountdownIntentProvider: AppIntentTimelineProvider {
     }
 
     func snapshot(for configuration: CountdownConfiguration, in context: Context) async -> ShiyuWidgetEntry {
-        configuration.timeline.snapshot()
+        configuredTimeline(configuration).snapshot()
     }
 
     func timeline(for configuration: CountdownConfiguration, in context: Context) async -> Timeline<ShiyuWidgetEntry> {
-        configuration.timeline.make()
+        configuredTimeline(configuration).make()
+    }
+
+    private func configuredTimeline(_ configuration: CountdownConfiguration) -> WidgetTimeline {
+        let additional = [configuration.second, configuration.third, configuration.fourth]
+        return WidgetTimeline(
+            metric: configuration.option.metric,
+            additionalMetrics: additional.compactMap { $0?.metric },
+            useMediumPreset: configuration.useMediumPreset
+        )
     }
 }
 
@@ -135,24 +150,25 @@ private struct ShiyuCountdownWidget: Widget {
     var body: some WidgetConfiguration {
         configuration()
             .configurationDisplayName("时余 · Countdown")
-            .description("Work, holidays, payday, retirement, and life.")
+            .description("Combine countdowns and earnings in one card.")
             .supportedFamilies([.systemSmall, .systemMedium])
+            .contentMarginsDisabled()
     }
 }
 
-/// 在 iOS 15 和 16 上可直接添加对应的固定主指标，也保留已有退休组件。
+/// 系统图库提供单项卡，既有倒计时组件保留原系统标识。
 private struct ShiyuFixedCountdownWidget: Widget {
     let metric: WidgetMetric
 
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: "ShiyuCountdown.\(metric.rawValue)",
-            provider: ShiyuStaticProvider(timeline: WidgetTimeline(metric: metric))
+            provider: ShiyuStaticProvider(timeline: WidgetTimeline(metric: metric, useMediumPreset: false))
         ) { entry in
             ShiyuWidgetCard(entry: entry)
         }
         .configurationDisplayName(metric.title(chinese: Locale.preferredLanguages.first?.hasPrefix("zh") == true))
-        .description("Shiyu countdown")
+        .description("One Shiyu metric.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -161,14 +177,16 @@ private struct ShiyuEarningsWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: "ShiyuEarnings",
-            provider: ShiyuStaticProvider(timeline: WidgetTimeline(metric: .retirement, salary: true))
+            provider: ShiyuStaticProvider(timeline: WidgetTimeline(
+                metric: .todaySalary, additionalMetrics: [.monthSalary], useMediumPreset: false
+            ))
         ) { entry in
-            ShiyuWidgetCard(entry: entry, salary: true)
+            ShiyuWidgetCard(entry: entry)
         }
         .configurationDisplayName("时余 · Earnings")
         .description("Earnings today and this month.")
         .supportedFamilies([.systemSmall, .systemMedium])
-            .contentMarginsDisabled()
+        .contentMarginsDisabled()
     }
 }
 
@@ -178,6 +196,15 @@ struct ShiyuWidgetBundle: WidgetBundle {
         ShiyuCountdownWidget()
         ShiyuEarningsWidget()
         FixedCountdownWidgets().body
+        FixedEarningsWidgets().body
+    }
+}
+
+/// 旧系统也能从图库添加单项薪资卡。
+private struct FixedEarningsWidgets: WidgetBundle {
+    var body: some Widget {
+        ShiyuFixedCountdownWidget(metric: .todaySalary)
+        ShiyuFixedCountdownWidget(metric: .monthSalary)
     }
 }
 

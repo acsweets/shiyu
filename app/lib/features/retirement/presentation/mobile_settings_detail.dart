@@ -6,6 +6,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../application/retirement_controller.dart';
 import '../application/settings_access.dart';
 import '../application/settings_editor.dart';
+import '../domain/metric_preferences.dart';
 import 'settings/calendar_settings.dart';
 import 'settings/display_settings.dart';
 import 'settings/general_settings.dart';
@@ -126,10 +127,7 @@ class _MobileSettingsDetailState extends State<MobileSettingsDetail> {
   }
 
   Widget _form() => switch (widget.section) {
-    MobileSettingsSection.countdowns => PersonalSettings(
-      editor: _editor,
-      showTimeZone: false,
-    ),
+    MobileSettingsSection.countdowns => _countdownSettings(),
     MobileSettingsSection.work => WorkSettings(
       editor: _editor,
       useTimePickers: true,
@@ -144,6 +142,46 @@ class _MobileSettingsDetailState extends State<MobileSettingsDetail> {
       mobile: true,
     ),
   };
+
+  Widget _countdownSettings() {
+    final AppLocalizations strings = AppLocalizations.of(context);
+    final bool showToday = enabledMetricIds(_editor.group('display'))
+        .contains(todaySalaryId);
+    return Column(
+      children: <Widget>[
+        SwitchListTile(
+          key: const ValueKey<String>('metric-visibility-today_salary'),
+          contentPadding: EdgeInsets.zero,
+          title: Text(strings.showTodayEarnings),
+          value: showToday,
+          onChanged: _editor.blocked ? null : _setTodayEarnings,
+        ),
+        SwitchListTile(
+          key: const ValueKey<String>('amount-privacy'),
+          contentPadding: EdgeInsets.zero,
+          title: Text(strings.hideSalary),
+          subtitle: Text(strings.hideEarningsDetail),
+          value: _editor.draft['hide_amount'] != false,
+          onChanged: _editor.blocked ? null : _setAmountHidden,
+        ),
+        const Divider(height: 28),
+        PersonalSettings(editor: _editor, showTimeZone: false),
+      ],
+    );
+  }
+
+  void _setTodayEarnings(bool visible) {
+    final Set<String> enabled = enabledMetricIds(_editor.group('display'))
+        .toSet();
+    if (visible) {
+      enabled.add(todaySalaryId);
+    } else {
+      enabled.remove(todaySalaryId);
+    }
+    _editor.changeGroup('display', 'enabled_metrics', enabled.toList());
+  }
+
+  void _setAmountHidden(bool hidden) => _editor.change('hide_amount', hidden);
 
   Widget _saveBar(BuildContext context, AppLocalizations strings) => SafeArea(
     top: false,

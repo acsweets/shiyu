@@ -1,7 +1,6 @@
 package com.growthrecord.shiyu.widgets
 
 import android.content.Context
-import android.content.res.Configuration
 import com.growthrecord.shiyu.R
 import org.json.JSONObject
 import java.text.NumberFormat
@@ -12,7 +11,12 @@ internal enum class WidgetMetric(val field: String, val label: Int) {
     HOLIDAY("holiday", R.string.widget_holiday),
     PAYDAY("payday", R.string.widget_payday),
     RETIREMENT("retirement", R.string.widget_heading),
-    LIFE("life", R.string.widget_life);
+    LIFE("life", R.string.widget_life),
+    TODAY_SALARY("today_salary", R.string.widget_today_earned),
+    MONTH_SALARY("month_salary", R.string.widget_month_earned);
+
+    /** 薪资共用快照、刷新与逐项标题设置。 */
+    val isEarnings: Boolean get() = this == TODAY_SALARY || this == MONTH_SALARY
 
     companion object {
         fun read(name: String?): WidgetMetric = entries.firstOrNull { it.field == name } ?: RETIREMENT
@@ -24,15 +28,18 @@ internal data class WidgetLine(
     val value: String,
     val titleVisible: Boolean,
     val targetMillis: Long? = null,
+    /** 薪资标题仍由自身的逐项开关决定。 */
+    val isEarnings: Boolean = false,
 )
 
 /** 只格式化 Rust 产生的秒数和十进制字符串。 */
 internal class WidgetMetrics(context: Context, locale: String?, private val snapshot: JSONObject?) {
-    val text: Context = if (locale == null) context else context.createConfigurationContext(
-        Configuration(context.resources.configuration).apply { setLocale(Locale.forLanguageTag(locale)) },
-    )
+    val text: Context = WidgetLocale.resources(context, locale)
 
-    fun countdown(metric: WidgetMetric): WidgetLine {
+    fun read(metric: WidgetMetric): WidgetLine =
+        if (metric.isEarnings) earnings(metric) else countdown(metric)
+
+    private fun countdown(metric: WidgetMetric): WidgetLine {
         val item = snapshot?.optJSONObject(metric.field)
         val seconds = item?.optLong("remaining_seconds")?.coerceAtLeast(0) ?: 0L
         val label = when (item?.optString("target_kind")) {
@@ -65,17 +72,16 @@ internal class WidgetMetrics(context: Context, locale: String?, private val snap
         return line(metric.field, label, value).copy(targetMillis = target)
     }
 
-    fun earnings(month: Boolean): WidgetLine {
+    private fun earnings(metric: WidgetMetric): WidgetLine {
         val salary = snapshot?.optJSONObject("salary")
-        val field = if (month) "month_earned" else "today_earned"
-        val label = if (month) R.string.widget_month_earned else R.string.widget_today_earned
+        val field = if (metric == WidgetMetric.MONTH_SALARY) "month_earned" else "today_earned"
         val value = when {
             salary == null -> text.getString(R.string.widget_error)
             salary.optBoolean("hidden") -> "****"
             salary.isNull(field) -> text.getString(R.string.widget_not_configured)
             else -> "${salary.getString(field)} ${salary.optString("currency")}".trim()
         }
-        return line(if (month) "month_salary" else "today_salary", label, value)
+        return line(metric.field, metric.label, value).copy(isEarnings = true)
     }
 
     private fun line(id: String, label: Int, value: String): WidgetLine {

@@ -15,7 +15,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.growthrecord.shiyu.R
 
-/** 选择当前实例的倒计时组合，保存后刷新系统桌面。 */
+/** 选择当前实例的显示指标，保存后刷新系统桌面。 */
 class WidgetConfigurationActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +28,7 @@ class WidgetConfigurationActivity : Activity() {
             return
         }
         val locale = runCatching { WidgetInputs.read(this).locale }.getOrNull()
-        val text = WidgetMetrics(this, locale, null).text
+        val text = WidgetLocale.resources(this, locale)
         val accent = Color.rgb(141, 75, 49)
         val body = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -81,7 +81,7 @@ class WidgetConfigurationActivity : Activity() {
         updateSelection()
         body.addView(save)
         body.addView(Button(this).apply {
-            this.text = text.getString(android.R.string.cancel)
+            this.text = text.getString(R.string.widget_cancel)
             setOnClickListener { finish() }
         })
         setContentView(ScrollView(this).apply {

@@ -31,6 +31,7 @@ class WidgetBridge {
     if (supported) await _channel.invokeMethod<void>('refresh');
   }
 
+  /// 返回值只表示系统是否接收了请求，桌面可能仍需用户确认。
   Future<bool> pin({bool salary = false}) async {
     if (!offersPin) return false;
     return await _channel.invokeMethod<bool>(
@@ -39,4 +40,8 @@ class WidgetBridge {
         ) ??
         false;
   }
+
+  /// 打开手机桌面，便于从启动器的小组件列表手动添加。
+  Future<void> openHomeScreen() =>
+      _channel.invokeMethod<void>('openHomeScreen');
 }

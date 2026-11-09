@@ -3,7 +3,7 @@ package com.growthrecord.shiyu.widgets
 import android.content.Context
 
 /** 未编辑过的组件沿用原有宽窄布局，保存后固定使用所选组合。 */
-internal data class WidgetCountdownGroup(val metrics: List<WidgetMetric>, val automatic: Boolean) {
+internal data class WidgetMetricGroup(val metrics: List<WidgetMetric>, val automatic: Boolean) {
     fun displayed(wide: Boolean): List<WidgetMetric> {
         if (!automatic || !wide) return metrics
         val last = if (metrics.first() == WidgetMetric.LIFE) WidgetMetric.LIFE else WidgetMetric.RETIREMENT
@@ -19,14 +19,14 @@ internal object WidgetSelection {
     private fun preferences(context: Context) =
         context.getSharedPreferences("widget_selection", Context.MODE_PRIVATE)
 
-    fun read(context: Context, id: Int): WidgetCountdownGroup {
+    fun read(context: Context, id: Int): WidgetMetricGroup {
         val value = preferences(context).getString(id.toString(), null)
         if (value?.startsWith(prefix) == true) {
             val fields = value.removePrefix(prefix).split(",").toSet()
             val metrics = WidgetMetric.entries.filter { it.field in fields }.take(limit)
-            if (metrics.isNotEmpty()) return WidgetCountdownGroup(metrics, automatic = false)
+            if (metrics.isNotEmpty()) return WidgetMetricGroup(metrics, automatic = false)
         }
-        return WidgetCountdownGroup(listOf(WidgetMetric.read(value)), automatic = true)
+        return WidgetMetricGroup(listOf(WidgetMetric.read(value)), automatic = true)
     }
 
     fun write(context: Context, id: Int, metrics: List<WidgetMetric>): Boolean {

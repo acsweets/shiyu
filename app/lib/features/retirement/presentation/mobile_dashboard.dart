@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/theme/settings_paper.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../application/retirement_controller.dart';
+import '../domain/metric_preferences.dart';
 import 'metrics/snapshot_metrics.dart';
 import 'mobile_settings_page.dart';
 
@@ -100,7 +101,7 @@ class MobileDashboard extends StatelessWidget {
     SnapshotMetrics metrics,
   ) {
     const Map<String, IconData> items = <String, IconData>{
-      'today_salary': Icons.account_balance_wallet_outlined,
+      todaySalaryId: Icons.account_balance_wallet_outlined,
       'month_salary': Icons.stacked_line_chart_rounded,
       'holiday': Icons.event_available_outlined,
       'payday': Icons.payments_outlined,
@@ -113,12 +114,15 @@ class MobileDashboard extends StatelessWidget {
     final double width = twoColumns
         ? (constraints.maxWidth - gap) / 2
         : constraints.maxWidth;
+    final bool showToday = enabledMetricIds(controller.displaySettings)
+        .contains(todaySalaryId);
     return Wrap(
       spacing: gap,
       runSpacing: gap,
       children: <Widget>[
         for (final MapEntry<String, IconData> item in items.entries)
-          SizedBox(width: width, child: _card(metrics, item.key, item.value)),
+          if (item.key != todaySalaryId || showToday)
+            SizedBox(width: width, child: _card(metrics, item.key, item.value)),
       ],
     );
   }

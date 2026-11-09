@@ -474,6 +474,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timeZoneLabel => 'IANA-Zeitzone';
 
   @override
+  String get timeZoneSearch => 'Zeitzonen suchen';
+
+  @override
+  String get timeZoneNoMatches => 'Keine passende Zeitzone';
+
+  @override
+  String get showTodayEarnings => 'Heutigen Verdienst anzeigen';
+
+  @override
+  String get hideEarningsDetail =>
+      'Die Beträge für heute und diesen Monat als **** anzeigen.';
+
+  @override
   String get saveSettings => 'Zeitzone speichern';
 
   @override
@@ -487,7 +500,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Halte den Startbildschirm gedrückt, um ein Shiyu-Widget hinzuzufügen. Beim Bearbeiten kannst du bis zu vier Countdowns kombinieren. Den Verdienst kannst du im Widget oder auf der App-Startseite aktualisieren.';
+      'Halte den Startbildschirm gedrückt, um ein Shiyu-Widget hinzuzufügen. Beim Bearbeiten kannst du bis zu vier Countdown- oder Verdienstwerte auswählen. Für eine getrennte Anzeige füge je Wert ein Widget hinzu.';
+
+  @override
+  String get widgetPinRequested =>
+      'Anfrage gesendet. Bestätige sie auf dem Startbildschirm. Wenn kein Dialog erscheint, halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetPinManual =>
+      'Der Startbildschirm hat die Anfrage nicht angenommen. Halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetOpenHome => 'Zum Startbildschirm';
 
   @override
   String get refreshEarnings => 'Verdienst aktualisieren';

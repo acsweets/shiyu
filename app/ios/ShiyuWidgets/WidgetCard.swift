@@ -4,24 +4,10 @@ import WidgetKit
 
 struct ShiyuWidgetCard: View {
     let entry: ShiyuWidgetEntry
-    var salary = false
 
     @Environment(\.widgetFamily) private var family
     private var compact: Bool { family == .systemSmall }
     private var appearance: WidgetAppearance { entry.appearance }
-
-    /// 保留既有组件的默认布局，显式追加时只显示去重后的选择。
-    private var countdowns: [WidgetMetric] {
-        if entry.additionalMetrics.isEmpty {
-            if compact { return [entry.metric] }
-            return [.work, .holiday, .payday, entry.metric == .life ? .life : .retirement]
-        }
-        var selected = [entry.metric]
-        for metric in entry.additionalMetrics where !selected.contains(metric) {
-            selected.append(metric)
-        }
-        return selected
-    }
 
     var body: some View {
         if #available(iOS 17.0, *) {
@@ -32,28 +18,26 @@ struct ShiyuWidgetCard: View {
     }
 
     private var surface: some View {
-        ZStack(alignment: .top) {
+        let metrics = entry.displayedMetrics(compact: compact)
+        let denseEarnings = entry.hasEarnings && compact
+        return ZStack(alignment: .top) {
             VStack(spacing: 4) {
-                if salary {
-                    if #available(iOS 17.0, *) {
-                        earningsRefresh
-                    }
-                    earnings
-                } else {
-                    countdownGrid
+                if #available(iOS 17.0, *), entry.hasEarnings {
+                    earningsRefresh
                 }
+                metricGrid(metrics)
             }
             .foregroundColor(appearance.colors.ink)
             .padding(.horizontal, 6)
             .padding(.vertical, 5)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(cardBackground)
-            .padding(.top, 28)
+            .padding(.top, denseEarnings ? 23 : 28)
 
             Image("widget_cat", bundle: .main)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 44, height: 34)
+                .frame(width: denseEarnings ? 38 : 44, height: denseEarnings ? 29 : 34)
                 .accessibilityHidden(true)
         }
     }
@@ -71,13 +55,18 @@ struct ShiyuWidgetCard: View {
         .accessibilityLabel(Text(entry.chinese ? "刷新已赚" : "Refresh earnings"))
     }
 
-    private var countdownGrid: some View {
-        let metrics = countdowns
+    /// 金额和倒计时走同一网格，混排时保持统一的数字大小。
+    private func metricGrid(_ metrics: [WidgetMetric]) -> some View {
         let columns = compact && metrics.count <= 2 ? 1 : 2
+        let earningsOnly = metrics.allSatisfy(\.isEarnings)
         return ForEach(Array(stride(from: 0, to: metrics.count, by: columns)), id: \.self) { index in
             HStack(spacing: 6) {
                 ForEach(metrics[index..<min(index + columns, metrics.count)], id: \.self) { metric in
-                    countdown(metric, single: metrics.count == 1)
+                    if metric.isEarnings {
+                        earning(metric, prominent: earningsOnly)
+                    } else {
+                        countdown(metric, single: metrics.count == 1)
+                    }
                 }
             }
         }
@@ -92,27 +81,13 @@ struct ShiyuWidgetCard: View {
         }
     }
 
-    @ViewBuilder private var earnings: some View {
-        if compact {
-            VStack(spacing: 3) {
-                earning(month: false)
-                earning(month: true)
-            }
-        } else {
-            HStack(spacing: 6) {
-                earning(month: false)
-                earning(month: true)
-            }
-        }
-    }
-
-    private func earning(month: Bool) -> some View {
-        let label = month
-            ? (entry.chinese ? "本月已赚" : "Earned this month")
-            : (entry.chinese ? "今日已赚" : "Earned today")
+    private func earning(_ metric: WidgetMetric, prominent: Bool) -> some View {
+        let label = metric.title(chinese: entry.chinese)
+        let month = metric == .monthSalary
         let value = entry.snapshot?.salary.amount(month: month, chinese: entry.chinese)
             ?? (entry.chinese ? "检查设置" : "Check settings")
-        return line(label, id: month ? "month_salary" : "today_salary", size: compact ? 17 : 23, alwaysLabel: true) {
+        let size: CGFloat = prominent ? (compact ? 17 : 23) : 16
+        return line(label, id: metric.rawValue, size: size, alwaysLabel: true) {
             Text(value).privacySensitive()
         }
     }

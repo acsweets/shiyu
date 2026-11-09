@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 
 import '../../retirement/application/retirement_controller.dart';
+import '../../retirement/domain/metric_preferences.dart';
 import '../../retirement/presentation/metrics/snapshot_metrics.dart';
 import '../data/skins/sticker_skin_settings.dart';
 import '../data/sticker_cat_pose.dart';
@@ -83,7 +84,7 @@ class StickerGroupView {
     SnapshotMetrics metrics,
     RetirementController controller,
   ) {
-    if (id == StickerMetricSelection.todaySalaryId) {
+    if (id == todaySalaryId) {
       final bool showAmount =
           controller.settings['hide_amount'] == false &&
           !controller.editingBlocked;

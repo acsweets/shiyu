@@ -29,6 +29,9 @@ class _MobileWidgetSettingsPageState extends State<MobileWidgetSettingsPage> {
   /// 串行写入，避免快速切换时旧外观覆盖新选择。
   Future<void> _pendingWrite = Future<void>.value();
 
+  bool _addingWidget = false;
+  bool? _pinRequested;
+
   @override
   void initState() {
     super.initState();
@@ -112,28 +115,64 @@ class _MobileWidgetSettingsPageState extends State<MobileWidgetSettingsPage> {
       if (widget.bridge.offersPin) ...<Widget>[
         const SizedBox(height: 14),
         OutlinedButton.icon(
-          onPressed: () => _addWidget(salary: false),
+          onPressed: _addingWidget ? null : _addCountdownWidget,
           icon: const Icon(Icons.add_rounded),
           label: Text(strings.addWidget),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
-          onPressed: () => _addWidget(salary: true),
+          onPressed: _addingWidget ? null : _addSalaryWidget,
           icon: const Icon(Icons.add_rounded),
           label: Text(strings.addSalaryWidget),
+        ),
+        if (_pinRequested case final bool requested)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Semantics(
+              liveRegion: true,
+              child: Text(
+                requested
+                    ? strings.widgetPinRequested
+                    : strings.widgetPinManual,
+              ),
+            ),
+          ),
+        TextButton.icon(
+          onPressed: _addingWidget ? null : _openHomeScreen,
+          icon: const Icon(Icons.home_outlined),
+          label: Text(strings.widgetOpenHome),
         ),
       ],
     ],
   );
 
+  Future<void> _addCountdownWidget() => _addWidget(salary: false);
+
+  Future<void> _addSalaryWidget() => _addWidget(salary: true);
+
   Future<void> _addWidget({required bool salary}) async {
+    setState(() {
+      _addingWidget = true;
+      _pinRequested = null;
+    });
     bool requested = false;
     try {
       requested = await widget.bridge.pin(salary: salary);
     } catch (_) {
       // 启动器不支持应用请求时，引导用户手动添加。
     }
-    if (!requested && mounted) {
+    if (!mounted) return;
+    setState(() {
+      _addingWidget = false;
+      _pinRequested = requested;
+    });
+  }
+
+  Future<void> _openHomeScreen() async {
+    try {
+      await widget.bridge.openHomeScreen();
+    } catch (_) {
+      if (!mounted) return;
       _showMessage(AppLocalizations.of(context).widgetInstructions);
     }
   }

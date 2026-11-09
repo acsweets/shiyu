@@ -451,6 +451,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get timeZoneLabel => 'IANA タイムゾーン';
 
   @override
+  String get timeZoneSearch => 'タイムゾーンを検索';
+
+  @override
+  String get timeZoneNoMatches => '一致するタイムゾーンがありません';
+
+  @override
+  String get showTodayEarnings => '今日の給与を表示';
+
+  @override
+  String get hideEarningsDetail => '今日と今月の金額を **** で隠します。';
+
+  @override
   String get saveSettings => 'タイムゾーンを保存';
 
   @override
@@ -464,7 +476,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'ホーム画面を長押しして時余のウィジェットを追加します。編集できる場合は、カウントダウンを最大4件まとめられます。給与はウィジェットまたはアプリのホーム画面から更新できます。';
+      'ホーム画面を長押しして時余のウィジェットを追加します。編集できる場合は、カウントダウンや給与から最大4項目を選べます。個別に表示するには、ウィジェットを項目ごとに追加します。';
+
+  @override
+  String get widgetPinRequested =>
+      '追加をリクエストしました。ホーム画面で確認してください。確認画面が出ない場合は、ホーム画面の空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
+
+  @override
+  String get widgetPinManual =>
+      'ホーム画面でリクエストを受け付けられませんでした。空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
+
+  @override
+  String get widgetOpenHome => 'ホーム画面へ';
 
   @override
   String get refreshEarnings => '給与を更新';

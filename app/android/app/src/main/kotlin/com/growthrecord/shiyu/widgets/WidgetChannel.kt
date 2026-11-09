@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Build
 import com.growthrecord.shiyu.BuildConfig
 import com.growthrecord.shiyu.core.computeTimeline
@@ -40,9 +41,13 @@ object WidgetChannel {
                     "pin" -> {
                         val manager = AppWidgetManager.getInstance(context)
                         val provider = if (call.arguments == "salary") SalaryWidget::class.java else RetirementWidget::class.java
-                        val pinned = Build.VERSION.SDK_INT >= 26 && manager.isRequestPinAppWidgetSupported &&
+                        val requested = Build.VERSION.SDK_INT >= 26 && manager.isRequestPinAppWidgetSupported &&
                             manager.requestPinAppWidget(ComponentName(context, provider), null, null)
-                        result.success(pinned)
+                        result.success(requested)
+                    }
+                    "openHomeScreen" -> {
+                        context.startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
+                        result.success(null)
                     }
                     "snapshot" -> {
                         val now = (call.arguments as Number).toLong()

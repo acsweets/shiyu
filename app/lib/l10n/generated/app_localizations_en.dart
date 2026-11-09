@@ -473,6 +473,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeZoneLabel => 'IANA time zone';
 
   @override
+  String get timeZoneSearch => 'Search time zones';
+
+  @override
+  String get timeZoneNoMatches => 'No matching time zones';
+
+  @override
+  String get showTodayEarnings => 'Show earned today';
+
+  @override
+  String get hideEarningsDetail =>
+      'Mask both today\'s and this month\'s amounts as ****.';
+
+  @override
   String get saveSettings => 'Save time zone';
 
   @override
@@ -486,7 +499,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Touch and hold the home screen to add a Shiyu widget. Where editing is supported, combine up to four countdowns. Refresh earnings from the widget or the app home screen.';
+      'Touch and hold the home screen to add a Shiyu widget. Where editing is supported, choose one to four countdown or earnings metrics. Add one widget per metric to display them separately.';
+
+  @override
+  String get widgetPinRequested =>
+      'Request sent. Confirm it on the home screen. If no prompt appears, touch and hold an empty area and choose Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetPinManual =>
+      'The home screen didn’t accept the request. Touch and hold an empty area there and choose Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetOpenHome => 'Go to home screen';
 
   @override
   String get refreshEarnings => 'Refresh earnings';

@@ -193,10 +193,7 @@ class FloatingWindowController with TrayListener, WindowListener {
   Future<void> toggleAmount() async {
     final RetirementController? state = business;
     if (state == null) return;
-    await state.saveSettings(<String, dynamic>{
-      ...state.settings,
-      'hide_amount': state.settings['hide_amount'] == false,
-    });
+    await state.setAmountHidden(state.settings['hide_amount'] == false);
   }
 
   void _businessChanged() => unawaited(_refreshMenu());

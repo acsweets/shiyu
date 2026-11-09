@@ -256,6 +256,9 @@ class StickerSettingsHost {
         } else {
           layout.toggle(id, visible);
         }
+      case StickerSetting.amountHidden:
+        saved = await controller.setAmountHidden(args['value'] as bool);
+        if (!saved) message = '无法保存金额显示设置';
       case StickerSetting.retirement:
         final bool saved = await controller.save(
           args['date'] as String?,

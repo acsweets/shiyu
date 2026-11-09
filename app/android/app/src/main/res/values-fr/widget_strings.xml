@@ -1,0 +1,33 @@
+<resources>
+    <string name="widget_title">Shiyu · Compte à rebours</string>
+    <string name="widget_heading">Compte à rebours avant la retraite</string>
+    <string name="widget_life">Temps de vie restant</string>
+    <string name="widget_life_elapsed">Jours vécus</string>
+    <string name="widget_expired">Terminé</string>
+    <plurals name="widget_days_lived">
+        <item quantity="one">%1$s jour</item>
+        <item quantity="other">%1$s jours</item>
+    </plurals>
+    <string name="widget_duration">%1$s j %2$s</string>
+    <string name="widget_retired">À la retraite</string>
+    <string name="widget_setup">Choisir la date de retraite</string>
+    <string name="widget_error">Vérifiez les réglages</string>
+    <string name="widget_work">Compte à rebours du travail</string>
+    <string name="widget_holiday">Avant le prochain repos</string>
+    <string name="widget_payday">Avant le jour de paie</string>
+    <string name="widget_work_start">Avant le début du travail</string>
+    <string name="widget_work_end">Avant la fin du travail</string>
+    <string name="widget_lunch_end">Avant la fin de la pause</string>
+    <string name="widget_holiday_end">Avant la fin du congé</string>
+    <string name="widget_payday_today">Jour de paie aujourd’hui</string>
+    <string name="widget_salary_title">Shiyu · Gains</string>
+    <string name="widget_today_earned">Gains du jour</string>
+    <string name="widget_month_earned">Gains du mois</string>
+    <string name="widget_not_configured">Non défini</string>
+    <string name="widget_unavailable">Indisponible</string>
+    <string name="widget_choose_metric">Choisir les éléments à afficher</string>
+    <string name="widget_choose_metric_limit">Choisissez entre un et quatre indicateurs de compte à rebours ou de gains.</string>
+    <string name="widget_refresh_earnings">Actualiser les gains</string>
+    <string name="widget_save_metric">Enregistrer le widget</string>
+    <string name="widget_cancel">Annuler</string>
+</resources>

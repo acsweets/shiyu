@@ -39,6 +39,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/holidays/calendar.json
+    - assets/time_zones.txt
     - assets/diagnostics/icon.ico
     - assets/diagnostics/icon.png
     - assets/brand/tray.ico

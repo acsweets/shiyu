@@ -4,6 +4,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../application/settings_editor.dart';
 import '../../data/settings_repository.dart';
 import 'settings_fields.dart';
+import 'settings_time_zone.dart';
 
 class PersonalSettings extends StatelessWidget {
   const PersonalSettings({
@@ -73,10 +74,8 @@ class PersonalSettings extends StatelessWidget {
               : strings.invalidValue,
         ),
         if (showTimeZone)
-          SettingsInput(
-            label: strings.timeZoneLabel,
+          SettingsTimeZone(
             value: editor.draft['time_zone'] as String? ?? 'Asia/Shanghai',
-            hint: 'Asia/Shanghai',
             changed: editor.blocked ? null : _zone,
             error: editor.issue('time_zone') == null
                 ? null
@@ -111,5 +110,5 @@ class PersonalSettings extends StatelessWidget {
   );
 
   void _retirement(String? value) => editor.change('retirement_date', value);
-  void _zone(String value) => editor.change('time_zone', value.trim());
+  void _zone(String value) => editor.change('time_zone', value);
 }

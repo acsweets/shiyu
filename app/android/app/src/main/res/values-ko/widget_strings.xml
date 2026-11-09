@@ -1,0 +1,32 @@
+<resources>
+    <string name="widget_title">시유 · 카운트다운</string>
+    <string name="widget_heading">은퇴 카운트다운</string>
+    <string name="widget_life">인생 카운트다운</string>
+    <string name="widget_life_elapsed">살아온 날 수</string>
+    <string name="widget_expired">종료됨</string>
+    <plurals name="widget_days_lived">
+        <item quantity="other">%1$s일</item>
+    </plurals>
+    <string name="widget_duration">%1$s일 %2$s</string>
+    <string name="widget_retired">은퇴 완료</string>
+    <string name="widget_setup">은퇴 날짜 선택</string>
+    <string name="widget_error">설정 확인</string>
+    <string name="widget_work">근무 카운트다운</string>
+    <string name="widget_holiday">다음 휴일까지</string>
+    <string name="widget_payday">급여일까지</string>
+    <string name="widget_work_start">출근까지</string>
+    <string name="widget_work_end">퇴근까지</string>
+    <string name="widget_lunch_end">휴식 종료까지</string>
+    <string name="widget_holiday_end">휴일 종료까지</string>
+    <string name="widget_payday_today">오늘은 급여일</string>
+    <string name="widget_salary_title">시유 · 급여</string>
+    <string name="widget_today_earned">오늘 수입</string>
+    <string name="widget_month_earned">이번 달 수입</string>
+    <string name="widget_not_configured">설정되지 않음</string>
+    <string name="widget_unavailable">사용할 수 없음</string>
+    <string name="widget_choose_metric">표시할 항목 선택</string>
+    <string name="widget_choose_metric_limit">카운트다운 또는 급여 항목을 1~4개 선택하세요.</string>
+    <string name="widget_refresh_earnings">급여 새로고침</string>
+    <string name="widget_save_metric">위젯 저장</string>
+    <string name="widget_cancel">취소</string>
+</resources>

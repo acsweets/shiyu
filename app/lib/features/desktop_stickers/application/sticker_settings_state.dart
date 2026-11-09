@@ -23,6 +23,7 @@ enum StickerSetting {
   preview,
   main,
   enabled,
+  amountHidden,
   retirement,
   restoreBackup,
   pause,
@@ -72,6 +73,7 @@ class StickerSettingsState {
   bool get editingBlocked => data['editingBlocked'] as bool;
   bool get canRestore => data['canRestore'] == true;
   bool get paused => data['paused'] == true;
+  bool get amountHidden => business?.values['hide_amount'] != false;
   StickerMode get mode => StickerMode.read(data['mode']);
   DesktopOptions get desktop => DesktopOptions.read(data['desktop']);
   bool get visibilityShortcutOk => data['visibilityShortcutOk'] == true;

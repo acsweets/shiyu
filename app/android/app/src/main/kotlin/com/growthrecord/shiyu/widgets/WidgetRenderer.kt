@@ -19,26 +19,38 @@ internal class WidgetRenderer(
     private val wallNow: Long,
     private val elapsedNow: Long,
 ) {
-    fun countdown(id: Int, wide: Boolean): RemoteViews {
+    fun countdown(id: Int, selected: List<WidgetMetric>, wide: Boolean): RemoteViews {
         val action = Intent(context, WidgetConfigurationActivity::class.java)
             .setAction(WidgetConfigurationActivity.editAction)
             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-        val views = base(action, id)
-        val selected = WidgetSelection.read(context, id).displayed(wide)
+        return render(action, id, selected, wide)
+    }
+
+    fun salary(wide: Boolean): RemoteViews = render(
+        Intent(context, MainActivity::class.java),
+        0,
+        listOf(WidgetMetric.TODAY_SALARY, WidgetMetric.MONTH_SALARY),
+        wide,
+    )
+
+    /** 组合卡与原薪资卡使用相同的指标行和刷新入口。 */
+    private fun render(action: Intent, id: Int, selected: List<WidgetMetric>, wide: Boolean): RemoteViews {
+        val hasEarnings = selected.any(WidgetMetric::isEarnings)
+        val views = base(action, id, compactSalary = hasEarnings && (!wide || selected.size > 2))
+        if (hasEarnings) showRefresh(views)
         if (selected.size == 1) {
-            showPrimary(views, metrics.countdown(selected.single()))
+            showPrimary(views, metrics.read(selected.single()))
         } else {
             showPrimary(views, null)
             val columns = if (wide || selected.size > 2) 2 else 1
-            selected.map(metrics::countdown).chunked(columns).forEach {
-                views.addView(R.id.widget_extra, row(it.first(), it.getOrNull(1)))
+            for (lines in selected.map(metrics::read).chunked(columns)) {
+                views.addView(R.id.widget_extra, row(lines.first(), lines.getOrNull(1)))
             }
         }
         return views
     }
 
-    fun salary(wide: Boolean): RemoteViews {
-        val views = base(Intent(context, MainActivity::class.java), 0, compactSalary = !wide)
+    private fun showRefresh(views: RemoteViews) {
         val refresh = Intent(context, RetirementWidget::class.java)
             .setAction(WidgetUpdates.action)
             .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
@@ -49,16 +61,6 @@ internal class WidgetRenderer(
             R.id.widget_refresh,
             PendingIntent.getBroadcast(context, 1, refresh, PendingIntent.FLAG_IMMUTABLE),
         )
-        showPrimary(views, null)
-        val today = metrics.earnings(false)
-        val month = metrics.earnings(true)
-        if (wide) {
-            views.addView(R.id.widget_extra, row(today, month, alwaysLabel = true))
-        } else {
-            views.addView(R.id.widget_extra, row(today, alwaysLabel = true))
-            views.addView(R.id.widget_extra, row(month, alwaysLabel = true))
-        }
-        return views
     }
 
     private fun base(action: Intent, id: Int, compactSalary: Boolean = false): RemoteViews =
@@ -89,21 +91,21 @@ internal class WidgetRenderer(
         }
     }
 
-    private fun row(first: WidgetLine, second: WidgetLine? = null, alwaysLabel: Boolean = false): RemoteViews =
+    private fun row(first: WidgetLine, second: WidgetLine?): RemoteViews =
         RemoteViews(context.packageName, R.layout.widget_metric_row).also {
             val titleSize = appearance.titleSize.coerceAtMost(14f)
-            setLine(it, R.id.widget_first_title, R.id.widget_first_value, first, titleSize, alwaysLabel)
+            setLine(it, R.id.widget_first_title, R.id.widget_first_value, first, titleSize)
             if (second == null) {
                 it.setViewVisibility(R.id.widget_second_cell, View.GONE)
             } else {
-                setLine(it, R.id.widget_second_title, R.id.widget_second_value, second, titleSize, alwaysLabel)
+                setLine(it, R.id.widget_second_title, R.id.widget_second_value, second, titleSize)
             }
         }
 
     private fun setLine(
-        views: RemoteViews, heading: Int, value: Int, line: WidgetLine, size: Float, alwaysLabel: Boolean = false,
+        views: RemoteViews, heading: Int, value: Int, line: WidgetLine, size: Float,
     ) {
-        val showTitle = line.titleVisible && (alwaysLabel || appearance.titleVisible)
+        val showTitle = line.titleVisible && (line.isEarnings || appearance.titleVisible)
         views.setViewVisibility(heading, if (showTitle) View.VISIBLE else View.GONE)
         views.setViewVisibility(value, View.VISIBLE)
         views.setTextViewTextSize(heading, TypedValue.COMPLEX_UNIT_SP, size)

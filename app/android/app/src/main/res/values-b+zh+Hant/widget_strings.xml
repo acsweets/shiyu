@@ -1,0 +1,32 @@
+<resources>
+    <string name="widget_title">時余 · 倒數計時</string>
+    <string name="widget_heading">退休倒數</string>
+    <string name="widget_life">靜待百歲，好好生活</string>
+    <string name="widget_life_elapsed">已存在世界</string>
+    <string name="widget_expired">已到期</string>
+    <plurals name="widget_days_lived">
+        <item quantity="other">%1$s 天</item>
+    </plurals>
+    <string name="widget_duration">%1$s 天 %2$s</string>
+    <string name="widget_retired">已退休</string>
+    <string name="widget_setup">選擇退休日期</string>
+    <string name="widget_error">檢查設定</string>
+    <string name="widget_work">上下班倒數計時</string>
+    <string name="widget_holiday">距離放假</string>
+    <string name="widget_payday">距離發薪</string>
+    <string name="widget_work_start">距離上班</string>
+    <string name="widget_work_end">距離下班</string>
+    <string name="widget_lunch_end">距離午休結束</string>
+    <string name="widget_holiday_end">距離假期結束</string>
+    <string name="widget_payday_today">今天發薪</string>
+    <string name="widget_salary_title">時余 · 薪資</string>
+    <string name="widget_today_earned">今日已賺</string>
+    <string name="widget_month_earned">本月已賺</string>
+    <string name="widget_not_configured">尚未設定</string>
+    <string name="widget_unavailable">暫無法使用</string>
+    <string name="widget_choose_metric">選擇顯示內容</string>
+    <string name="widget_choose_metric_limit">選擇 1 至 4 項倒數或薪資指標，在同一張卡片顯示。</string>
+    <string name="widget_refresh_earnings">重新整理已賺金額</string>
+    <string name="widget_save_metric">儲存小工具</string>
+    <string name="widget_cancel">取消</string>
+</resources>

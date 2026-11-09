@@ -1,0 +1,33 @@
+<resources>
+    <string name="widget_title">Shiyu · Cuenta atrás</string>
+    <string name="widget_heading">Cuenta atrás para la jubilación</string>
+    <string name="widget_life">Cuenta atrás vital</string>
+    <string name="widget_life_elapsed">Días vividos</string>
+    <string name="widget_expired">Finalizado</string>
+    <plurals name="widget_days_lived">
+        <item quantity="one">%1$s día</item>
+        <item quantity="other">%1$s días</item>
+    </plurals>
+    <string name="widget_duration">%1$s d %2$s</string>
+    <string name="widget_retired">Jubilado/a</string>
+    <string name="widget_setup">Elegir fecha de jubilación</string>
+    <string name="widget_error">Revisa los ajustes</string>
+    <string name="widget_work">Cuenta atrás laboral</string>
+    <string name="widget_holiday">Hasta el próximo descanso</string>
+    <string name="widget_payday">Hasta el día de cobro</string>
+    <string name="widget_work_start">Hasta el inicio de la jornada</string>
+    <string name="widget_work_end">Hasta el fin de la jornada</string>
+    <string name="widget_lunch_end">Hasta el fin de la pausa</string>
+    <string name="widget_holiday_end">Hasta el final del descanso</string>
+    <string name="widget_payday_today">Hoy es día de cobro</string>
+    <string name="widget_salary_title">Shiyu · Ingresos</string>
+    <string name="widget_today_earned">Ganado hoy</string>
+    <string name="widget_month_earned">Ganado este mes</string>
+    <string name="widget_not_configured">Sin configurar</string>
+    <string name="widget_unavailable">No disponible</string>
+    <string name="widget_choose_metric">Elige qué mostrar</string>
+    <string name="widget_choose_metric_limit">Elige de uno a cuatro indicadores de cuenta atrás o ingresos.</string>
+    <string name="widget_refresh_earnings">Actualizar ingresos</string>
+    <string name="widget_save_metric">Guardar widget</string>
+    <string name="widget_cancel">Cancelar</string>
+</resources>

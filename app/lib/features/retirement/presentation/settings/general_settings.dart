@@ -5,7 +5,7 @@ import '../../application/settings_editor.dart';
 import '../../data/settings_repository.dart';
 import 'app_language_setting.dart';
 import 'settings_files.dart';
-import 'settings_fields.dart';
+import 'settings_time_zone.dart';
 
 class GeneralSettings extends StatefulWidget {
   const GeneralSettings({required this.editor, this.mobile = false, super.key});
@@ -32,10 +32,8 @@ class _GeneralSettingsState extends State<GeneralSettings> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         if (widget.mobile)
-          SettingsInput(
-            label: strings.timeZoneLabel,
+          SettingsTimeZone(
             value: _editor.draft['time_zone'] as String? ?? 'Asia/Shanghai',
-            hint: 'Asia/Shanghai',
             changed: _editor.blocked ? null : _timeZone,
             error: _editor.issue('time_zone') == null
                 ? null
@@ -81,7 +79,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
       _editor.changeGroup('display', 'locale', value);
 
   void _hideSalary(bool value) => _editor.change('hide_amount', value);
-  void _timeZone(String value) => _editor.change('time_zone', value.trim());
+  void _timeZone(String value) => _editor.change('time_zone', value);
 
   Future<void> _peek() async {
     if (!await _editor.flush() || !mounted) return;

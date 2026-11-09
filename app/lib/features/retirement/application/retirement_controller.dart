@@ -282,6 +282,10 @@ class RetirementController extends ChangeNotifier {
         'display': <String, dynamic>{...displaySettings, 'locale': locale},
       });
 
+  /// 快捷键与设置开关共用同一金额遮蔽状态。
+  Future<bool> setAmountHidden(bool hidden) =>
+      saveSettings(<String, dynamic>{...settings, 'hide_amount': hidden});
+
   /// 后续设置页通过同一校验与持久化入口提交完整候选。
   Future<bool> saveSettings(SettingsValues candidate) async {
     if (editingBlocked) return false;

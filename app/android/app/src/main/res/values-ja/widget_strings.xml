@@ -1,0 +1,32 @@
+<resources>
+    <string name="widget_title">時余 · カウントダウン</string>
+    <string name="widget_heading">退職までのカウントダウン</string>
+    <string name="widget_life">人生カウントダウン</string>
+    <string name="widget_life_elapsed">生まれてからの日数</string>
+    <string name="widget_expired">終了</string>
+    <plurals name="widget_days_lived">
+        <item quantity="other">%1$s 日</item>
+    </plurals>
+    <string name="widget_duration">%1$s日 %2$s</string>
+    <string name="widget_retired">退職済み</string>
+    <string name="widget_setup">退職日を選択</string>
+    <string name="widget_error">設定を確認</string>
+    <string name="widget_work">勤務カウントダウン</string>
+    <string name="widget_holiday">次の休暇まで</string>
+    <string name="widget_payday">給料日まで</string>
+    <string name="widget_work_start">始業まで</string>
+    <string name="widget_work_end">終業まで</string>
+    <string name="widget_lunch_end">休憩終了まで</string>
+    <string name="widget_holiday_end">休暇終了まで</string>
+    <string name="widget_payday_today">今日は給料日</string>
+    <string name="widget_salary_title">時余 · 給与</string>
+    <string name="widget_today_earned">今日の収入</string>
+    <string name="widget_month_earned">今月の収入</string>
+    <string name="widget_not_configured">未設定</string>
+    <string name="widget_unavailable">利用できません</string>
+    <string name="widget_choose_metric">表示する項目を選択</string>
+    <string name="widget_choose_metric_limit">カウントダウンや給与から1〜4項目を選択できます。</string>
+    <string name="widget_refresh_earnings">給与を更新</string>
+    <string name="widget_save_metric">ウィジェットを保存</string>
+    <string name="widget_cancel">キャンセル</string>
+</resources>

@@ -5,7 +5,8 @@ import '../../../retirement/application/holiday_status.dart';
 import '../../../retirement/data/holiday_repository.dart';
 import '../../../retirement/presentation/holiday_panel.dart';
 import '../../../retirement/presentation/settings/business_settings_page.dart';
-import '../../../retirement/presentation/settings/display_settings.dart';
+import '../../../retirement/domain/metric_preferences.dart';
+import '../../../retirement/presentation/settings/settings_time_zone.dart';
 import '../../application/sticker_business_access.dart';
 import '../../application/sticker_metric_selection.dart';
 import '../../application/sticker_settings_state.dart';
@@ -24,8 +25,8 @@ class CountdownSettings extends StatefulWidget {
 }
 
 class _CountdownSettingsState extends State<CountdownSettings> {
-  /// 用户正在填写的时区，保存后交给 Rust 校验。
-  late final TextEditingController _zone;
+  /// 保存前暂存用户从时区列表选择的名称。
+  late String _zone;
 
   /// 保存前暂存在设置页中的日期。
   String? _date;
@@ -39,18 +40,13 @@ class _CountdownSettingsState extends State<CountdownSettings> {
   void initState() {
     super.initState();
     _date = _session.state.retirementDate;
-    _zone = TextEditingController(text: _session.state.timeZone);
-  }
-
-  @override
-  void dispose() {
-    _zone.dispose();
-    super.dispose();
+    _zone = _session.state.timeZone;
   }
 
   @override
   Widget build(BuildContext context) {
     final StickerSettingsState state = _session.state;
+    final AppLocalizations strings = AppLocalizations.of(context);
     final HolidayStatus? holidayStatus = state.holidayStatus;
     final bool editable = !state.editingBlocked && !_saving;
     return Column(
@@ -75,13 +71,22 @@ class _CountdownSettingsState extends State<CountdownSettings> {
         ),
         const Divider(height: 24),
         const Text('启用倒计时', style: TextStyle(fontWeight: FontWeight.w700)),
-        ...StickerLayout.titles.keys.map(_toggle),
-        for (final String id in StickerMetricSelection.sharedVisibilityIds)
-          _sharedMetricToggle(
-            id,
-            metricLabel(AppLocalizations.of(context), id),
-            editable,
+        _sharedMetricToggle(todaySalaryId, strings.showTodayEarnings, editable),
+        PaperSettingRow(
+          title: strings.hideSalary,
+          detail: strings.hideEarningsDetail,
+          control: Switch(
+            key: const ValueKey<String>('amount-privacy'),
+            value: state.amountHidden,
+            onChanged: editable ? _setAmountHidden : null,
           ),
+        ),
+        ...StickerLayout.titles.keys.map(_toggle),
+        _sharedMetricToggle(
+          StickerMetricSelection.lifeId,
+          strings.metricLife,
+          editable,
+        ),
         const Divider(height: 25),
         _modeSettings(context),
         const Divider(height: 25),
@@ -123,13 +128,9 @@ class _CountdownSettingsState extends State<CountdownSettings> {
         const SizedBox(height: 10),
         SizedBox(
           width: 300,
-          child: TextField(
-            controller: _zone,
-            enabled: editable,
-            decoration: const InputDecoration(
-              labelText: 'IANA 时区',
-              hintText: 'Asia/Shanghai',
-            ),
+          child: SettingsTimeZone(
+            value: _zone,
+            changed: editable ? _setZone : null,
           ),
         ),
         const SizedBox(height: 16),
@@ -197,7 +198,7 @@ class _CountdownSettingsState extends State<CountdownSettings> {
     if (!mounted) return;
     setState(() {
       _date = _session.state.retirementDate;
-      _zone.text = _session.state.timeZone;
+      _zone = _session.state.timeZone;
     });
   }
 
@@ -256,6 +257,9 @@ class _CountdownSettingsState extends State<CountdownSettings> {
     <String, Object?>{'id': id, 'value': visible},
   );
 
+  Future<void> _setAmountHidden(bool hidden) =>
+      _submit(StickerSetting.amountHidden, <String, Object?>{'value': hidden});
+
   void _togglePreview(bool value) => _session.change(
     StickerSetting.preview,
     <String, Object?>{'value': value},
@@ -293,9 +297,11 @@ class _CountdownSettingsState extends State<CountdownSettings> {
 
   void _clearDate() => setState(() => _date = null);
 
+  void _setZone(String value) => setState(() => _zone = value);
+
   Future<void> _save() => _submit(StickerSetting.retirement, <String, Object?>{
     'date': _date,
-    'zone': _zone.text,
+    'zone': _zone,
   });
 
   Future<void> _restoreBackup() =>
@@ -310,7 +316,7 @@ class _CountdownSettingsState extends State<CountdownSettings> {
       final StickerSettingsReply reply = await _session.send(action, arguments);
       if (mounted && action == StickerSetting.restoreBackup) {
         _date = reply.state.retirementDate;
-        _zone.text = reply.state.timeZone;
+        _zone = reply.state.timeZone;
       }
       if (mounted && reply.message != null) {
         ScaffoldMessenger.of(context).showSnackBar(

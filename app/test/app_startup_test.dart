@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +19,7 @@ void main() {
   testWidgets('手机设置保存时区并保留原生小组件入口', _verifyMobileSettings);
   testWidgets('手机设置首页切换语言并可恢复跟随系统', _verifyMobileLanguage);
   testWidgets('手机可切换生命计数并单独隐藏其标题', _verifyLifeDisplay);
+  testWidgets('手机倒计时设置独立保存今日已赚显隐和金额遮蔽', _verifyEarningsControls);
 }
 
 Future<void> _verifyChineseStartup(WidgetTester tester) async {
@@ -86,14 +89,23 @@ Future<void> _verifyMobileSettings(WidgetTester tester) async {
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
   final RetirementController controller = await createTestController();
   addTearDown(controller.dispose);
-  await tester.pumpWidget(ShiyuApp(controller: controller));
+  final String? catalog = await tester.runAsync(
+    () => rootBundle.loadString('assets/time_zones.txt'),
+  );
+  expect(catalog, contains('Europe/Lisbon'));
+  await tester.pumpWidget(
+    DefaultAssetBundle(
+      bundle: _TimeZoneTestBundle(catalog!),
+      child: ShiyuApp(controller: controller),
+    ),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byTooltip('设置'));
   await tester.pumpAndSettle();
 
   await tester.tap(find.text('通用'));
   await tester.pumpAndSettle();
-  await tester.enterText(find.byType(TextField), 'Asia/Paris');
+  await _selectTimeZone(tester, 'Europe/Lisbon');
   await tester.tap(find.byType(BackButton));
   await tester.pumpAndSettle();
   expect(find.text('放弃未保存的修改？'), findsOneWidget);
@@ -102,7 +114,7 @@ Future<void> _verifyMobileSettings(WidgetTester tester) async {
   expect(controller.timeZone, 'Asia/Shanghai');
   await tester.tap(find.text('通用'));
   await tester.pumpAndSettle();
-  await tester.enterText(find.byType(TextField), 'Asia/Tokyo');
+  await _selectTimeZone(tester, 'Asia/Tokyo');
   expect(controller.timeZone, 'Asia/Shanghai');
   await tester.pump();
   await tester.tap(find.text('保存设置'));
@@ -114,6 +126,77 @@ Future<void> _verifyMobileSettings(WidgetTester tester) async {
   await tester.tap(find.text('09:00'));
   await tester.pumpAndSettle();
   expect(find.byType(TimePickerDialog), findsOneWidget);
+}
+
+Future<void> _verifyEarningsControls(WidgetTester tester) async {
+  final RetirementController controller = await createTestController();
+  addTearDown(controller.dispose);
+  await tester.pumpWidget(
+    ShiyuApp(controller: controller, locale: const Locale('zh')),
+  );
+  await tester.pumpAndSettle();
+  final Finder todayCard = find.byKey(
+    const ValueKey<String>('mobile-metric-today_salary'),
+  );
+  final Finder monthCard = find.byKey(
+    const ValueKey<String>('mobile-metric-month_salary'),
+  );
+  final Finder visibility = find.byKey(
+    const ValueKey<String>('metric-visibility-today_salary'),
+  );
+  final Finder privacy = find.byKey(const ValueKey<String>('amount-privacy'));
+  expect(todayCard, findsOneWidget);
+  await tester.tap(find.byTooltip('设置'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('倒计时'));
+  await tester.pumpAndSettle();
+  expect(tester.widget<SwitchListTile>(visibility).value, isTrue);
+  expect(tester.widget<SwitchListTile>(privacy).value, isTrue);
+  await tester.tap(visibility);
+  await tester.pumpAndSettle();
+  expect(tester.widget<SwitchListTile>(privacy).value, isTrue);
+  await tester.tap(privacy);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('保存设置'));
+  await tester.pumpAndSettle();
+  expect(
+    controller.displaySettings['enabled_metrics'],
+    isNot(contains('today_salary')),
+  );
+  expect(controller.settings['hide_amount'], isFalse);
+  await tester.tap(find.byType(BackButton));
+  await tester.pumpAndSettle();
+  expect(todayCard, findsNothing);
+  expect(monthCard, findsOneWidget);
+}
+
+Future<void> _selectTimeZone(WidgetTester tester, String value) async {
+  await tester.tap(find.byKey(const ValueKey<String>('time-zone-picker')));
+  await tester.pumpAndSettle();
+  final Finder search = find.byKey(const ValueKey<String>('time-zone-search'));
+  await tester.enterText(search, 'Invalid/Zone');
+  await tester.pumpAndSettle();
+  expect(find.text('没有匹配的时区'), findsOneWidget);
+  await tester.enterText(search, value);
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(MenuItemButton, value));
+  await tester.pumpAndSettle();
+}
+
+class _TimeZoneTestBundle extends CachingAssetBundle {
+  _TimeZoneTestBundle(this.catalog);
+
+  /// 用真实资产内容同步完成加载，避免测试时钟阻塞平台通道。
+  final String catalog;
+
+  @override
+  Future<ByteData> load(String key) => rootBundle.load(key);
+
+  @override
+  Future<String> loadString(String key, {bool cache = true}) =>
+      key == 'assets/time_zones.txt'
+      ? SynchronousFuture<String>(catalog)
+      : rootBundle.loadString(key, cache: cache);
 }
 
 Future<void> _verifyMobileLanguage(WidgetTester tester) async {

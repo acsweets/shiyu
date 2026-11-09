@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../../retirement/application/retirement_controller.dart';
+import '../../retirement/domain/metric_preferences.dart';
 import '../../retirement/presentation/metrics/snapshot_metrics.dart';
-import '../../retirement/presentation/settings/display_settings.dart';
 import '../data/sticker_layout.dart';
 import '../data/sticker_mode.dart';
 
@@ -13,8 +13,7 @@ class StickerMetricSelection {
   final StickerLayout layout;
   final RetirementController controller;
 
-  /// 今日已赚和生命指标的稳定标识。
-  static const String todaySalaryId = 'today_salary';
+  /// 生命指标的稳定标识。
   static const String lifeId = 'life';
 
   /// 在倒计时和完整设置中共用同一开关的指标。
@@ -35,8 +34,7 @@ class StickerMetricSelection {
 
   /// 完整设置保存的启用项，旧设置使用迷你浮窗默认项。
   List<String> get enabledMetrics =>
-      _list(controller.displaySettings['enabled_metrics']) ??
-      defaultMetricOrder.take(5).toList();
+      enabledMetricIds(controller.displaySettings);
 
   Iterable<String> get enabledSharedMetrics =>
       sharedVisibilityIds.where(enabledMetrics.contains);

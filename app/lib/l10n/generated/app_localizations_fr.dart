@@ -479,6 +479,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get timeZoneLabel => 'Fuseau horaire IANA';
 
   @override
+  String get timeZoneSearch => 'Rechercher un fuseau horaire';
+
+  @override
+  String get timeZoneNoMatches => 'Aucun fuseau horaire correspondant';
+
+  @override
+  String get showTodayEarnings => 'Afficher les gains du jour';
+
+  @override
+  String get hideEarningsDetail =>
+      'Masque les montants du jour et du mois avec ****.';
+
+  @override
   String get saveSettings => 'Enregistrer le fuseau';
 
   @override
@@ -492,7 +505,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      'Appuyez longuement sur l’écran d’accueil pour ajouter un widget Shiyu. Si le widget est modifiable, combinez jusqu’à quatre comptes à rebours. Actualisez les gains depuis le widget ou l’accueil de l’application.';
+      'Appuyez longuement sur l’écran d’accueil pour ajouter un widget Shiyu. Si le widget est modifiable, choisissez un à quatre indicateurs de compte à rebours ou de gains. Ajoutez un widget par indicateur pour les afficher séparément.';
+
+  @override
+  String get widgetPinRequested =>
+      'Demande envoyée. Confirmez-la sur l’écran d’accueil. Si aucun message ne s’affiche, appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetPinManual =>
+      'L’écran d’accueil n’a pas accepté la demande. Appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
+
+  @override
+  String get widgetOpenHome => 'Aller à l’écran d’accueil';
 
   @override
   String get refreshEarnings => 'Actualiser les gains';

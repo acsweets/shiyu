@@ -24,8 +24,9 @@
     <string name="widget_month_earned">本月已赚</string>
     <string name="widget_not_configured">未设置</string>
     <string name="widget_unavailable">暂不可用</string>
-    <string name="widget_choose_metric">选择倒计时</string>
-    <string name="widget_choose_metric_limit">选择 1 至 4 项，在同一个小组件内显示。</string>
+    <string name="widget_choose_metric">选择显示内容</string>
+    <string name="widget_choose_metric_limit">选择 1 至 4 项倒计时或薪资指标，在同一张卡片显示。</string>
     <string name="widget_refresh_earnings">刷新已赚</string>
     <string name="widget_save_metric">保存小组件</string>
+    <string name="widget_cancel">取消</string>
 </resources>

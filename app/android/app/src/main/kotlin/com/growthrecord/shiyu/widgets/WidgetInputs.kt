@@ -13,7 +13,7 @@ internal class WidgetInputs private constructor(
     private val calendar: String,
     val recovery: Boolean,
 ) {
-    val locale: String? get() = settings.optJSONObject("display")?.optString("locale")?.ifEmpty { null }
+    val locale: String? get() = settings.optJSONObject("display")?.opt("locale") as? String
 
     fun snapshot(now: Long): String {
         val raw = settings.toString()

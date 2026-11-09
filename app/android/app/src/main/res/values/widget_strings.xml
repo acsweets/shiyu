@@ -25,9 +25,10 @@
     <string name="widget_month_earned">Earned this month</string>
     <string name="widget_not_configured">Not set</string>
     <string name="widget_unavailable">Unavailable</string>
-    <string name="widget_choose_metric">Choose countdowns</string>
-    <string name="widget_choose_metric_limit">Choose one to four countdowns for this widget.</string>
+    <string name="widget_choose_metric">Choose what to display</string>
+    <string name="widget_choose_metric_limit">Choose one to four countdown or earnings metrics.</string>
     <string name="widget_refresh_earnings">Refresh earnings</string>
     <string name="widget_refresh_symbol" translatable="false">↻</string>
     <string name="widget_save_metric">Save widget</string>
+    <string name="widget_cancel">Cancel</string>
 </resources>

@@ -3,6 +3,11 @@ import WidgetKit
 
 enum WidgetMetric: String, CaseIterable {
     case work, holiday, payday, retirement, life
+    case todaySalary = "today_salary"
+    case monthSalary = "month_salary"
+
+    /// 薪资需要保留逐项标题和遮蔽规则，并显示手动刷新入口。
+    var isEarnings: Bool { self == .todaySalary || self == .monthSalary }
 
     func title(chinese: Bool) -> String {
         switch self {
@@ -11,6 +16,8 @@ enum WidgetMetric: String, CaseIterable {
         case .payday: return chinese ? "距离发薪" : "Until payday"
         case .retirement: return chinese ? "退休倒计时" : "Retirement countdown"
         case .life: return chinese ? "静待百岁，好好生活" : "Life countdown"
+        case .todaySalary: return chinese ? "今日已赚" : "Earned today"
+        case .monthSalary: return chinese ? "本月已赚" : "Earned this month"
         }
     }
 
@@ -37,8 +44,26 @@ struct ShiyuWidgetEntry: TimelineEntry {
     let appearance: WidgetAppearance
     let locale: String?
     let metric: WidgetMetric
-    /// 用户为当前实例追加的倒计时，空列表沿用旧版布局。
+    /// 用户为当前实例追加的指标。
     let additionalMetrics: [WidgetMetric]
+    /// 中尺寸旧实例可沿用预设，用户可改成只显示所选项。
+    let useMediumPreset: Bool
+
+    var hasEarnings: Bool {
+        metric.isEarnings || additionalMetrics.contains(where: \.isEarnings)
+    }
+
+    /// 按配置顺序去重，单项、小尺寸和自选组合保留明确选择。
+    func displayedMetrics(compact: Bool) -> [WidgetMetric] {
+        if useMediumPreset && !compact && additionalMetrics.isEmpty && !metric.isEarnings {
+            return [.work, .holiday, .payday, metric == .life ? .life : .retirement]
+        }
+        var selected = [metric]
+        for item in additionalMetrics where !selected.contains(item) {
+            selected.append(item)
+        }
+        return selected
+    }
 
     var chinese: Bool {
         (locale ?? Locale.preferredLanguages.first)?.hasPrefix("zh") == true
@@ -89,6 +114,7 @@ struct WidgetSnapshot: Decodable {
         case .payday: return payday
         case .retirement: return retirement
         case .life: return life
+        case .todaySalary, .monthSalary: return nil
         }
     }
 }

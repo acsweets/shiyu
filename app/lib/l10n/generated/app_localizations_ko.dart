@@ -451,6 +451,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get timeZoneLabel => 'IANA 시간대';
 
   @override
+  String get timeZoneSearch => '시간대 검색';
+
+  @override
+  String get timeZoneNoMatches => '일치하는 시간대가 없습니다';
+
+  @override
+  String get showTodayEarnings => '오늘 번 금액 표시';
+
+  @override
+  String get hideEarningsDetail => '오늘과 이번 달 금액을 ****로 가립니다.';
+
+  @override
   String get saveSettings => '시간대 저장';
 
   @override
@@ -464,7 +476,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get widgetInstructions =>
-      '홈 화면을 길게 눌러 시유 위젯을 추가하세요. 편집을 지원하는 경우 카운트다운을 최대 4개까지 합칠 수 있습니다. 위젯 또는 앱 홈에서 급여를 새로고침할 수 있습니다.';
+      '홈 화면을 길게 눌러 시유 위젯을 추가하세요. 편집을 지원하는 경우 카운트다운과 급여 지표를 최대 4개까지 선택할 수 있습니다. 따로 표시하려면 지표마다 위젯을 추가하세요.';
+
+  @override
+  String get widgetPinRequested =>
+      '추가를 요청했습니다. 홈 화면에서 확인하세요. 확인 창이 뜨지 않으면 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
+
+  @override
+  String get widgetPinManual =>
+      '홈 화면에서 요청을 받지 못했습니다. 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
+
+  @override
+  String get widgetOpenHome => '홈 화면으로 이동';
 
   @override
   String get refreshEarnings => '급여 새로고침';

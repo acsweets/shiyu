@@ -2,21 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../application/settings_editor.dart';
+import '../../domain/metric_preferences.dart';
 import 'custom_countdown_settings.dart';
-
-const List<String> defaultMetricOrder = <String>[
-  'work',
-  'today_salary',
-  'holiday',
-  'life',
-  'retirement',
-  'month_salary',
-  'payday',
-];
 
 String metricLabel(AppLocalizations strings, String id) => switch (id) {
   'work' => strings.metricWork,
-  'today_salary' => strings.metricTodaySalary,
+  todaySalaryId => strings.metricTodaySalary,
   'month_salary' => strings.metricMonthSalary,
   'holiday' => strings.metricHoliday,
   'life' => strings.metricLife,
@@ -167,11 +158,7 @@ class DisplaySettingsForm extends StatelessWidget {
           .toList() ??
       defaultMetricOrder.toList();
 
-  Set<String> get _enabled =>
-      (editor.group('display')['enabled_metrics'] as List<Object?>?)
-          ?.cast<String>()
-          .toSet() ??
-      defaultMetricOrder.take(5).toSet();
+  Set<String> get _enabled => enabledMetricIds(editor.group('display')).toSet();
 
   Set<String> get _hiddenTitles =>
       (editor.group('display')['hidden_metric_titles'] as List<Object?>?)

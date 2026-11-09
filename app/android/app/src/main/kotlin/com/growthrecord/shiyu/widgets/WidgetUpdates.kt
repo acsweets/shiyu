@@ -34,10 +34,13 @@ internal object WidgetUpdates {
         }.getOrNull()
         val metrics = WidgetMetrics(context, input?.locale, snapshot)
         val renderer = WidgetRenderer(context, metrics, WidgetAppearance.read(context), now, elapsed)
+        var hasEarnings = salaries.isNotEmpty()
         for (id in countdowns) {
             val options = manager.getAppWidgetOptions(id)
-            val small = renderer.countdown(id, false)
-            val large = renderer.countdown(id, true)
+            val group = WidgetSelection.read(context, id)
+            hasEarnings = hasEarnings || group.metrics.any(WidgetMetric::isEarnings)
+            val small = renderer.countdown(id, group.displayed(false), false)
+            val large = renderer.countdown(id, group.displayed(true), true)
             manager.updateAppWidget(id, responsive(options, small, large, 290, 128))
         }
         for (id in salaries) {
@@ -46,7 +49,7 @@ internal object WidgetUpdates {
             val large = renderer.salary(true)
             manager.updateAppWidget(id, responsive(options, small, large, 260, 105))
         }
-        val interval = if (salaries.isNotEmpty()) 60_000L else 900_000L
+        val interval = if (hasEarnings) 60_000L else 900_000L
         val boundary = snapshot?.optLong("next_change_at_millis", now + interval) ?: now + interval
         schedule(context, (boundary - now).coerceIn(1_000L, interval))
     }

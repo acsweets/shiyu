@@ -1,0 +1,33 @@
+<resources>
+    <string name="widget_title">Shiyu · Countdown</string>
+    <string name="widget_heading">Countdown bis zur Rente</string>
+    <string name="widget_life">Lebenscountdown</string>
+    <string name="widget_life_elapsed">Gelebte Tage</string>
+    <string name="widget_expired">Abgelaufen</string>
+    <plurals name="widget_days_lived">
+        <item quantity="one">%1$s Tag</item>
+        <item quantity="other">%1$s Tage</item>
+    </plurals>
+    <string name="widget_duration">%1$s Tg. %2$s</string>
+    <string name="widget_retired">Im Ruhestand</string>
+    <string name="widget_setup">Rentendatum wählen</string>
+    <string name="widget_error">Einstellungen prüfen</string>
+    <string name="widget_work">Arbeitscountdown</string>
+    <string name="widget_holiday">Bis zur nächsten Freizeit</string>
+    <string name="widget_payday">Bis zum Zahltag</string>
+    <string name="widget_work_start">Bis Arbeitsbeginn</string>
+    <string name="widget_work_end">Bis Arbeitsende</string>
+    <string name="widget_lunch_end">Bis Pausenende</string>
+    <string name="widget_holiday_end">Bis zum Ende der Pause</string>
+    <string name="widget_payday_today">Heute ist Zahltag</string>
+    <string name="widget_salary_title">Shiyu · Verdienst</string>
+    <string name="widget_today_earned">Heute verdient</string>
+    <string name="widget_month_earned">Diesen Monat verdient</string>
+    <string name="widget_not_configured">Nicht festgelegt</string>
+    <string name="widget_unavailable">Nicht verfügbar</string>
+    <string name="widget_choose_metric">Anzeige auswählen</string>
+    <string name="widget_choose_metric_limit">Wähle ein bis vier Countdown- oder Verdienstwerte.</string>
+    <string name="widget_refresh_earnings">Verdienst aktualisieren</string>
+    <string name="widget_save_metric">Widget speichern</string>
+    <string name="widget_cancel">Abbrechen</string>
+</resources>

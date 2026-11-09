@@ -973,6 +973,30 @@ abstract class AppLocalizations {
   /// **'IANA 时区'**
   String get timeZoneLabel;
 
+  /// No description provided for @timeZoneSearch.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索时区'**
+  String get timeZoneSearch;
+
+  /// No description provided for @timeZoneNoMatches.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有匹配的时区'**
+  String get timeZoneNoMatches;
+
+  /// No description provided for @showTodayEarnings.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示今日已赚'**
+  String get showTodayEarnings;
+
+  /// No description provided for @hideEarningsDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启后，今日和本月的金额显示为 ****。'**
+  String get hideEarningsDetail;
+
   /// No description provided for @saveSettings.
   ///
   /// In zh, this message translates to:
@@ -1000,8 +1024,26 @@ abstract class AppLocalizations {
   /// No description provided for @widgetInstructions.
   ///
   /// In zh, this message translates to:
-  /// **'长按手机桌面添加时余小组件。在支持编辑的系统上，可合并最多 4 项倒计时。薪资可在组件或应用首页手动刷新。'**
+  /// **'长按手机桌面添加时余小组件。在支持编辑的系统上，一张卡片可选 1 至 4 项倒计时或薪资指标。要分开显示，添加多张卡片并各选一项。'**
   String get widgetInstructions;
+
+  /// No description provided for @widgetPinRequested.
+  ///
+  /// In zh, this message translates to:
+  /// **'已发送添加请求，请在桌面确认。如果没有弹窗，长按桌面空白处，选择「小组件」→「时余」。'**
+  String get widgetPinRequested;
+
+  /// No description provided for @widgetPinManual.
+  ///
+  /// In zh, this message translates to:
+  /// **'桌面未接收添加请求。请长按桌面空白处，选择「小组件」→「时余」。'**
+  String get widgetPinManual;
+
+  /// No description provided for @widgetOpenHome.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往桌面'**
+  String get widgetOpenHome;
 
   /// No description provided for @refreshEarnings.
   ///
