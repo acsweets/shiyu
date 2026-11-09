@@ -1,5 +1,5 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+minimum_ios_version = '15.0'
+platform :ios, minimum_ios_version
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -37,7 +37,18 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  minimum_version = Gem::Version.new(minimum_ios_version)
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    next unless target.platform_name == :ios
+
+    # 新版 Xcode 要求 iOS 模拟器的 Pod 构建目标至少为 15.0。
+    target.build_configurations.each do |configuration|
+      settings = configuration.build_settings
+      version = settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if version.nil? || (Gem::Version.correct?(version) && Gem::Version.new(version) < minimum_version)
+        settings['IPHONEOS_DEPLOYMENT_TARGET'] = minimum_ios_version
+      end
+    end
   end
 end

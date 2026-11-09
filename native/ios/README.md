@@ -24,6 +24,8 @@ flutter run -d DEVICE_ID
 flutter test integration_test/retirement_test.dart -d DEVICE_ID
 ```
 
+如果旧检出生成的 Pods 仍报 iOS 13.0 部署目标错误，更新仓库后从 `app/` 运行 `flutter pub get` 和 `(cd ios && pod install)`，再启动模拟器构建。Podfile 会将低于 15.0 的 iOS Pods 目标提升到 15.0。
+
 如需用 Xcode 构建或为真机设置签名，从 `app/` 准备 Flutter 配置并打开工作区。
 
 ```sh
