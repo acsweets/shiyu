@@ -1,4 +1,5 @@
-platform :osx, '12.0'
+minimum_macos_version = '12.0'
+platform :osx, minimum_macos_version
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -36,7 +37,18 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  minimum_version = Gem::Version.new(minimum_macos_version)
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
+    next unless target.platform_name == :osx
+
+    # 新版 Xcode 拒绝低于 12.0 的 Pod 构建目标。
+    target.build_configurations.each do |configuration|
+      settings = configuration.build_settings
+      version = settings['MACOSX_DEPLOYMENT_TARGET']
+      if version.nil? || (Gem::Version.correct?(version) && Gem::Version.new(version) < minimum_version)
+        settings['MACOSX_DEPLOYMENT_TARGET'] = minimum_macos_version
+      end
+    end
   end
 end
