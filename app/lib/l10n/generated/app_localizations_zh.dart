@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -53,9 +52,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     return '$daysString 天';
@@ -473,12 +470,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addSalaryWidget => '添加薪资小组件';
 
   @override
-  String get widgetInstructions =>
-      '长按手机桌面添加时余小组件。在支持编辑的系统上，一张卡片可选 1 至 4 项倒计时或薪资指标。要分开显示，添加多张卡片并各选一项。';
+  String get widgetInstructions => '长按手机桌面添加时余小组件。在支持编辑的系统上，一张卡片可选 1 至 4 项倒计时或薪资指标。要分开显示，添加多张卡片并各选一项。';
 
   @override
-  String get widgetPinRequested =>
-      '已发送添加请求，请在桌面确认。如果没有弹窗，长按桌面空白处，选择「小组件」→「时余」。';
+  String get widgetPinRequested => '已发送添加请求，请在桌面确认。如果没有弹窗，长按桌面空白处，选择「小组件」→「时余」。';
 
   @override
   String get widgetPinManual => '桌面未接收添加请求。请长按桌面空白处，选择「小组件」→「时余」。';
@@ -537,7 +532,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
-  AppLocalizationsZhHant() : super('zh_Hant');
+  AppLocalizationsZhHant(): super('zh_Hant');
 
   @override
   String get mobileMacaronGlass => '馬卡龍玻璃';
@@ -583,9 +578,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     return '$daysString 天';
@@ -1003,12 +996,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get addSalaryWidget => '加入薪資小工具';
 
   @override
-  String get widgetInstructions =>
-      '長按主畫面加入時余小工具。在支援編輯的系統上，一張卡片可選 1 至 4 項倒數或薪資指標。要分開顯示，新增多張卡片並各選一項。';
+  String get widgetInstructions => '長按主畫面加入時余小工具。在支援編輯的系統上，一張卡片可選 1 至 4 項倒數或薪資指標。要分開顯示，新增多張卡片並各選一項。';
 
   @override
-  String get widgetPinRequested =>
-      '已送出新增請求，請在主畫面確認。如果沒有跳出確認視窗，請長按主畫面空白處，選擇「小工具」→「时余」。';
+  String get widgetPinRequested => '已送出新增請求，請在主畫面確認。如果沒有跳出確認視窗，請長按主畫面空白處，選擇「小工具」→「时余」。';
 
   @override
   String get widgetPinManual => '主畫面未接受新增請求。請長按主畫面空白處，選擇「小工具」→「时余」。';

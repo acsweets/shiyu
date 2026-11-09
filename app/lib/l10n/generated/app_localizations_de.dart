@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -13,23 +12,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mobileMacaronGlass => 'Macaron-Glas';
 
   @override
-  String get mobileCountdownSummary =>
-      'Ruhestand, Geburtsdatum und Lebensanzeige';
+  String get mobileCountdownSummary => 'Ruhestand, Geburtsdatum und Lebensanzeige';
 
   @override
-  String get mobileWorkSummary =>
-      'Arbeitstage, Arbeitszeiten, Pause und Gehalt';
+  String get mobileWorkSummary => 'Arbeitstage, Arbeitszeiten, Pause und Gehalt';
 
   @override
   String get mobileCalendarSummary => 'Zahltage, Feiertagsregion und Ausnahmen';
 
   @override
-  String get mobileTitlesSummary =>
-      'Titel einzelner Countdowns ein- oder ausblenden';
+  String get mobileTitlesSummary => 'Titel einzelner Countdowns ein- oder ausblenden';
 
   @override
-  String get mobileWidgetSummary =>
-      'Widgets hinzufügen, Farben und Schrift ändern';
+  String get mobileWidgetSummary => 'Widgets hinzufügen, Farben und Schrift ändern';
 
   @override
   String get mobileGeneralSummary => 'Zeitzone, Betragsanzeige und Sicherungen';
@@ -47,8 +42,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get metricTitleVisibility => 'Titel je Anzeige';
 
   @override
-  String get metricTitleVisibilityDetail =>
-      'Wenn du einen Titel ausblendest, bleibt der Wert sichtbar. Schwebefenster und Widgets haben auch einen zentralen Titelschalter.';
+  String get metricTitleVisibilityDetail => 'Wenn du einen Titel ausblendest, bleibt der Wert sichtbar. Schwebefenster und Widgets haben auch einen zentralen Titelschalter.';
 
   @override
   String get lifeDisplayMode => 'Anzeige der Lebenszeit';
@@ -58,9 +52,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     String _temp0 = intl.Intl.pluralLogic(
@@ -85,20 +77,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get desktopCatAssets => 'Katzensticker';
 
   @override
-  String get desktopAppearanceDescription =>
-      'Ändere Sprache, Farben oder Schriftgröße und prüfe die Vorschau des schwebenden Fensters.';
+  String get desktopAppearanceDescription => 'Ändere Sprache, Farben oder Schriftgröße und prüfe die Vorschau des schwebenden Fensters.';
 
   @override
-  String get desktopWindowsDescription =>
-      'Sieh dir die Fensterinhalte an und gruppiere, trenne oder passe sie an.';
+  String get desktopWindowsDescription => 'Sieh dir die Fensterinhalte an und gruppiere, trenne oder passe sie an.';
 
   @override
-  String get desktopCountdownsDescription =>
-      'Wähle die Desktop-Countdowns und lege den Rentenbeginn fest.';
+  String get desktopCountdownsDescription => 'Wähle die Desktop-Countdowns und lege den Rentenbeginn fest.';
 
   @override
-  String get desktopCatAssetsDescription =>
-      'Tausche den Katzensticker für jedes Fenster aus.';
+  String get desktopCatAssetsDescription => 'Tausche den Katzensticker für jedes Fenster aus.';
 
   @override
   String get floatingMode => 'Fenstermodus';
@@ -191,8 +179,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enableAll => 'Alle anzeigen';
 
   @override
-  String get exportPrivacy =>
-      'Der Export enthält persönliche Daten und Gehalt. Wähle einen sicheren Speicherort.';
+  String get exportPrivacy => 'Der Export enthält persönliche Daten und Gehalt. Wähle einen sicheren Speicherort.';
 
   @override
   String get finishSetup => 'Einrichtung abschließen';
@@ -219,19 +206,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get holidayStart => 'Startdatum';
 
   @override
-  String get invalidCountdown =>
-      'Prüfe Namen und Uhrzeit. Ein neues Ziel muss in der Zukunft liegen.';
+  String get invalidCountdown => 'Prüfe Namen und Uhrzeit. Ein neues Ziel muss in der Zukunft liegen.';
 
   @override
-  String get invalidDraft =>
-      'Prüfe die Felder. Deine letzten gültigen Einstellungen bleiben gespeichert.';
+  String get invalidDraft => 'Prüfe die Felder. Deine letzten gültigen Einstellungen bleiben gespeichert.';
 
   @override
   String get invalidHoliday => 'Gib Name, Typ und einen gültigen Zeitraum ein.';
 
   @override
-  String get invalidLifespan =>
-      'Gib 1–150 Jahre mit höchstens einer Dezimalstelle ein.';
+  String get invalidLifespan => 'Gib 1–150 Jahre mit höchstens einer Dezimalstelle ein.';
 
   @override
   String get invalidLunch => 'Die Pause muss innerhalb der Arbeitszeit liegen.';
@@ -246,8 +230,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get invalidValue => 'Prüfe den Wert.';
 
   @override
-  String get invalidWorkHours =>
-      'Verwende HH:mm mit einem späteren Ende am selben Tag.';
+  String get invalidWorkHours => 'Verwende HH:mm mit einem späteren Ende am selben Tag.';
 
   @override
   String get itemName => 'Name';
@@ -373,8 +356,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsExported => 'Einstellungen exportiert.';
 
   @override
-  String get settingsFileInvalid =>
-      'Datei konnte nicht verwendet werden. Prüfe Größe, JSON-Format und Version.';
+  String get settingsFileInvalid => 'Datei konnte nicht verwendet werden. Prüfe Größe, JSON-Format und Version.';
 
   @override
   String get settingsImport => 'Einstellungen importieren';
@@ -410,8 +392,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get holidayData => 'Feiertagsdaten';
 
   @override
-  String get holidayFallback =>
-      'Daten für das aktuelle Jahr fehlen. Dein Wochenplan wird verwendet.';
+  String get holidayFallback => 'Daten für das aktuelle Jahr fehlen. Dein Wochenplan wird verwendet.';
 
   @override
   String get holidayChecking => 'Feiertagsdaten werden geprüft…';
@@ -429,12 +410,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get holidayLatest => 'Feiertagsdaten sind aktuell.';
 
   @override
-  String get holidayRejected =>
-      'Die Datei ist ungültig. Prüfe Version, Region, Jahre und Prüfsumme.';
+  String get holidayRejected => 'Die Datei ist ungültig. Prüfe Version, Region, Jahre und Prüfsumme.';
 
   @override
-  String get holidayFailed =>
-      'Aktualisierung fehlgeschlagen. Gültige lokale Daten werden weiterverwendet.';
+  String get holidayFailed => 'Aktualisierung fehlgeschlagen. Gültige lokale Daten werden weiterverwendet.';
 
   @override
   String get restoreSettingsBackup => 'Sicherung wiederherstellen';
@@ -446,8 +425,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tagline => 'Mehr Zeit fürs Leben.';
 
   @override
-  String get initializationNotice =>
-      'Die App-Grundlage ist bereit. Zeit- und Gehaltsfunktionen sind in Entwicklung.';
+  String get initializationNotice => 'Die App-Grundlage ist bereit. Zeit- und Gehaltsfunktionen sind in Entwicklung.';
 
   @override
   String get retirementTitle => 'Countdown bis zur Rente';
@@ -483,8 +461,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showTodayEarnings => 'Heutigen Verdienst anzeigen';
 
   @override
-  String get hideEarningsDetail =>
-      'Die Beträge für heute und diesen Monat als **** anzeigen.';
+  String get hideEarningsDetail => 'Die Beträge für heute und diesen Monat als **** anzeigen.';
 
   @override
   String get saveSettings => 'Zeitzone speichern';
@@ -499,16 +476,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get addSalaryWidget => 'Verdienst-Widget hinzufügen';
 
   @override
-  String get widgetInstructions =>
-      'Halte den Startbildschirm gedrückt, um ein Shiyu-Widget hinzuzufügen. Beim Bearbeiten kannst du bis zu vier Countdown- oder Verdienstwerte auswählen. Für eine getrennte Anzeige füge je Wert ein Widget hinzu.';
+  String get widgetInstructions => 'Halte den Startbildschirm gedrückt, um ein Shiyu-Widget hinzuzufügen. Beim Bearbeiten kannst du bis zu vier Countdown- oder Verdienstwerte auswählen. Für eine getrennte Anzeige füge je Wert ein Widget hinzu.';
 
   @override
-  String get widgetPinRequested =>
-      'Anfrage gesendet. Bestätige sie auf dem Startbildschirm. Wenn kein Dialog erscheint, halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
+  String get widgetPinRequested => 'Anfrage gesendet. Bestätige sie auf dem Startbildschirm. Wenn kein Dialog erscheint, halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
 
   @override
-  String get widgetPinManual =>
-      'Der Startbildschirm hat die Anfrage nicht angenommen. Halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
+  String get widgetPinManual => 'Der Startbildschirm hat die Anfrage nicht angenommen. Halte dort eine freie Stelle gedrückt und wähle Widgets → Shiyu (时余).';
 
   @override
   String get widgetOpenHome => 'Zum Startbildschirm';
@@ -517,16 +491,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get refreshEarnings => 'Verdienst aktualisieren';
 
   @override
-  String get settingsError =>
-      'Prüfe Datum, Zeitzone und gemeinsamen Speicher und versuche es erneut.';
+  String get settingsError => 'Prüfe Datum, Zeitzone und gemeinsamen Speicher und versuche es erneut.';
 
   @override
-  String get calendarFallback =>
-      'Feiertagsdaten sind noch nicht verbunden; die eingestellten wöchentlichen Arbeitstage werden verwendet.';
+  String get calendarFallback => 'Feiertagsdaten sind noch nicht verbunden; die eingestellten wöchentlichen Arbeitstage werden verwendet.';
 
   @override
-  String get currentSlice =>
-      'Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten.';
+  String get currentSlice => 'Der Renten-Countdown ist verfügbar. Weitere Kennzahlen folgen in späteren Schritten.';
 
   @override
   String get mobileSettings => 'Einstellungen';
@@ -559,8 +530,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mobileSaved => 'Einstellungen gespeichert';
 
   @override
-  String get mobileAppearanceError =>
-      'Darstellung konnte nicht gespeichert werden. Erneut versuchen.';
+  String get mobileAppearanceError => 'Darstellung konnte nicht gespeichert werden. Erneut versuchen.';
 
   @override
   String get mobileNotSet => 'Nicht festgelegt';

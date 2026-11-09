@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - shiyu_bridge (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - shiyu_bridge (from `.symlinks/plugins/shiyu_bridge/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  shiyu_bridge:
+    :path: ".symlinks/plugins/shiyu_bridge/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  shiyu_bridge: 77b483727fe2ad2c1ebd572b4b55ee54e4daed89
+
+PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+
+COCOAPODS: 1.16.2

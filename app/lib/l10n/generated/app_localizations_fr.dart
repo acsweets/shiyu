@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -13,34 +12,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mobileMacaronGlass => 'Verre macaron';
 
   @override
-  String get mobileCountdownSummary =>
-      'Retraite, naissance et affichage de la durée de vie';
+  String get mobileCountdownSummary => 'Retraite, naissance et affichage de la durée de vie';
 
   @override
   String get mobileWorkSummary => 'Jours ouvrés, horaires, pause et salaire';
 
   @override
-  String get mobileCalendarSummary =>
-      'Dates de paie, jours fériés et exceptions';
+  String get mobileCalendarSummary => 'Dates de paie, jours fériés et exceptions';
 
   @override
-  String get mobileTitlesSummary =>
-      'Afficher ou masquer chaque titre de compte à rebours';
+  String get mobileTitlesSummary => 'Afficher ou masquer chaque titre de compte à rebours';
 
   @override
-  String get mobileWidgetSummary =>
-      'Ajouter des widgets et ajuster couleurs et texte';
+  String get mobileWidgetSummary => 'Ajouter des widgets et ajuster couleurs et texte';
 
   @override
-  String get mobileGeneralSummary =>
-      'Fuseau horaire, visibilité des montants et sauvegardes';
+  String get mobileGeneralSummary => 'Fuseau horaire, visibilité des montants et sauvegardes';
 
   @override
   String get mobileSaving => 'Enregistrement…';
 
   @override
-  String get mobileDiscardChanges =>
-      'Abandonner les modifications non enregistrées ?';
+  String get mobileDiscardChanges => 'Abandonner les modifications non enregistrées ?';
 
   @override
   String get mobileDiscard => 'Abandonner les modifications';
@@ -49,8 +42,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get metricTitleVisibility => 'Titres par indicateur';
 
   @override
-  String get metricTitleVisibilityDetail =>
-      'La valeur reste visible si le titre est masqué. Les fenêtres flottantes et les widgets ont aussi un réglage général pour les titres.';
+  String get metricTitleVisibilityDetail => 'La valeur reste visible si le titre est masqué. Les fenêtres flottantes et les widgets ont aussi un réglage général pour les titres.';
 
   @override
   String get lifeDisplayMode => 'Affichage de la durée de vie';
@@ -60,9 +52,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     String _temp0 = intl.Intl.pluralLogic(
@@ -87,20 +77,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get desktopCatAssets => 'Autocollants de chat';
 
   @override
-  String get desktopAppearanceDescription =>
-      'Changez la langue, les couleurs ou la taille du texte et prévisualisez la fenêtre flottante.';
+  String get desktopAppearanceDescription => 'Changez la langue, les couleurs ou la taille du texte et prévisualisez la fenêtre flottante.';
 
   @override
-  String get desktopWindowsDescription =>
-      'Consultez le contenu des fenêtres pour le regrouper, le séparer ou l’ajuster.';
+  String get desktopWindowsDescription => 'Consultez le contenu des fenêtres pour le regrouper, le séparer ou l’ajuster.';
 
   @override
-  String get desktopCountdownsDescription =>
-      'Choisissez les comptes à rebours du bureau et définissez la date de départ à la retraite.';
+  String get desktopCountdownsDescription => 'Choisissez les comptes à rebours du bureau et définissez la date de départ à la retraite.';
 
   @override
-  String get desktopCatAssetsDescription =>
-      'Remplacez l’autocollant de chat de chaque fenêtre.';
+  String get desktopCatAssetsDescription => 'Remplacez l’autocollant de chat de chaque fenêtre.';
 
   @override
   String get floatingMode => 'Mode de fenêtre';
@@ -193,8 +179,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get enableAll => 'Tout afficher';
 
   @override
-  String get exportPrivacy =>
-      'L’export contient vos données personnelles et votre salaire. Choisissez un emplacement sûr.';
+  String get exportPrivacy => 'L’export contient vos données personnelles et votre salaire. Choisissez un emplacement sûr.';
 
   @override
   String get finishSetup => 'Terminer la configuration';
@@ -221,24 +206,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get holidayStart => 'Date de début';
 
   @override
-  String get invalidCountdown =>
-      'Vérifiez le nom et l’heure. Un nouvel objectif doit être dans le futur.';
+  String get invalidCountdown => 'Vérifiez le nom et l’heure. Un nouvel objectif doit être dans le futur.';
 
   @override
-  String get invalidDraft =>
-      'Vérifiez les champs. Vos derniers réglages valides sont conservés.';
+  String get invalidDraft => 'Vérifiez les champs. Vos derniers réglages valides sont conservés.';
 
   @override
-  String get invalidHoliday =>
-      'Indiquez un nom, un type et une plage de dates valide.';
+  String get invalidHoliday => 'Indiquez un nom, un type et une plage de dates valide.';
 
   @override
-  String get invalidLifespan =>
-      'Saisissez entre 1 et 150 ans, avec une décimale maximum.';
+  String get invalidLifespan => 'Saisissez entre 1 et 150 ans, avec une décimale maximum.';
 
   @override
-  String get invalidLunch =>
-      'La pause doit être comprise dans les heures de travail.';
+  String get invalidLunch => 'La pause doit être comprise dans les heures de travail.';
 
   @override
   String get invalidPaydays => 'Choisissez des jours distincts entre 1 et 31.';
@@ -250,8 +230,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidValue => 'Vérifiez cette valeur.';
 
   @override
-  String get invalidWorkHours =>
-      'Utilisez HH:mm avec une fin après le début, le même jour.';
+  String get invalidWorkHours => 'Utilisez HH:mm avec une fin après le début, le même jour.';
 
   @override
   String get itemName => 'Nom';
@@ -302,8 +281,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get netMonthly => 'Salaire mensuel net (facultatif)';
 
   @override
-  String get netRequired =>
-      'Saisissez le salaire net avant de choisir cette option.';
+  String get netRequired => 'Saisissez le salaire net avant de choisir cette option.';
 
   @override
   String get nextStep => 'Continuer';
@@ -378,8 +356,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsExported => 'Réglages exportés.';
 
   @override
-  String get settingsFileInvalid =>
-      'Fichier inutilisable. Vérifiez sa taille, son format JSON et sa version.';
+  String get settingsFileInvalid => 'Fichier inutilisable. Vérifiez sa taille, son format JSON et sa version.';
 
   @override
   String get settingsImport => 'Importer les réglages';
@@ -415,8 +392,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get holidayData => 'Données des jours fériés';
 
   @override
-  String get holidayFallback =>
-      'Les données de cette année manquent. Votre planning hebdomadaire est utilisé.';
+  String get holidayFallback => 'Les données de cette année manquent. Votre planning hebdomadaire est utilisé.';
 
   @override
   String get holidayChecking => 'Vérification des jours fériés…';
@@ -434,12 +410,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get holidayLatest => 'Les données sont à jour.';
 
   @override
-  String get holidayRejected =>
-      'Fichier invalide. Vérifiez la version, la région, les années et la somme de contrôle.';
+  String get holidayRejected => 'Fichier invalide. Vérifiez la version, la région, les années et la somme de contrôle.';
 
   @override
-  String get holidayFailed =>
-      'Échec de la mise à jour. Les données locales valides restent utilisées.';
+  String get holidayFailed => 'Échec de la mise à jour. Les données locales valides restent utilisées.';
 
   @override
   String get restoreSettingsBackup => 'Restaurer la sauvegarde';
@@ -451,8 +425,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tagline => 'Prenez le temps de vivre.';
 
   @override
-  String get initializationNotice =>
-      'La base de l’application est prête. Les fonctions de temps et de salaire sont en cours de développement.';
+  String get initializationNotice => 'La base de l’application est prête. Les fonctions de temps et de salaire sont en cours de développement.';
 
   @override
   String get retirementTitle => 'Compte à rebours avant la retraite';
@@ -488,8 +461,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get showTodayEarnings => 'Afficher les gains du jour';
 
   @override
-  String get hideEarningsDetail =>
-      'Masque les montants du jour et du mois avec ****.';
+  String get hideEarningsDetail => 'Masque les montants du jour et du mois avec ****.';
 
   @override
   String get saveSettings => 'Enregistrer le fuseau';
@@ -504,16 +476,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addSalaryWidget => 'Ajouter le widget des gains';
 
   @override
-  String get widgetInstructions =>
-      'Appuyez longuement sur l’écran d’accueil pour ajouter un widget Shiyu. Si le widget est modifiable, choisissez un à quatre indicateurs de compte à rebours ou de gains. Ajoutez un widget par indicateur pour les afficher séparément.';
+  String get widgetInstructions => 'Appuyez longuement sur l’écran d’accueil pour ajouter un widget Shiyu. Si le widget est modifiable, choisissez un à quatre indicateurs de compte à rebours ou de gains. Ajoutez un widget par indicateur pour les afficher séparément.';
 
   @override
-  String get widgetPinRequested =>
-      'Demande envoyée. Confirmez-la sur l’écran d’accueil. Si aucun message ne s’affiche, appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
+  String get widgetPinRequested => 'Demande envoyée. Confirmez-la sur l’écran d’accueil. Si aucun message ne s’affiche, appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
 
   @override
-  String get widgetPinManual =>
-      'L’écran d’accueil n’a pas accepté la demande. Appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
+  String get widgetPinManual => 'L’écran d’accueil n’a pas accepté la demande. Appuyez longuement sur une zone vide et choisissez Widgets → Shiyu (时余).';
 
   @override
   String get widgetOpenHome => 'Aller à l’écran d’accueil';
@@ -522,16 +491,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get refreshEarnings => 'Actualiser les gains';
 
   @override
-  String get settingsError =>
-      'Vérifiez la date, le fuseau horaire et le stockage partagé, puis réessayez.';
+  String get settingsError => 'Vérifiez la date, le fuseau horaire et le stockage partagé, puis réessayez.';
 
   @override
-  String get calendarFallback =>
-      'Les jours fériés ne sont pas encore connectés ; les jours travaillés hebdomadaires configurés sont utilisés.';
+  String get calendarFallback => 'Les jours fériés ne sont pas encore connectés ; les jours travaillés hebdomadaires configurés sont utilisés.';
 
   @override
-  String get currentSlice =>
-      'Le compte à rebours avant la retraite est disponible. Les autres indicateurs seront ajoutés ultérieurement.';
+  String get currentSlice => 'Le compte à rebours avant la retraite est disponible. Les autres indicateurs seront ajoutés ultérieurement.';
 
   @override
   String get mobileSettings => 'Réglages';
@@ -564,8 +530,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mobileSaved => 'Réglages enregistrés';
 
   @override
-  String get mobileAppearanceError =>
-      'Impossible d’enregistrer l’apparence. Réessayez.';
+  String get mobileAppearanceError => 'Impossible d’enregistrer l’apparence. Réessayez.';
 
   @override
   String get mobileNotSet => 'Non défini';

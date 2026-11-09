@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -43,8 +42,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get metricTitleVisibility => '항목별 제목 표시';
 
   @override
-  String get metricTitleVisibilityDetail =>
-      '제목을 꺼도 값은 표시됩니다. 플로팅 창과 위젯에는 제목을 한꺼번에 끄는 설정도 있습니다.';
+  String get metricTitleVisibilityDetail => '제목을 꺼도 값은 표시됩니다. 플로팅 창과 위젯에는 제목을 한꺼번에 끄는 설정도 있습니다.';
 
   @override
   String get lifeDisplayMode => '생애 표시 방식';
@@ -54,9 +52,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     return '$daysString일';
@@ -75,8 +71,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get desktopCatAssets => '고양이 스티커';
 
   @override
-  String get desktopAppearanceDescription =>
-      '언어, 색상, 글자 크기를 바꾸고 떠 있는 창을 미리 봅니다.';
+  String get desktopAppearanceDescription => '언어, 색상, 글자 크기를 바꾸고 떠 있는 창을 미리 봅니다.';
 
   @override
   String get desktopWindowsDescription => '각 창의 내용을 확인하고 합치거나 나누고 표시를 조정합니다.';
@@ -475,16 +470,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addSalaryWidget => '급여 위젯 추가';
 
   @override
-  String get widgetInstructions =>
-      '홈 화면을 길게 눌러 시유 위젯을 추가하세요. 편집을 지원하는 경우 카운트다운과 급여 지표를 최대 4개까지 선택할 수 있습니다. 따로 표시하려면 지표마다 위젯을 추가하세요.';
+  String get widgetInstructions => '홈 화면을 길게 눌러 시유 위젯을 추가하세요. 편집을 지원하는 경우 카운트다운과 급여 지표를 최대 4개까지 선택할 수 있습니다. 따로 표시하려면 지표마다 위젯을 추가하세요.';
 
   @override
-  String get widgetPinRequested =>
-      '추가를 요청했습니다. 홈 화면에서 확인하세요. 확인 창이 뜨지 않으면 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
+  String get widgetPinRequested => '추가를 요청했습니다. 홈 화면에서 확인하세요. 확인 창이 뜨지 않으면 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
 
   @override
-  String get widgetPinManual =>
-      '홈 화면에서 요청을 받지 못했습니다. 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
+  String get widgetPinManual => '홈 화면에서 요청을 받지 못했습니다. 빈 곳을 길게 눌러 위젯 → 시유(时余)를 선택하세요.';
 
   @override
   String get widgetOpenHome => '홈 화면으로 이동';

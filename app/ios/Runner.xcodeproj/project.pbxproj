@@ -8,14 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		1A44715D3DA68A43AA64CB9F /* ShiyuCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7D92859598BE3F75B682D /* ShiyuCore.swift */; };
+		2C7B072E490006DF5C403062 /* SharedWidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E62D3AF1EE4F57B3E8BBEBB /* SharedWidgetStore.swift */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
+		36490F7A1C0C1382697E177F /* WidgetCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42508BEBD69526D6264613B /* WidgetCard.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		437CF7DF57765480C5C70F96 /* WidgetSettingsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1694B60A04B22B66132373D /* WidgetSettingsBridge.swift */; };
+		63529E600FC9E61D5232E686 /* RetirementWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC2F6740E841C5E399DE938 /* RetirementWidget.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		7C75B6E02E4F41E68D8C14D0 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 58CCFE13515344FB849ACB8C /* Localizable.xcstrings */; };
+		8E3B8AD35BECFE47456D73D7 /* SharedWidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E62D3AF1EE4F57B3E8BBEBB /* SharedWidgetStore.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		9868C5201BF5C75BE8EBF223 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3420BEFF8EC8E8FA20B9499 /* Pods_Runner.framework */; };
+		98E52CC2F47E7820DC885D03 /* widget_cat.png in Resources */ = {isa = PBXBuildFile; fileRef = 197BF02F22467F563DABF8BA /* widget_cat.png */; };
+		BE6195A4F02116AE9D2193F6 /* ShiyuWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F2BEB45D1FC9DCC6582118ED /* ShiyuWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CA44D7B343C549F4FD7906FE /* WidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6FEED4918C529B7D5E2371 /* WidgetModels.swift */; };
+		E615CFE8346E99E7F1A1D2D1 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1364178020D16416E00234EA /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,9 +38,27 @@
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
 		};
+		FB65192B1C68A1FD835C5CA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3F171E665BB9BDA502988368;
+			remoteInfo = ShiyuWidgets;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		9565E950B9CC34FF8B9EC7EA /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BE6195A4F02116AE9D2193F6 /* ShiyuWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -42,11 +72,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1364178020D16416E00234EA /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		197BF02F22467F563DABF8BA /* widget_cat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ShiyuWidgets/Resources/widget_cat.png; sourceTree = SOURCE_ROOT; };
+		1ADF6C63AB4CFCEF8F6B7169 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		1EC7D92859598BE3F75B682D /* ShiyuCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ../../native/ios/Generated/ShiyuCore.swift; sourceTree = SOURCE_ROOT; };
+		2240899A914E039F45591131 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		58CCFE13515344FB849ACB8C /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = ShiyuWidgets/Resources/Localizable.xcstrings; sourceTree = SOURCE_ROOT; };
+		5AEE445FC1D09F1907B61B09 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
+		6E62D3AF1EE4F57B3E8BBEBB /* SharedWidgetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/SharedWidgetStore.swift; sourceTree = SOURCE_ROOT; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +97,15 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		99959DC07EF34DA5F253F06E /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		A42508BEBD69526D6264613B /* WidgetCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiyuWidgets/WidgetCard.swift; sourceTree = SOURCE_ROOT; };
+		AEC2F6740E841C5E399DE938 /* RetirementWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiyuWidgets/RetirementWidget.swift; sourceTree = SOURCE_ROOT; };
+		C1694B60A04B22B66132373D /* WidgetSettingsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Runner/WidgetSettingsBridge.swift; sourceTree = SOURCE_ROOT; };
+		C3420BEFF8EC8E8FA20B9499 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C974A26D24FE941A7EE63B35 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		E2D59E1B2060525264BF82E1 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		F2BEB45D1FC9DCC6582118ED /* ShiyuWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShiyuWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA6FEED4918C529B7D5E2371 /* WidgetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiyuWidgets/WidgetModels.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +114,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
+				9868C5201BF5C75BE8EBF223 /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7CD36D1EFF0DED6986A7B13 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E615CFE8346E99E7F1A1D2D1 /* Pods_RunnerTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C764E1F27BF1EB25A6C57C4E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +163,9 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
-				FE58B17D8F6F77CD47CBEE26,
+				FE58B17D8F6F77CD47CBEE26 /* Shiyu Widgets */,
+				F5D8B310634753AB9142DF55 /* Pods */,
+				C17BE1FCF57CCB3818DDAA9E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,7 +174,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
-				F2BEB45D1FC9DCC6582118ED,
+				F2BEB45D1FC9DCC6582118ED /* ShiyuWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -130,6 +195,44 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		C17BE1FCF57CCB3818DDAA9E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C3420BEFF8EC8E8FA20B9499 /* Pods_Runner.framework */,
+				1364178020D16416E00234EA /* Pods_RunnerTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F5D8B310634753AB9142DF55 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E2D59E1B2060525264BF82E1 /* Pods-Runner.debug.xcconfig */,
+				C974A26D24FE941A7EE63B35 /* Pods-Runner.release.xcconfig */,
+				99959DC07EF34DA5F253F06E /* Pods-Runner.profile.xcconfig */,
+				2240899A914E039F45591131 /* Pods-RunnerTests.debug.xcconfig */,
+				1ADF6C63AB4CFCEF8F6B7169 /* Pods-RunnerTests.release.xcconfig */,
+				5AEE445FC1D09F1907B61B09 /* Pods-RunnerTests.profile.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		FE58B17D8F6F77CD47CBEE26 /* Shiyu Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				C1694B60A04B22B66132373D /* WidgetSettingsBridge.swift */,
+				A42508BEBD69526D6264613B /* WidgetCard.swift */,
+				FA6FEED4918C529B7D5E2371 /* WidgetModels.swift */,
+				6E62D3AF1EE4F57B3E8BBEBB /* SharedWidgetStore.swift */,
+				AEC2F6740E841C5E399DE938 /* RetirementWidget.swift */,
+				1EC7D92859598BE3F75B682D /* ShiyuCore.swift */,
+				197BF02F22467F563DABF8BA /* widget_cat.png */,
+				58CCFE13515344FB849ACB8C /* Localizable.xcstrings */,
+			);
+			name = "Shiyu Widgets";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -137,8 +240,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 331C8087294A63A400263BE5 /* Build configuration list for PBXNativeTarget "RunnerTests" */;
 			buildPhases = (
+				7328B650B1A5DEB18E9ECD8B /* [CP] Check Pods Manifest.lock */,
 				331C807D294A63A400263BE5 /* Sources */,
 				331C807F294A63A400263BE5 /* Resources */,
+				A7CD36D1EFF0DED6986A7B13 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -150,22 +255,42 @@
 			productReference = 331C8081294A63A400263BE5 /* RunnerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		3F171E665BB9BDA502988368 /* ShiyuWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 453D9A4E4BA56E8BCA381F5A /* Build configuration list for PBXNativeTarget "ShiyuWidgets" */;
+			buildPhases = (
+				7A4C5E7C1C3B149D6EA02EF6 /* Build Widget Rust core */,
+				597A55E44EAA9D2BC37A5CC2 /* Sources */,
+				C764E1F27BF1EB25A6C57C4E /* Frameworks */,
+				AFC478459E145B7C71E78755 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShiyuWidgets;
+			productName = ShiyuWidgets;
+			productReference = F2BEB45D1FC9DCC6582118ED /* ShiyuWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		97C146ED1CF9000F007C117D /* Runner */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
-				9565E950B9CC34FF8B9EC7EA,
+				C44EA46957F450A662787C23 /* [CP] Check Pods Manifest.lock */,
+				9565E950B9CC34FF8B9EC7EA /* Embed App Extensions */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+				097C3DB64ABCBE73A728DB99 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				7C04F2BAC3F006679F9F039C,
+				7C04F2BAC3F006679F9F039C /* PBXTargetDependency */,
 			);
 			name = Runner;
 			packageProductDependencies = (
@@ -207,7 +332,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -215,7 +340,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
-				3F171E665BB9BDA502988368,
+				3F171E665BB9BDA502988368 /* ShiyuWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -239,9 +364,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AFC478459E145B7C71E78755 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				98E52CC2F47E7820DC885D03 /* widget_cat.png in Resources */,
+				7C75B6E02E4F41E68D8C14D0 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		097C3DB64ABCBE73A728DB99 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -258,6 +409,44 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
+		7328B650B1A5DEB18E9ECD8B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RunnerTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7A4C5E7C1C3B149D6EA02EF6 /* Build Widget Rust core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build Widget Rust core";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore/libshiyu_ffi.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "bash \"$SRCROOT/../../scripts/build_widget_core.sh\"";
+		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -273,6 +462,28 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
 		};
+		C44EA46957F450A662787C23 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -284,6 +495,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		597A55E44EAA9D2BC37A5CC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63529E600FC9E61D5232E686 /* RetirementWidget.swift in Sources */,
+				36490F7A1C0C1382697E177F /* WidgetCard.swift in Sources */,
+				CA44D7B343C549F4FD7906FE /* WidgetModels.swift in Sources */,
+				8E3B8AD35BECFE47456D73D7 /* SharedWidgetStore.swift in Sources */,
+				1A44715D3DA68A43AA64CB9F /* ShiyuCore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		97C146EA1CF9000F007C117D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,8 +514,8 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
-				437CF7DF57765480C5C70F96,
-				2C7B072E490006DF5C403062,
+				437CF7DF57765480C5C70F96 /* WidgetSettingsBridge.swift in Sources */,
+				2C7B072E490006DF5C403062 /* SharedWidgetStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +526,11 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 331C8085294A63A400263BE5 /* PBXContainerItemProxy */;
+		};
+		7C04F2BAC3F006679F9F039C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3F171E665BB9BDA502988368 /* ShiyuWidgets */;
+			targetProxy = FB65192B1C68A1FD835C5CA6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -326,6 +554,42 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		08A51FF345B1639B2310BEF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShiyuWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",
+				);
+				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lshiyu_ffi",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap";
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		249021D3217E4FDB00AE95B9 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -383,9 +647,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -403,6 +667,7 @@
 		};
 		331C8088294A63A400263BE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2240899A914E039F45591131 /* Pods-RunnerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -420,6 +685,7 @@
 		};
 		331C8089294A63A400263BE5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ADF6C63AB4CFCEF8F6B7169 /* Pods-RunnerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -435,6 +701,7 @@
 		};
 		331C808A294A63A400263BE5 /* Profile */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5AEE445FC1D09F1907B61B09 /* Pods-RunnerTests.profile.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -565,9 +832,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -588,9 +855,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -606,6 +873,78 @@
 			};
 			name = Release;
 		};
+		BF9E657CE61A98D4A2E8B380 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShiyuWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",
+				);
+				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lshiyu_ffi",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap";
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C2A51F3DB5D439F681381386 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShiyuWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",
+				);
+				MARKETING_VERSION = 0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lshiyu_ffi",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap";
+				PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -615,6 +954,16 @@
 				331C8088294A63A400263BE5 /* Debug */,
 				331C8089294A63A400263BE5 /* Release */,
 				331C808A294A63A400263BE5 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		453D9A4E4BA56E8BCA381F5A /* Build configuration list for PBXNativeTarget "ShiyuWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08A51FF345B1639B2310BEF2 /* Debug */,
+				BF9E657CE61A98D4A2E8B380 /* Release */,
+				C2A51F3DB5D439F681381386 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -642,7 +991,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};
@@ -654,102 +1003,6 @@
 			productName = FlutterGeneratedPluginSwiftPackage;
 		};
 /* End XCSwiftPackageProductDependency section */
-		C1694B60A04B22B66132373D = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Runner/WidgetSettingsBridge.swift"; sourceTree = SOURCE_ROOT; };
-		437CF7DF57765480C5C70F96 = { isa = PBXBuildFile; fileRef = C1694B60A04B22B66132373D; };
-		6E62D3AF1EE4F57B3E8BBEBB = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shared/SharedWidgetStore.swift"; sourceTree = SOURCE_ROOT; };
-		2C7B072E490006DF5C403062 = { isa = PBXBuildFile; fileRef = 6E62D3AF1EE4F57B3E8BBEBB; };
-		8E3B8AD35BECFE47456D73D7 = { isa = PBXBuildFile; fileRef = 6E62D3AF1EE4F57B3E8BBEBB; };
-		197BF02F22467F563DABF8BA /* widget_cat.png */ = { isa = PBXFileReference; lastKnownFileType = image.png; path = "ShiyuWidgets/Resources/widget_cat.png"; sourceTree = SOURCE_ROOT; };
-		98E52CC2F47E7820DC885D03 /* widget_cat.png in Resources */ = { isa = PBXBuildFile; fileRef = 197BF02F22467F563DABF8BA /* widget_cat.png */; };
-		58CCFE13515344FB849ACB8C /* Localizable.xcstrings */ = { isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "ShiyuWidgets/Resources/Localizable.xcstrings"; sourceTree = SOURCE_ROOT; };
-		7C75B6E02E4F41E68D8C14D0 /* Localizable.xcstrings in Resources */ = { isa = PBXBuildFile; fileRef = 58CCFE13515344FB849ACB8C /* Localizable.xcstrings */; };
-		FA6FEED4918C529B7D5E2371 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShiyuWidgets/WidgetModels.swift"; sourceTree = SOURCE_ROOT; };
-		A42508BEBD69526D6264613B = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShiyuWidgets/WidgetCard.swift"; sourceTree = SOURCE_ROOT; };
-		AEC2F6740E841C5E399DE938 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShiyuWidgets/RetirementWidget.swift"; sourceTree = SOURCE_ROOT; };
-		CA44D7B343C549F4FD7906FE = { isa = PBXBuildFile; fileRef = FA6FEED4918C529B7D5E2371; };
-		36490F7A1C0C1382697E177F = { isa = PBXBuildFile; fileRef = A42508BEBD69526D6264613B; };
-		63529E600FC9E61D5232E686 = { isa = PBXBuildFile; fileRef = AEC2F6740E841C5E399DE938; };
-		1EC7D92859598BE3F75B682D = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "../../native/ios/Generated/ShiyuCore.swift"; sourceTree = SOURCE_ROOT; };
-		1A44715D3DA68A43AA64CB9F = { isa = PBXBuildFile; fileRef = 1EC7D92859598BE3F75B682D; };
-		FE58B17D8F6F77CD47CBEE26 = { isa = PBXGroup; name = "Shiyu Widgets"; sourceTree = "<group>"; children = (C1694B60A04B22B66132373D,A42508BEBD69526D6264613B,FA6FEED4918C529B7D5E2371,6E62D3AF1EE4F57B3E8BBEBB,AEC2F6740E841C5E399DE938,1EC7D92859598BE3F75B682D,197BF02F22467F563DABF8BA,58CCFE13515344FB849ACB8C); };
-		F2BEB45D1FC9DCC6582118ED = { isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShiyuWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		597A55E44EAA9D2BC37A5CC2 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (63529E600FC9E61D5232E686,36490F7A1C0C1382697E177F,CA44D7B343C549F4FD7906FE,8E3B8AD35BECFE47456D73D7,1A44715D3DA68A43AA64CB9F,); runOnlyForDeploymentPostprocessing = 0; };
-		C764E1F27BF1EB25A6C57C4E = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		AFC478459E145B7C71E78755 = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (98E52CC2F47E7820DC885D03,7C75B6E02E4F41E68D8C14D0,); runOnlyForDeploymentPostprocessing = 0; };
-		7A4C5E7C1C3B149D6EA02EF6 = { isa = PBXShellScriptBuildPhase; alwaysOutOfDate = 1; buildActionMask = 2147483647; files = (); inputPaths = (); outputPaths = ("$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore/libshiyu_ffi.a",); name = "Build Widget Rust core"; shellPath = /bin/bash; shellScript = "bash \"$SRCROOT/../../scripts/build_widget_core.sh\""; runOnlyForDeploymentPostprocessing = 0; };
-		08A51FF345B1639B2310BEF2 = { isa = XCBuildConfiguration; name = Debug; buildSettings = {
-            APPLICATION_EXTENSION_API_ONLY = YES;
-            CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
-            CODE_SIGN_STYLE = Automatic;
-            CURRENT_PROJECT_VERSION = 1;
-            GENERATE_INFOPLIST_FILE = YES;
-            INFOPLIST_FILE = ShiyuWidgets/Info.plist;
-            IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-            MARKETING_VERSION = 0.1.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
-            PRODUCT_NAME = "$(TARGET_NAME)";
-            SDKROOT = iphoneos;
-            SKIP_INSTALL = YES;
-            SWIFT_VERSION = 5.0;
-            TARGETED_DEVICE_FAMILY = "1,2";
-            ENABLE_USER_SCRIPT_SANDBOXING = NO;
-            LIBRARY_SEARCH_PATHS = ("$(inherited)","$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",);
-            OTHER_LDFLAGS = ("$(inherited)","-lshiyu_ffi",);
-            SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
-            OTHER_SWIFT_FLAGS = ("$(inherited)","-Xcc","-fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap",);
-            LD_RUNPATH_SEARCH_PATHS = ("$(inherited)","@executable_path/Frameworks","@executable_path/../../Frameworks",);
-        }; };
-		BF9E657CE61A98D4A2E8B380 = { isa = XCBuildConfiguration; name = Release; buildSettings = {
-            APPLICATION_EXTENSION_API_ONLY = YES;
-            CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
-            CODE_SIGN_STYLE = Automatic;
-            CURRENT_PROJECT_VERSION = 1;
-            GENERATE_INFOPLIST_FILE = YES;
-            INFOPLIST_FILE = ShiyuWidgets/Info.plist;
-            IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-            MARKETING_VERSION = 0.1.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
-            PRODUCT_NAME = "$(TARGET_NAME)";
-            SDKROOT = iphoneos;
-            SKIP_INSTALL = YES;
-            SWIFT_VERSION = 5.0;
-            TARGETED_DEVICE_FAMILY = "1,2";
-            ENABLE_USER_SCRIPT_SANDBOXING = NO;
-            LIBRARY_SEARCH_PATHS = ("$(inherited)","$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",);
-            OTHER_LDFLAGS = ("$(inherited)","-lshiyu_ffi",);
-            SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
-            OTHER_SWIFT_FLAGS = ("$(inherited)","-Xcc","-fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap",);
-            LD_RUNPATH_SEARCH_PATHS = ("$(inherited)","@executable_path/Frameworks","@executable_path/../../Frameworks",);
-        }; };
-		C2A51F3DB5D439F681381386 = { isa = XCBuildConfiguration; name = Profile; buildSettings = {
-            APPLICATION_EXTENSION_API_ONLY = YES;
-            CODE_SIGN_ENTITLEMENTS = ShiyuWidgets/ShiyuWidgets.entitlements;
-            CODE_SIGN_STYLE = Automatic;
-            CURRENT_PROJECT_VERSION = 1;
-            GENERATE_INFOPLIST_FILE = YES;
-            INFOPLIST_FILE = ShiyuWidgets/Info.plist;
-            IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-            MARKETING_VERSION = 0.1.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.growthrecord.shiyu.widgets;
-            PRODUCT_NAME = "$(TARGET_NAME)";
-            SDKROOT = iphoneos;
-            SKIP_INSTALL = YES;
-            SWIFT_VERSION = 5.0;
-            TARGETED_DEVICE_FAMILY = "1,2";
-            ENABLE_USER_SCRIPT_SANDBOXING = NO;
-            LIBRARY_SEARCH_PATHS = ("$(inherited)","$(BUILT_PRODUCTS_DIR)/ShiyuWidgetCore",);
-            OTHER_LDFLAGS = ("$(inherited)","-lshiyu_ffi",);
-            SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../../native/ios/Generated";
-            OTHER_SWIFT_FLAGS = ("$(inherited)","-Xcc","-fmodule-map-file=$(SRCROOT)/../../native/ios/Generated/ShiyuCoreFFI.modulemap",);
-            LD_RUNPATH_SEARCH_PATHS = ("$(inherited)","@executable_path/Frameworks","@executable_path/../../Frameworks",);
-        }; };
-		453D9A4E4BA56E8BCA381F5A = { isa = XCConfigurationList; buildConfigurations = (08A51FF345B1639B2310BEF2,BF9E657CE61A98D4A2E8B380,C2A51F3DB5D439F681381386); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-		3F171E665BB9BDA502988368 = { isa = PBXNativeTarget; buildConfigurationList = 453D9A4E4BA56E8BCA381F5A; buildPhases = (7A4C5E7C1C3B149D6EA02EF6,597A55E44EAA9D2BC37A5CC2,C764E1F27BF1EB25A6C57C4E,AFC478459E145B7C71E78755,); buildRules = (); dependencies = (); name = ShiyuWidgets; productName = ShiyuWidgets; productReference = F2BEB45D1FC9DCC6582118ED; productType = "com.apple.product-type.app-extension"; };
-		FB65192B1C68A1FD835C5CA6 = { isa = PBXContainerItemProxy; containerPortal = 97C146E61CF9000F007C117D; proxyType = 1; remoteGlobalIDString = 3F171E665BB9BDA502988368; remoteInfo = ShiyuWidgets; };
-		7C04F2BAC3F006679F9F039C = { isa = PBXTargetDependency; target = 3F171E665BB9BDA502988368; targetProxy = FB65192B1C68A1FD835C5CA6; };
-		BE6195A4F02116AE9D2193F6 = { isa = PBXBuildFile; fileRef = F2BEB45D1FC9DCC6582118ED; settings = { ATTRIBUTES = (RemoveHeadersOnCopy,); }; };
-		9565E950B9CC34FF8B9EC7EA = { isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (BE6195A4F02116AE9D2193F6,); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
-
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }

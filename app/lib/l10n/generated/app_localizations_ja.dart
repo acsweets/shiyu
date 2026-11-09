@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -43,8 +42,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get metricTitleVisibility => '項目ごとのタイトル表示';
 
   @override
-  String get metricTitleVisibilityDetail =>
-      'タイトルを非表示にしても数値は表示されます。フローティングウィンドウとウィジェットにもタイトルの一括設定があります。';
+  String get metricTitleVisibilityDetail => 'タイトルを非表示にしても数値は表示されます。フローティングウィンドウとウィジェットにもタイトルの一括設定があります。';
 
   @override
   String get lifeDisplayMode => '人生の表示モード';
@@ -54,9 +52,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String lifeElapsedValue(num days) {
-    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
     return '$daysString 日';
@@ -75,8 +71,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get desktopCatAssets => '猫のステッカー';
 
   @override
-  String get desktopAppearanceDescription =>
-      '言語、配色、文字サイズを変更し、フローティングウィンドウを確認します。';
+  String get desktopAppearanceDescription => '言語、配色、文字サイズを変更し、フローティングウィンドウを確認します。';
 
   @override
   String get desktopWindowsDescription => '各ウィンドウの内容を確認し、結合、分割、表示調整ができます。';
@@ -475,16 +470,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get addSalaryWidget => '給与ウィジェットを追加';
 
   @override
-  String get widgetInstructions =>
-      'ホーム画面を長押しして時余のウィジェットを追加します。編集できる場合は、カウントダウンや給与から最大4項目を選べます。個別に表示するには、ウィジェットを項目ごとに追加します。';
+  String get widgetInstructions => 'ホーム画面を長押しして時余のウィジェットを追加します。編集できる場合は、カウントダウンや給与から最大4項目を選べます。個別に表示するには、ウィジェットを項目ごとに追加します。';
 
   @override
-  String get widgetPinRequested =>
-      '追加をリクエストしました。ホーム画面で確認してください。確認画面が出ない場合は、ホーム画面の空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
+  String get widgetPinRequested => '追加をリクエストしました。ホーム画面で確認してください。確認画面が出ない場合は、ホーム画面の空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
 
   @override
-  String get widgetPinManual =>
-      'ホーム画面でリクエストを受け付けられませんでした。空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
+  String get widgetPinManual => 'ホーム画面でリクエストを受け付けられませんでした。空いている場所を長押しし、「ウィジェット」から「时余（Shiyu）」を選んでください。';
 
   @override
   String get widgetOpenHome => 'ホーム画面へ';
