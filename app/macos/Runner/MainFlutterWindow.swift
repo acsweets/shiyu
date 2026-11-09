@@ -23,7 +23,7 @@ class MainFlutterWindow: NSWindow {
     let packs = FlutterMethodChannel(
       name: "shiyu/timerpack", binaryMessenger: flutterViewController.engine.binaryMessenger
     )
-    packs.resizeChannelBuffer(8)
+    packs.resizeBuffer(8)
     packChannel = packs
 
     // 子窗仅控制自己的窗口，业务状态与全局入口由主窗管理。
