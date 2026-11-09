@@ -18,7 +18,8 @@ class AppDelegate: FlutterAppDelegate {
   }
 
   override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-    return true
+    // 浮窗全部关闭后保留菜单栏入口，用户仍可显示浮窗或主动退出。
+    return false
   }
 
   override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
