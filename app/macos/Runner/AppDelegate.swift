@@ -12,7 +12,7 @@ class AppDelegate: FlutterAppDelegate {
     if !other.isEmpty { super.application(application, open: other) }
   }
 
-  func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+  override func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
     sender.windows.compactMap { $0 as? MainFlutterWindow }.first?.reopenShiyu()
     return false
   }
